@@ -85,7 +85,17 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 .todo-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 18px; }
 .todo-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
 @media (max-width: 760px) { .todo-list { grid-template-columns: 1fr; } }
-.todo-list li { border-bottom: 1px solid var(--line); min-width: 0; }
+.todo-list li { border-bottom: 1px solid var(--line); min-width: 0; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+.todo-list li.todo-empty { display: block; }
+.todo-list.one { grid-template-columns: 1fr; }
+.todo-list li.is-waiting label span { color: var(--muted); }
+.since { display: block; font-family: var(--font-data); font-size: 11px; color: var(--muted); }
+.mini { font: 600 12px var(--font-body); color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 999px; padding: 4px 10px; cursor: pointer; white-space: nowrap; }
+.mini:hover { filter: brightness(0.96); }
+.mini:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sub-head { font-family: var(--font-data); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 14px 0 2px; }
+.recur { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 760px) { .recur { grid-template-columns: 1fr; } }
 .todo-list label { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 10px 0; cursor: pointer; }
 .todo-list label span { min-width: 0; overflow-wrap: anywhere; }
 .todo-list li.is-done label span { text-decoration: line-through; color: var(--muted); }
@@ -218,9 +228,7 @@ a { color: var(--accent); }
   ],
   "followups": [],
   "todos": [
-    "Dinner",
-    "Trailers: Justin",
-    "Hospitality: 9am front-door greeter (Gabriel, the Fahertys or the Moores?)",
+    "Choose the 9am front-door greeter (Gabriel, the Fahertys or the Moores?)",
     "Daniel Hogge for hospitality",
     "Bonars serving",
     "Weston: photo op for Trunk or Treat",
@@ -282,12 +290,24 @@ a { color: var(--accent); }
     <div class="progress" role="progressbar" aria-labelledby="h-todo" id="todo-progress" aria-valuemin="0" aria-valuemax="100"><span id="todo-bar"></span></div>
     <div class="todo-card">
       <ul class="todo-list" id="todos"></ul>
+      <div id="waiting-wrap" hidden>
+        <div class="sub-head" id="waiting-head"></div>
+        <ul class="todo-list" id="waiting-list"></ul>
+      </div>
       <details id="done-wrap" hidden>
         <summary id="done-sum"></summary>
         <ul class="todo-list done-list" id="done-list"></ul>
       </details>
     </div>
     <p class="empty" id="todo-note"></p>
+  </section>
+
+  <section class="section" aria-labelledby="h-recur">
+    <div class="section-head"><h2 id="h-recur">Recurring</h2><span class="count" id="recur-count"></span></div>
+    <div class="recur">
+      <div class="todo-card"><div class="sub-head">Every day</div><ul class="todo-list one" id="recur-daily"></ul></div>
+      <div class="todo-card"><div class="sub-head">Every week, before Sunday</div><ul class="todo-list one" id="recur-weekly"></ul></div>
+    </div>
   </section>
 
   <div class="notes">
@@ -311,40 +331,54 @@ a { color: var(--accent); }
 (function () {
   var d = JSON.parse(document.getElementById('brief-data').textContent);
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
 
   document.getElementById('prepared').textContent = d.preparedAt;
   document.getElementById('date').textContent = d.dateLabel;
   document.getElementById('headline').textContent = d.headline;
   document.getElementById('sources').textContent = d.sources.join(' · ');
 
-  // Check-offs. Saved to the page's shared store (collection "done", one doc per item)
-  // so they follow you across devices and the morning routine can read them.
+  // Check-offs live in the page's shared store so they follow Hobie across devices
+  // and the morning routine can read them:
+  //   done/<key>      {text, kind: todo|priority|recurring, status: done|waiting, doneAt, since}
+  //   recurring/<id>  {text, every: daily|weekly, due, order}
   // Falls back to this browser's storage when the store isn't available.
-  var done = {};
+  var state = {};
+  var recurring = [];
   var db = null;
   var priorityRows = [];
+  var note = document.getElementById('todo-note');
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120) || 'item'; }
-  function loadLocal() {
-    var keys = priorityRows.map(function (r) { return r.key; }).concat(d.todos.map(function (t) { return 't-' + slug(t); }));
-    keys.forEach(function (k) { if (store('done:' + k) === '1') done[k] = { text: k, doneAt: '' }; });
-  }
-  function setDone(key, text, kind, on) {
-    if (on) done[key] = { text: text, kind: kind, doneAt: new Date().toISOString() };
-    else delete done[key];
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function ymd(dt) { return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); }
+  function shortDate(iso) { var t = Date.parse(iso); return isNaN(t) ? '' : new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  var now = new Date();
+  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+  var dayPeriod = ymd(now), weekPeriod = 'wk-' + ymd(monday);
+  var isWeekendStretch = now.getDay() === 5 || now.getDay() === 6 || now.getDay() === 0;
+  function recurKey(r) { return 'r-' + r.id + '-' + (r.every === 'daily' ? dayPeriod : weekPeriod); }
+  function statusOf(key) { var it = state[key]; return it ? (it.status || 'done') : 'open'; }
+  function loadLocal() { try { state = JSON.parse(localStorage.getItem('brief-state') || '{}') || {}; } catch (e) { state = {}; } }
+  function saveLocal() { try { localStorage.setItem('brief-state', JSON.stringify(state)); } catch (e) {} }
+
+  function setStatus(key, text, kind, status) {
+    var prev = state[key];
+    var stamp = new Date().toISOString();
+    if (status === 'open') delete state[key];
+    else state[key] = {
+      text: text, kind: kind, status: status,
+      doneAt: status === 'done' ? stamp : '',
+      since: status === 'waiting' ? ((prev && prev.since) || stamp) : ((prev && prev.since) || '')
+    };
     refresh();
-    if (db) {
-      var ref = db.doc('done/' + key);
-      (on ? ref.set(done[key]) : ref.delete()).catch(function () {
-        document.getElementById('todo-note').textContent = "That change didn't save. Check your connection and try again.";
-      });
-    } else {
-      store('done:' + key, on ? '1' : '0');
-    }
+    if (!db) { saveLocal(); return; }
+    var ref = db.doc('done/' + key);
+    (status === 'open' ? ref.delete() : ref.set(state[key])).catch(function () {
+      note.textContent = "That change didn't save. Check your connection and try again.";
+    });
   }
 
   var ol = document.getElementById('priorities');
-  d.priorities.forEach(function (p, i) {
+  d.priorities.forEach(function (p) {
     var li = el('li');
     var body = el('div', 'p-body');
     body.append(el('div', 'p-title', p.title), el('div', 'p-why', p.why), el('div', 'p-src', p.source));
@@ -354,84 +388,113 @@ a { color: var(--accent); }
     var key = 'p-' + slug(p.title);
     var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key;
     cb.setAttribute('aria-label', 'Mark done: ' + p.title);
-    cb.addEventListener('change', function () { setDone(key, p.title, 'priority', cb.checked); });
+    cb.addEventListener('change', function () { setStatus(key, p.title, 'priority', cb.checked ? 'done' : 'open'); });
     right.append(cb);
     li.append(body, right);
     ol.append(li);
     priorityRows.push({ key: key, cb: cb, li: li });
   });
 
-  function todoRow(key, text, isDone) {
-    var li = el('li', isDone ? 'is-done' : null);
+  function row(key, text, kind, status, extra) {
+    var li = el('li', 'is-' + status);
     var label = el('label');
-    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = isDone;
-    cb.addEventListener('change', function () { setDone(key, text, 'todo', cb.checked); });
-    label.append(cb, el('span', null, text));
+    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = status === 'done';
+    cb.addEventListener('change', function () { setStatus(key, text, kind, cb.checked ? 'done' : 'open'); });
+    var span = el('span', null, text);
+    if (status === 'waiting' && state[key] && state[key].since) span.append(el('small', 'since', 'Waiting since ' + shortDate(state[key].since)));
+    label.append(cb, span);
     li.append(label);
+    if (extra) li.append(extra);
+    if (kind === 'todo' && status !== 'done') {
+      var b = el('button', 'mini', status === 'waiting' ? 'Back to list' : 'Waiting');
+      b.type = 'button';
+      b.setAttribute('aria-label', (status === 'waiting' ? 'Move back to the list: ' : 'Mark as waiting on someone: ') + text);
+      b.addEventListener('click', function () { setStatus(key, text, 'todo', status === 'waiting' ? 'open' : 'waiting'); });
+      li.append(b);
+    }
     return li;
   }
 
   function refresh() {
-    var openCount = 0;
+    var openP = 0;
     priorityRows.forEach(function (r) {
-      var on = !!done[r.key];
+      var on = statusOf(r.key) === 'done';
       r.cb.checked = on; r.li.classList.toggle('done', on);
-      if (!on) openCount++;
+      if (!on) openP++;
     });
-    document.getElementById('first-count').textContent = openCount === 0 ? 'All done' : openCount + ' of ' + priorityRows.length + ' left';
+    document.getElementById('first-count').textContent = openP === 0 ? 'All done' : openP + ' of ' + priorityRows.length + ' left';
 
-    var list = document.getElementById('todos');
-    var doneList = document.getElementById('done-list');
-    list.textContent = ''; doneList.textContent = '';
-    var todayKeys = {};
-    var left = 0, finished = 0;
+    var list = document.getElementById('todos'), waitList = document.getElementById('waiting-list'), doneList = document.getElementById('done-list');
+    list.textContent = ''; waitList.textContent = ''; doneList.textContent = '';
+    var listed = {}, left = 0, waiting = 0, finished = 0;
     d.todos.forEach(function (t) {
-      var key = 't-' + slug(t);
-      todayKeys[key] = true;
-      if (done[key]) { finished++; doneList.append(todoRow(key, t, true)); }
-      else { left++; list.append(todoRow(key, t, false)); }
+      var key = 't-' + slug(t), st = statusOf(key);
+      listed[key] = true;
+      if (st === 'done') { finished++; doneList.append(row(key, t, 'todo', st)); }
+      else if (st === 'waiting') { waiting++; waitList.append(row(key, t, 'todo', st)); }
+      else { left++; list.append(row(key, t, 'todo', st)); }
     });
-    // Items checked off on earlier days drop out of the morning list; keep showing the past week's.
+    // Items handled on earlier days drop out of the morning list: keep showing everything
+    // still waiting, and the past week's checked-off items.
     var weekAgo = Date.now() - 7 * 864e5;
-    Object.keys(done).forEach(function (key) {
-      var it = done[key];
-      if (todayKeys[key] || it.kind !== 'todo' || !it.doneAt || Date.parse(it.doneAt) < weekAgo) return;
-      finished++;
-      doneList.append(todoRow(key, it.text, true));
+    Object.keys(state).forEach(function (key) {
+      var it = state[key], st = statusOf(key);
+      if (listed[key] || it.kind !== 'todo') return;
+      if (st === 'waiting') { waiting++; waitList.append(row(key, it.text, 'todo', st)); }
+      else if (it.doneAt && Date.parse(it.doneAt) >= weekAgo) { finished++; doneList.append(row(key, it.text, 'todo', st)); }
     });
     if (!d.todos.length) {
       var p = el('li', 'todo-empty'); p.innerHTML = '<p class="empty">No list yet. At the end of the day, email your Apple Notes list to yourself with a subject like <code>Notes To Do</code>.</p>';
       list.append(p);
     } else if (!left) {
-      var p2 = el('li', 'todo-empty'); p2.append(el('p', 'empty', 'Everything on the list is checked off.'));
+      var p2 = el('li', 'todo-empty'); p2.append(el('p', 'empty', 'Nothing left that’s yours to do.'));
       list.append(p2);
     }
-    var total = left + finished;
+    var total = left + waiting + finished;
     var pct = total ? Math.round(finished / total * 100) : 0;
     document.getElementById('todo-bar').style.width = pct + '%';
     document.getElementById('todo-progress').setAttribute('aria-valuenow', pct);
-    document.getElementById('todo-count').textContent = left + ' left · ' + finished + ' done';
-    var wrap = document.getElementById('done-wrap');
-    wrap.hidden = finished === 0;
+    document.getElementById('todo-count').textContent = left + ' left · ' + waiting + ' waiting · ' + finished + ' done';
+    document.getElementById('waiting-wrap').hidden = waiting === 0;
+    document.getElementById('waiting-head').textContent = 'Waiting on someone (' + waiting + ')';
+    document.getElementById('done-wrap').hidden = finished === 0;
     document.getElementById('done-sum').textContent = 'Checked off (' + finished + ')';
+
+    var daily = document.getElementById('recur-daily'), weekly = document.getElementById('recur-weekly');
+    daily.textContent = ''; weekly.textContent = '';
+    var recurLeft = 0;
+    recurring.forEach(function (r) {
+      var key = recurKey(r), st = statusOf(key);
+      if (st !== 'done') recurLeft++;
+      var chip = null;
+      if (r.every === 'weekly' && r.due) chip = el('span', 'chip' + (st !== 'done' && isWeekendStretch ? ' due' : ''), 'By ' + r.due.slice(0, 3));
+      (r.every === 'daily' ? daily : weekly).append(row(key, r.text, 'recurring', st, chip));
+    });
+    [daily, weekly].forEach(function (ul) {
+      if (!ul.children.length) { var e = el('li', 'todo-empty'); e.append(el('p', 'empty', 'Nothing here yet.')); ul.append(e); }
+    });
+    document.getElementById('recur-count').textContent = recurring.length ? (recurLeft ? recurLeft + ' to do' : 'All done') : '';
   }
 
   loadLocal();
   refresh();
-  document.getElementById('todo-note').textContent = 'Check-offs are saved in this browser only.';
+  note.textContent = 'Check-offs are saved in this browser only.';
 
   var use = window.claude && window.claude.use ? window.claude.use('db') : Promise.resolve(null);
   use.then(function (store_) {
     if (!store_) return;
     db = store_;
     db.collection('done').onSnapshot(function (snap) {
-      done = {};
-      snap.docs.forEach(function (doc) { done[doc.id] = doc.data(); });
-      document.getElementById('todo-note').textContent = 'Check-offs sync across your devices, and tomorrow’s brief leaves them off.';
+      state = {};
+      snap.docs.forEach(function (doc) { state[doc.id] = doc.data(); });
+      note.textContent = 'Check-offs sync across your devices. “Waiting” keeps an item off your plate without calling it finished.';
       refresh();
-    }, function () {
-      document.getElementById('todo-note').textContent = 'Check-offs stopped syncing. Reload the page to reconnect.';
-    });
+    }, function () { note.textContent = 'Check-offs stopped syncing. Reload the page to reconnect.'; });
+    db.collection('recurring').onSnapshot(function (snap) {
+      recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
+        .sort(function (a, b) { return a.order - b.order; });
+      refresh();
+    }, function () {});
   }, function () {});
 
   var sch = document.getElementById('schedule');
