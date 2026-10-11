@@ -75,8 +75,25 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 .mail-from { font-weight: 600; }
 .mail-ask { font-size: 15px; }
 
-.notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 900px) { .notes { grid-template-columns: 1fr; } }
+.notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+@media (max-width: 760px) { .notes { grid-template-columns: 1fr; } }
+
+/* To-do checklist */
+.progress { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.progress span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 999px; transition: width .4s ease; }
+@media (prefers-reduced-motion: reduce) { .progress span { transition: none; } }
+.todo-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 18px; }
+.todo-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
+@media (max-width: 760px) { .todo-list { grid-template-columns: 1fr; } }
+.todo-list li { border-bottom: 1px solid var(--line); min-width: 0; }
+.todo-list label { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 10px 0; cursor: pointer; }
+.todo-list label span { min-width: 0; overflow-wrap: anywhere; }
+.todo-list li.is-done label span { text-decoration: line-through; color: var(--muted); }
+.todo-list .check { margin-top: 1px; }
+#done-wrap { padding: 10px 0 6px; }
+#done-wrap summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 0; }
+#done-wrap summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.todo-empty { padding: 12px 0; }
 .note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
 .note ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 .empty { color: var(--muted); font-size: 14px; margin: 0; }
@@ -260,14 +277,23 @@ a { color: var(--accent); }
     </section>
   </div>
 
+  <section class="section" aria-labelledby="h-todo">
+    <div class="section-head"><h2 id="h-todo">To-do list</h2><span class="count" id="todo-count"></span></div>
+    <div class="progress" role="progressbar" aria-labelledby="h-todo" id="todo-progress" aria-valuemin="0" aria-valuemax="100"><span id="todo-bar"></span></div>
+    <div class="todo-card">
+      <ul class="todo-list" id="todos"></ul>
+      <details id="done-wrap" hidden>
+        <summary id="done-sum"></summary>
+        <ul class="todo-list done-list" id="done-list"></ul>
+      </details>
+    </div>
+    <p class="empty" id="todo-note"></p>
+  </section>
+
   <div class="notes">
     <section class="note" aria-labelledby="h-fu">
       <h2 id="h-fu">Meeting follow-ups</h2>
       <div id="followups"></div>
-    </section>
-    <section class="note" aria-labelledby="h-todo">
-      <h2 id="h-todo">From your to-do list</h2>
-      <div id="todos"></div>
     </section>
     <section class="note" aria-labelledby="h-ideas">
       <h2 id="h-ideas">Ideas and learning</h2>
@@ -292,6 +318,31 @@ a { color: var(--accent); }
   document.getElementById('headline').textContent = d.headline;
   document.getElementById('sources').textContent = d.sources.join(' · ');
 
+  // Check-offs. Saved to the page's shared store (collection "done", one doc per item)
+  // so they follow you across devices and the morning routine can read them.
+  // Falls back to this browser's storage when the store isn't available.
+  var done = {};
+  var db = null;
+  var priorityRows = [];
+  function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120) || 'item'; }
+  function loadLocal() {
+    var keys = priorityRows.map(function (r) { return r.key; }).concat(d.todos.map(function (t) { return 't-' + slug(t); }));
+    keys.forEach(function (k) { if (store('done:' + k) === '1') done[k] = { text: k, doneAt: '' }; });
+  }
+  function setDone(key, text, kind, on) {
+    if (on) done[key] = { text: text, kind: kind, doneAt: new Date().toISOString() };
+    else delete done[key];
+    refresh();
+    if (db) {
+      var ref = db.doc('done/' + key);
+      (on ? ref.set(done[key]) : ref.delete()).catch(function () {
+        document.getElementById('todo-note').textContent = "That change didn't save. Check your connection and try again.";
+      });
+    } else {
+      store('done:' + key, on ? '1' : '0');
+    }
+  }
+
   var ol = document.getElementById('priorities');
   d.priorities.forEach(function (p, i) {
     var li = el('li');
@@ -300,15 +351,88 @@ a { color: var(--accent); }
     var right = el('div');
     right.style.display = 'grid'; right.style.gap = '8px'; right.style.justifyItems = 'end';
     right.append(el('span', 'chip' + (p.urgent ? ' due' : ''), p.tag));
-    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'p-' + d.date + '-' + i;
+    var key = 'p-' + slug(p.title);
+    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key;
     cb.setAttribute('aria-label', 'Mark done: ' + p.title);
-    if (store(cb.id) === '1') { cb.checked = true; li.classList.add('done'); }
-    cb.addEventListener('change', function () { li.classList.toggle('done', cb.checked); store(cb.id, cb.checked ? '1' : '0'); });
+    cb.addEventListener('change', function () { setDone(key, p.title, 'priority', cb.checked); });
     right.append(cb);
     li.append(body, right);
     ol.append(li);
+    priorityRows.push({ key: key, cb: cb, li: li });
   });
-  document.getElementById('first-count').textContent = d.priorities.length + ' items';
+
+  function todoRow(key, text, isDone) {
+    var li = el('li', isDone ? 'is-done' : null);
+    var label = el('label');
+    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = isDone;
+    cb.addEventListener('change', function () { setDone(key, text, 'todo', cb.checked); });
+    label.append(cb, el('span', null, text));
+    li.append(label);
+    return li;
+  }
+
+  function refresh() {
+    var openCount = 0;
+    priorityRows.forEach(function (r) {
+      var on = !!done[r.key];
+      r.cb.checked = on; r.li.classList.toggle('done', on);
+      if (!on) openCount++;
+    });
+    document.getElementById('first-count').textContent = openCount === 0 ? 'All done' : openCount + ' of ' + priorityRows.length + ' left';
+
+    var list = document.getElementById('todos');
+    var doneList = document.getElementById('done-list');
+    list.textContent = ''; doneList.textContent = '';
+    var todayKeys = {};
+    var left = 0, finished = 0;
+    d.todos.forEach(function (t) {
+      var key = 't-' + slug(t);
+      todayKeys[key] = true;
+      if (done[key]) { finished++; doneList.append(todoRow(key, t, true)); }
+      else { left++; list.append(todoRow(key, t, false)); }
+    });
+    // Items checked off on earlier days drop out of the morning list; keep showing the past week's.
+    var weekAgo = Date.now() - 7 * 864e5;
+    Object.keys(done).forEach(function (key) {
+      var it = done[key];
+      if (todayKeys[key] || it.kind !== 'todo' || !it.doneAt || Date.parse(it.doneAt) < weekAgo) return;
+      finished++;
+      doneList.append(todoRow(key, it.text, true));
+    });
+    if (!d.todos.length) {
+      var p = el('li', 'todo-empty'); p.innerHTML = '<p class="empty">No list yet. At the end of the day, email your Apple Notes list to yourself with a subject like <code>Notes To Do</code>.</p>';
+      list.append(p);
+    } else if (!left) {
+      var p2 = el('li', 'todo-empty'); p2.append(el('p', 'empty', 'Everything on the list is checked off.'));
+      list.append(p2);
+    }
+    var total = left + finished;
+    var pct = total ? Math.round(finished / total * 100) : 0;
+    document.getElementById('todo-bar').style.width = pct + '%';
+    document.getElementById('todo-progress').setAttribute('aria-valuenow', pct);
+    document.getElementById('todo-count').textContent = left + ' left · ' + finished + ' done';
+    var wrap = document.getElementById('done-wrap');
+    wrap.hidden = finished === 0;
+    document.getElementById('done-sum').textContent = 'Checked off (' + finished + ')';
+  }
+
+  loadLocal();
+  refresh();
+  document.getElementById('todo-note').textContent = 'Check-offs are saved in this browser only.';
+
+  var use = window.claude && window.claude.use ? window.claude.use('db') : Promise.resolve(null);
+  use.then(function (store_) {
+    if (!store_) return;
+    db = store_;
+    db.collection('done').onSnapshot(function (snap) {
+      done = {};
+      snap.docs.forEach(function (doc) { done[doc.id] = doc.data(); });
+      document.getElementById('todo-note').textContent = 'Check-offs sync across your devices, and tomorrow’s brief leaves them off.';
+      refresh();
+    }, function () {
+      document.getElementById('todo-note').textContent = 'Check-offs stopped syncing. Reload the page to reconnect.';
+    });
+  }, function () {});
 
   var sch = document.getElementById('schedule');
   if (!d.schedule.length) sch.append(el('p', 'empty', 'Nothing on your calendar today.'));
@@ -352,7 +476,6 @@ a { color: var(--accent); }
     box.append(ul);
   }
   fillNote('followups', d.followups, 'No meeting notes yet. Email your Granola notes to yourself and action items show up here the next morning.');
-  fillNote('todos', d.todos, 'No list yet. At the end of the day, email your Apple Notes list to yourself with the subject <code>To-Do</code>.');
   fillNote('ideas', d.ideas, 'Email yourself anything with the subject <code>Idea</code> or <code>Learning</code> and it collects here.');
 })();
 </script>
