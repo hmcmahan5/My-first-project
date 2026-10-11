@@ -112,80 +112,133 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 4px; }
 input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 a { color: var(--accent); }
+
+[hidden] { display: none !important; }
+/* Task manager */
+.task-text { min-width: 0; overflow-wrap: anywhere; }
+.task-side { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.mini.ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.todo-list li.task { grid-template-columns: 1fr auto; }
+.editor { grid-column: 1 / -1; display: grid; gap: 12px; padding: 4px 0 16px 34px; }
+@media (max-width: 760px) { .todo-list li.task label { padding-bottom: 4px; } .editor { padding-left: 0; } .task-side { justify-content: flex-start; padding: 0 0 8px 34px; } .todo-list li.task { grid-template-columns: 1fr; } }
+.editor .field { display: grid; gap: 4px; cursor: default; padding: 0; grid-template-columns: 1fr; }
+.field-label { font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.editor input[type=text], .editor input[type=date], .editor textarea, .add input {
+  font: 16px var(--font-body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0;
+}
+.editor textarea { resize: vertical; }
+.editor input:focus-visible, .editor textarea:focus-visible, .add input:focus-visible, .btn:focus-visible, .seg-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.quick { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 4px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; gap: 2px; width: max-content; max-width: 100%; }
+.seg-btn { font: 600 14px var(--font-body); border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.seg-btn[aria-checked="true"] { background: var(--accent); color: var(--surface); }
+.ed-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.confirm { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--due); font-size: 14px; }
+.btn { font: 600 14px var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.btn.danger { color: var(--due); border-color: var(--due); background: transparent; }
+.add { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 14px 0 6px; }
+@media (max-width: 520px) { .add { grid-template-columns: 1fr auto; } .add input[type=text] { grid-column: 1 / -1; } }
+.group .sub-head { padding-top: 16px; }
+.g-overdue .sub-head { color: var(--due); }
 </style>
 
-<!-- The morning routine rewrites only this data block each day. -->
+<!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
 <script type="application/json" id="brief-data">
 {
-  "date": "2026-10-12",
-  "dateLabel": "Monday, October 12",
-  "preparedAt": "Prepared Saturday evening, Oct 10 (preview)",
-  "headline": "Staff and admin meetings fill 8:30 to 11:30, and both are a good place to clear several items from your list. Tuesday's Faith Leader's Breakfast still isn't on your calendar.",
+  "date": "2026-10-11",
+  "dateLabel": "Sunday, October 11",
+  "preparedAt": "Prepared Sunday 7:00 AM ET",
+  "headline": "Sunday service day: production call at 6:00, Welcome Team huddle at 8:40, services at 9:00 and 10:45. Your weekly Hospitality, Set up / tear down and Trailers items are due today. Monday's staff and admin meetings are a good place to settle Oct 18 volunteers before the MORE series starts.",
   "priorities": [
     {
-      "title": "Decide on Tuesday's Faith Leader's Breakfast and add it to your calendar",
-      "why": "Tue Oct 13, 7:30 to 8:00 a.m. at the T.C. Walker Education Center cafeteria (use entrance 7S). Marked high importance and still unread.",
-      "source": "Email from Leslie Cloer, Gloucester County",
-      "tag": "Tomorrow",
+      "title": "Finish this week's Hospitality, Set up / tear down and Trailers",
+      "why": "All three weekly items are due today and aren't marked done this week. Huddle is 8:40, services 9:00 and 10:45, and you're on Trailer Blue set-up.",
+      "source": "Dashboard checklist + Planning Center",
+      "tag": "Today",
       "urgent": true
     },
     {
-      "title": "Bring the serving and hospitality questions to the 8:30 staff meeting",
-      "why": "Settle the 9am front-door greeter (Gabriel, the Fahertys or the Moores), Daniel Hogge for hospitality, the Bonars serving, trailers with Justin, Weston's Trunk or Treat photo op, and a Path Finders info table. Also decide where the 455 MORE Guides (7 boxes) go.",
-      "source": "Your to-do note + Scott Payne's MORE email",
+      "title": "Line up Oct 18 greeter and set-up volunteers",
+      "why": "Christen Speight declined Worship Center Greeters for Oct 18 and blocked out Oct 18 and 25. Brant Ryan declined Trailer Green for Oct 18 (out of town). Oct 18 is MORE launch Sunday. Settle the front-door greeter (Gabriel, the Fahertys or the Moores) and Daniel Hogge for hospitality at Monday's staff meeting.",
+      "source": "Planning Center + your to-do note",
       "tag": "Staff mtg",
       "urgent": false
     },
     {
       "title": "Clear the two overdue Ministry Platform tasks",
-      "why": "Baptism interest call with Anthony Alvarez was due Aug 30. Leadership Institute group inquiry for Diane Coppola was due Sep 22. Both are quick, and the open time after 11:30 fits them.",
+      "why": "Baptism interest call for Anthony Alvarez was due Aug 30 (42 days overdue). Group inquiry follow-up for Diane Coppola, Liberty Leadership Institute Gloucester, was due Sep 22.",
       "source": "Ministry Platform task reminder",
       "tag": "Overdue",
       "urgent": true
     },
     {
-      "title": "Use the 10:30 admin meeting for paperwork",
-      "why": "Route the school facility-use invoices (13 Sundays, Jul 5 to Sep 27, plus Sep 20; Nikki Cox is the new GCPS billing contact), mileage reimbursement, Hannah's health insurance and Tanner Schaller's blue card.",
-      "source": "Email from Christina Long, GCPS + your to-do note",
-      "tag": "Admin mtg",
-      "urgent": false
+      "title": "Decide on Tuesday's Faith Leader's Breakfast and add it to your calendar",
+      "why": "Tue Oct 13, 7:30 to 8:00 a.m., T.C. Walker Education Center Cafeteria (6099 T.C. Walker Rd), enter by entrance 7S only. Marked high importance, still unread, and not on your calendar.",
+      "source": "Email from Leslie Cloer, Gloucester County",
+      "tag": "Tue",
+      "urgent": true
     },
     {
-      "title": "Reach out to people on your list",
-      "why": "Text the Charests, check on Dillon, and decide whether to talk to Matt.",
-      "source": "Your to-do note",
-      "tag": "Today",
+      "title": "Bring the MORE walkthrough and paperwork to Monday's meetings",
+      "why": "You told Scott you'd walk the team through Oct 18 on Monday and pick up supplies from the closet. 455 MORE Guides (7 boxes) arrive by Wednesday. Use the 10:30 admin meeting for mileage reimbursement, Hannah's health insurance and Tanner Schaller's blue card.",
+      "source": "Scott Payne and Jennifer Ward emails + your to-do note",
+      "tag": "Mon mtgs",
       "urgent": false
     }
   ],
   "schedule": [
     {
-      "start": "8:30",
-      "end": "10:30",
-      "title": "Gloucester Staff Meeting",
-      "where": "GTR Office · bring the serving questions and the MORE Guides plan"
+      "start": "6:00",
+      "end": "7:00",
+      "title": "Production call (Campus Pastor)",
+      "where": "Gloucester · Tyler loaded your sermon bundle onto the computer last night"
     },
     {
-      "start": "10:30",
-      "end": "11:30",
-      "title": "Administrative Meeting",
-      "where": "GTR Office · invoices, mileage, insurance, blue card"
+      "start": "7:00",
+      "end": "8:40",
+      "title": "Rehearsal",
+      "where": "Gloucester"
     },
     {
-      "start": "11:30",
+      "start": "8:40",
+      "end": "9:00",
+      "title": "Hospitality Huddle (Welcoming Pastor)",
+      "where": "Trailer Blue set-up also starts here"
+    },
+    {
+      "start": "9:00",
       "end": "",
-      "title": "Open the rest of the day",
-      "where": "Good window for the Ministry Platform follow-ups and your texts",
-      "gap": true
+      "title": "Service",
+      "where": "Welcoming Pastor, Set Up (Trailer Blue)"
+    },
+    {
+      "start": "10:45",
+      "end": "",
+      "title": "Second service",
+      "where": "Trailer Blue set-up"
     }
   ],
   "week": [
+    {
+      "day": "Mon Oct 12",
+      "items": [
+        {
+          "time": "8:30",
+          "title": "Gloucester Staff Meeting, GTR Office (to 10:30). Settle Oct 18 greeter, hospitality, serving, Trunk or Treat photo op and the MORE walkthrough."
+        },
+        {
+          "time": "10:30",
+          "title": "Administrative Meeting, GTR Office (to 11:30). Mileage, Hannah's insurance, Tanner's blue card."
+        }
+      ]
+    },
     {
       "day": "Tue Oct 13",
       "items": [
         {
           "time": "7:30",
-          "title": "Faith Leader's Breakfast (not on calendar)"
+          "title": "Faith Leader's Breakfast and Prayer (not on calendar)"
         }
       ]
     },
@@ -194,7 +247,7 @@ a { color: var(--accent); }
       "items": [
         {
           "time": "9:00",
-          "title": "Local Worship Meeting (Teams)"
+          "title": "Local Worship Meeting (Teams, to 10:00)"
         }
       ]
     },
@@ -205,58 +258,70 @@ a { color: var(--accent); }
   ],
   "emails": [
     {
-      "from": "Leslie Cloer",
+      "from": "Leslie Cloer, Gloucester County",
       "subject": "Faith Leader's Breakfast & Prayer",
-      "ask": "Attend Tue 7:30 a.m.? No RSVP requested, but it isn't on your calendar.",
+      "ask": "Attend Tue Oct 13, 7:30 a.m.? No RSVP requested.",
       "when": "Fri",
       "flag": "Unread"
     },
     {
-      "from": "Christina Long, GCPS",
-      "subject": "Church Facility Use Invoices, July through September",
-      "ask": "Two invoice PDFs to pay. Nikki Cox handles billing from here on.",
-      "when": "Fri",
+      "from": "Laura Smith, AP",
+      "subject": "Fw: Invoice #698 - Liberty Live Church Ministry - June 2026 @ Page",
+      "ask": "Call the school to confirm the rate is the same, per Marcia's question. You said you'd find out; the new July to September invoices came Friday and you sent them to finance.",
+      "when": "Thu",
+      "flag": "Reply"
+    },
+    {
+      "from": "Planning Center",
+      "subject": "Christen Speight declined Oct 18 and blocked Oct 18 and 25",
+      "ask": "Find a replacement Worship Center greeter for Oct 18.",
+      "when": "Sat",
       "flag": "Action"
     },
     {
-      "from": "Scott Payne",
-      "subject": "Re: MORE Initiative",
-      "ask": "FYI: you're now receiving 455 MORE Guides (7 boxes).",
+      "from": "Planning Center",
+      "subject": "Brant Ryan declined Trailer Green for Oct 18",
+      "ask": "Find a replacement for Trailer Green set-up on Oct 18 (out of town).",
+      "when": "Mon",
+      "flag": "Action"
+    },
+    {
+      "from": "Scott Payne / Jennifer Ward",
+      "subject": "MORE Initiative and MORE Supplies for Oct 18",
+      "ask": "FYI: 455 MORE Guides (7 boxes) by Wednesday, portable display hubs very close, commitment cards already in the Campus Box.",
       "when": "Sat",
+      "flag": "FYI"
+    },
+    {
+      "from": "Tyler Skaggs",
+      "subject": "Re: Sermon for Tomorrow",
+      "ask": "FYI: sermon bundle is loaded on the computer for this morning.",
+      "when": "Sat",
+      "flag": "FYI"
+    },
+    {
+      "from": "Tyler Wilson-Jones",
+      "subject": "CP Meeting Notes 10/6/26",
+      "ask": "FYI: check the yellow-highlighted assignments for you.",
+      "when": "Thu",
       "flag": "FYI"
     }
   ],
-  "followups": [],
-  "todos": [
-    "Choose the 9am front-door greeter (Gabriel, the Fahertys or the Moores?)",
-    "Daniel Hogge for hospitality",
-    "Bonars serving",
-    "Weston: photo op for Trunk or Treat",
-    "Table with information for Path Finders",
-    "Monday meeting",
-    "Mileage reimbursement",
-    "Blue card for Tanner Schaller",
-    "Health insurance for Hannah",
-    "Sermon (slides done)",
-    "Text the Charests",
-    "Check on Dillon",
-    "Talk to Matt?",
-    "Media block on the network: try phone-to-HDMI",
-    "Change Bordeaux to GTR",
-    "Dave Miller (school door scheduling and teachers done)",
-    "iPad issue in kids (waiting on Kaylin and Amanda)",
-    "Windshield crack",
-    "PIP to Scott: looks done. Scott replied \"Perfect! Thank you!\" on Oct 9."
+  "followups": [
+    "Check the yellow-highlighted assignments in the 10/6 CP Meeting Notes (Tyler Wilson-Jones)."
   ],
+  "todos": [],
   "ideas": [
     "Connect Claude with Ministry Platform and Planning Center (needs IT approval)",
-    "A to-do dashboard like StaffWell (this page is the start)"
+    "A to-do dashboard like StaffWell (this page is the start)",
+    "Leadership video notes: multiply through being an example, creating a big picture, aligning individual objectives with business goals"
   ],
   "sources": [
-    "Outlook calendar, Oct 12 to 18",
-    "Inbox, Oct 9 to 11 (newsletters and promotions skipped)",
+    "Outlook calendar, Oct 11 to 15",
+    "Inbox, Oct 8 to 11 (newsletters, promotions and text notifications skipped)",
     "\"Notes To Do\" email from Oct 10 (checked-off items left out)",
-    "Ministry Platform reminder email (no direct connection yet)"
+    "Ministry Platform reminder email (no direct connection yet)",
+    "Planning Center emails"
   ]
 }
 </script>
@@ -289,14 +354,15 @@ a { color: var(--accent); }
     <div class="section-head"><h2 id="h-todo">To-do list</h2><span class="count" id="todo-count"></span></div>
     <div class="progress" role="progressbar" aria-labelledby="h-todo" id="todo-progress" aria-valuemin="0" aria-valuemax="100"><span id="todo-bar"></span></div>
     <div class="todo-card">
-      <ul class="todo-list" id="todos"></ul>
-      <div id="waiting-wrap" hidden>
-        <div class="sub-head" id="waiting-head"></div>
-        <ul class="todo-list" id="waiting-list"></ul>
-      </div>
+      <form class="add" id="add-form" aria-label="Add a task">
+        <input type="text" id="add-text" placeholder="Add a task" aria-label="New task">
+        <input type="date" id="add-due" aria-label="Due date (optional)">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+      <div id="task-groups"></div>
       <details id="done-wrap" hidden>
         <summary id="done-sum"></summary>
-        <ul class="todo-list done-list" id="done-list"></ul>
+        <ul class="todo-list one done-list" id="done-list"></ul>
       </details>
     </div>
     <p class="empty" id="todo-note"></p>
@@ -337,46 +403,71 @@ a { color: var(--accent); }
   document.getElementById('headline').textContent = d.headline;
   document.getElementById('sources').textContent = d.sources.join(' · ');
 
-  // Check-offs live in the page's shared store so they follow Hobie across devices
-  // and the morning routine can read them:
-  //   done/<key>      {text, kind: todo|priority|recurring, status: done|waiting, doneAt, since}
+  // Saved state lives in the page's shared store so it follows Hobie across devices
+  // and the morning routine can read it:
+  //   tasks/<id>      {text, status: open|waiting|done, due: YYYY-MM-DD|"", waitingOn, note,
+  //                    source, createdAt, updatedAt, doneAt, since}
+  //   done/<key>      {text, kind: priority|recurring, status: done, doneAt}
   //   recurring/<id>  {text, every: daily|weekly, due, order}
   // Falls back to this browser's storage when the store isn't available.
-  var state = {};
+  var tasks = {};
+  var marks = {};
   var recurring = [];
   var db = null;
   var priorityRows = [];
+  var editingId = null;
+  var deferred = false;
   var note = document.getElementById('todo-note');
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120) || 'item'; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function ymd(dt) { return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); }
+  function parseDay(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
   function shortDate(iso) { var t = Date.parse(iso); return isNaN(t) ? '' : new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   var now = new Date();
-  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
-  var dayPeriod = ymd(now), weekPeriod = 'wk-' + ymd(monday);
-  var isWeekendStretch = now.getDay() === 5 || now.getDay() === 6 || now.getDay() === 0;
-  function recurKey(r) { return 'r-' + r.id + '-' + (r.every === 'daily' ? dayPeriod : weekPeriod); }
-  function statusOf(key) { var it = state[key]; return it ? (it.status || 'done') : 'open'; }
-  function loadLocal() { try { state = JSON.parse(localStorage.getItem('brief-state') || '{}') || {}; } catch (e) { state = {}; } }
-  function saveLocal() { try { localStorage.setItem('brief-state', JSON.stringify(state)); } catch (e) {} }
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var todayStr = ymd(today);
+  var monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7));
+  var weekPeriod = 'wk-' + ymd(monday);
+  var isWeekendStretch = today.getDay() === 5 || today.getDay() === 6 || today.getDay() === 0;
+  function daysUntil(s) { var dt = parseDay(s); return dt ? Math.round((dt - today) / 864e5) : null; }
+  function recurKey(r) { return 'r-' + r.id + '-' + (r.every === 'daily' ? todayStr : weekPeriod); }
+  function nowIso() { return new Date().toISOString(); }
+  function showError(msg) { note.textContent = msg; }
 
-  function setStatus(key, text, kind, status) {
-    var prev = state[key];
-    var stamp = new Date().toISOString();
-    if (status === 'open') delete state[key];
-    else state[key] = {
-      text: text, kind: kind, status: status,
-      doneAt: status === 'done' ? stamp : '',
-      since: status === 'waiting' ? ((prev && prev.since) || stamp) : ((prev && prev.since) || '')
-    };
+  function saveLocal() { try { localStorage.setItem('brief-tasks', JSON.stringify(tasks)); localStorage.setItem('brief-marks', JSON.stringify(marks)); } catch (e) {} }
+  function loadLocal() {
+    try { tasks = JSON.parse(localStorage.getItem('brief-tasks') || 'null') || null; marks = JSON.parse(localStorage.getItem('brief-marks') || '{}') || {}; } catch (e) { tasks = null; }
+    if (!tasks) { tasks = {}; (d.todos || []).forEach(function (t) { tasks['t-' + slug(t)] = { text: t, status: 'open', due: '', waitingOn: '', note: '', source: 'brief' }; }); }
+  }
+
+  function writeTask(id, body) {
+    if (body) tasks[id] = body; else delete tasks[id];
+    refresh();
+    if (!db) { saveLocal(); return; }
+    var ref = db.doc('tasks/' + id);
+    (body ? ref.set(body) : ref.delete()).catch(function () { showError("That change didn't save. Check your connection and try again."); });
+  }
+  function patchTask(id, changes) {
+    var t = tasks[id]; if (!t) return;
+    var next = {}; Object.keys(t).forEach(function (k) { next[k] = t[k]; });
+    Object.keys(changes).forEach(function (k) { next[k] = changes[k]; });
+    if (changes.status && changes.status !== t.status) {
+      if (changes.status === 'done') next.doneAt = nowIso();
+      if (changes.status === 'waiting') next.since = t.since && t.status === 'waiting' ? t.since : nowIso();
+      if (changes.status !== 'done') next.doneAt = '';
+    }
+    next.updatedAt = nowIso();
+    writeTask(id, next);
+  }
+  function setMark(key, text, kind, on) {
+    if (on) marks[key] = { text: text, kind: kind, status: 'done', doneAt: nowIso() }; else delete marks[key];
     refresh();
     if (!db) { saveLocal(); return; }
     var ref = db.doc('done/' + key);
-    (status === 'open' ? ref.delete() : ref.set(state[key])).catch(function () {
-      note.textContent = "That change didn't save. Check your connection and try again.";
-    });
+    (on ? ref.set(marks[key]) : ref.delete()).catch(function () { showError("That change didn't save. Check your connection and try again."); });
   }
 
+  // Do these first
   var ol = document.getElementById('priorities');
   d.priorities.forEach(function (p) {
     var li = el('li');
@@ -388,112 +479,222 @@ a { color: var(--accent); }
     var key = 'p-' + slug(p.title);
     var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key;
     cb.setAttribute('aria-label', 'Mark done: ' + p.title);
-    cb.addEventListener('change', function () { setStatus(key, p.title, 'priority', cb.checked ? 'done' : 'open'); });
+    cb.addEventListener('change', function () { setMark(key, p.title, 'priority', cb.checked); });
     right.append(cb);
     li.append(body, right);
     ol.append(li);
     priorityRows.push({ key: key, cb: cb, li: li });
   });
 
-  function row(key, text, kind, status, extra) {
-    var li = el('li', 'is-' + status);
+  // Add a task
+  document.getElementById('add-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('add-text'), due = document.getElementById('add-due');
+    var text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    var id = 't-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36);
+    var stamp = nowIso();
+    writeTask(id, { text: text, status: 'open', due: due.value || '', waitingOn: '', note: '', source: 'dashboard', createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
+    input.value = ''; due.value = '';
+    input.focus();
+  });
+
+  function dueChip(t) {
+    if (!t.due) return null;
+    var n = daysUntil(t.due), dt = parseDay(t.due);
+    if (n === null) return null;
+    var label = n < 0 ? 'Overdue · ' + dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : n === 0 ? 'Due today' : n === 1 ? 'Due tomorrow'
+      : 'Due ' + dt.toLocaleDateString('en-US', n < 7 ? { weekday: 'short' } : { month: 'short', day: 'numeric' });
+    return el('span', 'chip' + (n <= 0 && t.status !== 'done' ? ' due' : ''), label);
+  }
+
+  function editor(id, t) {
+    var f = el('form', 'editor');
+    f.setAttribute('aria-label', 'Edit task');
+    function field(labelText, control) { var w = el('label', 'field'); w.append(el('span', 'field-label', labelText), control); return w; }
+    var txt = el('input'); txt.type = 'text'; txt.id = 'ed-text-' + id; txt.value = t.text; txt.required = true;
+    var due = el('input'); due.type = 'date'; due.id = 'ed-due-' + id; due.value = t.due || '';
+    var seg = el('div', 'seg'); seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-label', 'Status');
+    var status = t.status || 'open';
+    var who = el('input'); who.type = 'text'; who.id = 'ed-who-' + id; who.value = t.waitingOn || ''; who.placeholder = 'Name';
+    var whoField = field('Waiting on', who);
+    [['open', 'To do'], ['waiting', 'Waiting'], ['done', 'Done']].forEach(function (o) {
+      var b = el('button', 'seg-btn', o[1]); b.type = 'button';
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(o[0] === status));
+      b.addEventListener('click', function () {
+        status = o[0];
+        Array.prototype.forEach.call(seg.children, function (c) { c.setAttribute('aria-checked', String(c === b)); });
+        whoField.hidden = status !== 'waiting';
+      });
+      seg.append(b);
+    });
+    whoField.hidden = status !== 'waiting';
+    var nt = el('textarea'); nt.id = 'ed-note-' + id; nt.rows = 2; nt.value = t.note || ''; nt.placeholder = 'Details, next step, who to call';
+    var quick = el('div', 'quick');
+    [['Today', 0], ['Tomorrow', 1], ['Friday', null], ['Next week', 7], ['No date', -1]].forEach(function (q) {
+      var b = el('button', 'mini', q[0]); b.type = 'button';
+      b.addEventListener('click', function () {
+        if (q[1] === -1) { due.value = ''; return; }
+        var n = q[1] === null ? ((5 - today.getDay() + 7) % 7) : q[1];
+        due.value = ymd(new Date(today.getFullYear(), today.getMonth(), today.getDate() + n));
+      });
+      quick.append(b);
+    });
+    var dueField = field('Due date', due); dueField.append(quick);
+    var actions = el('div', 'ed-actions');
+    var save = el('button', 'btn primary', 'Save'); save.type = 'submit';
+    var cancel = el('button', 'btn', 'Cancel'); cancel.type = 'button';
+    var del = el('button', 'btn danger', 'Delete'); del.type = 'button';
+    var confirmBox = el('span', 'confirm'); confirmBox.hidden = true;
+    var yes = el('button', 'btn danger', 'Yes, delete'); yes.type = 'button';
+    var no = el('button', 'btn', 'Keep it'); no.type = 'button';
+    confirmBox.append(el('span', null, 'Delete this task?'), yes, no);
+    actions.append(save, cancel, del, confirmBox);
+    f.append(field('Task', txt), field('Status', seg), whoField, dueField, field('Note', nt), actions);
+    function close() { editingId = null; if (deferred) { deferred = false; } refresh(); }
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = txt.value.trim(); if (!text) { txt.focus(); return; }
+      editingId = null;
+      patchTask(id, { text: text, due: due.value || '', status: status, waitingOn: status === 'waiting' ? who.value.trim() : (t.waitingOn || ''), note: nt.value.trim() });
+    });
+    cancel.addEventListener('click', close);
+    del.addEventListener('click', function () { del.hidden = true; confirmBox.hidden = false; yes.focus(); });
+    no.addEventListener('click', function () { del.hidden = false; confirmBox.hidden = true; });
+    yes.addEventListener('click', function () { editingId = null; writeTask(id, null); });
+    setTimeout(function () { txt.focus(); }, 0);
+    return f;
+  }
+
+  function taskRow(id, t) {
+    var st = t.status || 'open';
+    var li = el('li', 'task is-' + st);
     var label = el('label');
-    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = status === 'done';
-    cb.addEventListener('change', function () { setStatus(key, text, kind, cb.checked ? 'done' : 'open'); });
-    var span = el('span', null, text);
-    if (status === 'waiting' && state[key] && state[key].since) span.append(el('small', 'since', 'Waiting since ' + shortDate(state[key].since)));
+    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + id; cb.checked = st === 'done';
+    cb.addEventListener('change', function () { patchTask(id, { status: cb.checked ? 'done' : 'open' }); });
+    var span = el('span', 'task-text', t.text);
+    var meta = [];
+    if (st === 'waiting') meta.push('Waiting' + (t.waitingOn ? ' on ' + t.waitingOn : '') + (t.since ? ' since ' + shortDate(t.since) : ''));
+    if (st === 'done' && t.doneAt) meta.push('Done ' + shortDate(t.doneAt));
+    if (t.note) meta.push(t.note);
+    if (meta.length) span.append(el('small', 'since', meta.join(' · ')));
     label.append(cb, span);
-    li.append(label);
-    if (extra) li.append(extra);
-    if (kind === 'todo' && status !== 'done') {
-      var b = el('button', 'mini', status === 'waiting' ? 'Back to list' : 'Waiting');
-      b.type = 'button';
-      b.setAttribute('aria-label', (status === 'waiting' ? 'Move back to the list: ' : 'Mark as waiting on someone: ') + text);
-      b.addEventListener('click', function () { setStatus(key, text, 'todo', status === 'waiting' ? 'open' : 'waiting'); });
-      li.append(b);
+    var side = el('div', 'task-side');
+    var chip = st === 'done' ? null : dueChip(t);
+    if (chip) side.append(chip);
+    if (st !== 'done') {
+      var w = el('button', 'mini', st === 'waiting' ? 'Back to list' : 'Waiting'); w.type = 'button';
+      w.setAttribute('aria-label', (st === 'waiting' ? 'Move back to the list: ' : 'Mark as waiting on someone: ') + t.text);
+      w.addEventListener('click', function () { patchTask(id, { status: st === 'waiting' ? 'open' : 'waiting' }); });
+      side.append(w);
     }
+    var edit = el('button', 'mini ghost', 'Edit'); edit.type = 'button';
+    edit.setAttribute('aria-label', 'Edit: ' + t.text); edit.setAttribute('aria-expanded', String(editingId === id));
+    edit.addEventListener('click', function () { editingId = editingId === id ? null : id; refresh(); });
+    side.append(edit);
+    li.append(label, side);
+    if (editingId === id) li.append(editor(id, t));
     return li;
   }
 
   function refresh() {
     var openP = 0;
     priorityRows.forEach(function (r) {
-      var on = statusOf(r.key) === 'done';
+      var on = !!marks[r.key];
       r.cb.checked = on; r.li.classList.toggle('done', on);
       if (!on) openP++;
     });
     document.getElementById('first-count').textContent = openP === 0 ? 'All done' : openP + ' of ' + priorityRows.length + ' left';
 
-    var list = document.getElementById('todos'), waitList = document.getElementById('waiting-list'), doneList = document.getElementById('done-list');
-    list.textContent = ''; waitList.textContent = ''; doneList.textContent = '';
-    var listed = {}, left = 0, waiting = 0, finished = 0;
-    d.todos.forEach(function (t) {
-      var key = 't-' + slug(t), st = statusOf(key);
-      listed[key] = true;
-      if (st === 'done') { finished++; doneList.append(row(key, t, 'todo', st)); }
-      else if (st === 'waiting') { waiting++; waitList.append(row(key, t, 'todo', st)); }
-      else { left++; list.append(row(key, t, 'todo', st)); }
-    });
-    // Items handled on earlier days drop out of the morning list: keep showing everything
-    // still waiting, and the past week's checked-off items.
+    var groups = { overdue: [], today: [], week: [], later: [], none: [], waiting: [], done: [] };
     var weekAgo = Date.now() - 7 * 864e5;
-    Object.keys(state).forEach(function (key) {
-      var it = state[key], st = statusOf(key);
-      if (listed[key] || it.kind !== 'todo') return;
-      if (st === 'waiting') { waiting++; waitList.append(row(key, it.text, 'todo', st)); }
-      else if (it.doneAt && Date.parse(it.doneAt) >= weekAgo) { finished++; doneList.append(row(key, it.text, 'todo', st)); }
+    Object.keys(tasks).forEach(function (id) {
+      var t = tasks[id], st = t.status || 'open';
+      if (st === 'done') { if (!t.doneAt || Date.parse(t.doneAt) >= weekAgo) groups.done.push(id); return; }
+      if (st === 'waiting') { groups.waiting.push(id); return; }
+      var n = daysUntil(t.due);
+      groups[n === null ? 'none' : n < 0 ? 'overdue' : n === 0 ? 'today' : n < 7 ? 'week' : 'later'].push(id);
     });
-    if (!d.todos.length) {
-      var p = el('li', 'todo-empty'); p.innerHTML = '<p class="empty">No list yet. At the end of the day, email your Apple Notes list to yourself with a subject like <code>Notes To Do</code>.</p>';
-      list.append(p);
-    } else if (!left) {
-      var p2 = el('li', 'todo-empty'); p2.append(el('p', 'empty', 'Nothing left that’s yours to do.'));
-      list.append(p2);
+    function byDue(a, b) { var x = tasks[a], y = tasks[b]; return (x.due || '9999').localeCompare(y.due || '9999') || (x.createdAt || '').localeCompare(y.createdAt || '') || x.text.localeCompare(y.text); }
+    Object.keys(groups).forEach(function (g) { groups[g].sort(g === 'done' ? function (a, b) { return (tasks[b].doneAt || '').localeCompare(tasks[a].doneAt || ''); } : byDue); });
+
+    if (editingId && !tasks[editingId]) editingId = null;
+    var wrap = document.getElementById('task-groups');
+    wrap.textContent = '';
+    var names = { overdue: 'Overdue', today: 'Due today', week: 'This week', later: 'Later', none: 'No due date', waiting: 'Waiting on someone' };
+    ['overdue', 'today', 'week', 'later', 'none', 'waiting'].forEach(function (g) {
+      if (!groups[g].length) return;
+      var box = el('div', 'group g-' + g);
+      box.append(el('div', 'sub-head', names[g] + ' (' + groups[g].length + ')'));
+      var ul = el('ul', 'todo-list one');
+      groups[g].forEach(function (id) { ul.append(taskRow(id, tasks[id])); });
+      box.append(ul); wrap.append(box);
+    });
+    var left = groups.overdue.length + groups.today.length + groups.week.length + groups.later.length + groups.none.length;
+    var waiting = groups.waiting.length, finished = groups.done.length;
+    if (!left && !waiting) {
+      wrap.append(el('p', 'empty todo-empty', Object.keys(tasks).length ? 'Nothing left that’s yours to do.' : 'No tasks yet. Add one above, or email your Apple Notes list to yourself with a subject like “Notes To Do”.'));
     }
+    var doneList = document.getElementById('done-list');
+    doneList.textContent = '';
+    groups.done.forEach(function (id) { doneList.append(taskRow(id, tasks[id])); });
     var total = left + waiting + finished;
     var pct = total ? Math.round(finished / total * 100) : 0;
     document.getElementById('todo-bar').style.width = pct + '%';
     document.getElementById('todo-progress').setAttribute('aria-valuenow', pct);
     document.getElementById('todo-count').textContent = left + ' left · ' + waiting + ' waiting · ' + finished + ' done';
-    document.getElementById('waiting-wrap').hidden = waiting === 0;
-    document.getElementById('waiting-head').textContent = 'Waiting on someone (' + waiting + ')';
-    document.getElementById('done-wrap').hidden = finished === 0;
-    document.getElementById('done-sum').textContent = 'Checked off (' + finished + ')';
+    var dw = document.getElementById('done-wrap');
+    dw.hidden = finished === 0;
+    if (editingId && tasks[editingId] && (tasks[editingId].status === 'done')) dw.open = true;
+    document.getElementById('done-sum').textContent = 'Checked off this week (' + finished + ')';
 
     var daily = document.getElementById('recur-daily'), weekly = document.getElementById('recur-weekly');
     daily.textContent = ''; weekly.textContent = '';
     var recurLeft = 0;
     recurring.forEach(function (r) {
-      var key = recurKey(r), st = statusOf(key);
-      if (st !== 'done') recurLeft++;
-      var chip = null;
-      if (r.every === 'weekly' && r.due) chip = el('span', 'chip' + (st !== 'done' && isWeekendStretch ? ' due' : ''), 'By ' + r.due.slice(0, 3));
-      (r.every === 'daily' ? daily : weekly).append(row(key, r.text, 'recurring', st, chip));
+      var key = recurKey(r), on = !!marks[key];
+      if (!on) recurLeft++;
+      var li = el('li', on ? 'is-done' : 'is-open');
+      var label = el('label');
+      var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = on;
+      cb.addEventListener('change', function () { setMark(key, r.text, 'recurring', cb.checked); });
+      label.append(cb, el('span', 'task-text', r.text));
+      li.append(label);
+      if (r.every === 'weekly' && r.due) li.append(el('span', 'chip' + (!on && isWeekendStretch ? ' due' : ''), 'By ' + r.due.slice(0, 3)));
+      (r.every === 'daily' ? daily : weekly).append(li);
     });
     [daily, weekly].forEach(function (ul) {
       if (!ul.children.length) { var e = el('li', 'todo-empty'); e.append(el('p', 'empty', 'Nothing here yet.')); ul.append(e); }
     });
     document.getElementById('recur-count').textContent = recurring.length ? (recurLeft ? recurLeft + ' to do' : 'All done') : '';
   }
+  // A live update from another device shouldn't wipe a half-typed edit.
+  function refreshFromStore() { if (editingId) { deferred = true; return; } refresh(); }
 
   loadLocal();
   refresh();
-  note.textContent = 'Check-offs are saved in this browser only.';
+  showError('Changes are saved in this browser only.');
 
   var use = window.claude && window.claude.use ? window.claude.use('db') : Promise.resolve(null);
   use.then(function (store_) {
     if (!store_) return;
     db = store_;
+    tasks = {}; marks = {};
+    var got = 0;
+    function ready() { if (++got >= 2) showError('Changes sync across your devices.'); }
+    db.collection('tasks').onSnapshot(function (snap) {
+      tasks = {}; snap.docs.forEach(function (doc) { tasks[doc.id] = doc.data(); });
+      refreshFromStore(); if (got < 2) ready();
+    }, function () { showError('Tasks stopped syncing. Reload the page to reconnect.'); });
     db.collection('done').onSnapshot(function (snap) {
-      state = {};
-      snap.docs.forEach(function (doc) { state[doc.id] = doc.data(); });
-      note.textContent = 'Check-offs sync across your devices. “Waiting” keeps an item off your plate without calling it finished.';
-      refresh();
-    }, function () { note.textContent = 'Check-offs stopped syncing. Reload the page to reconnect.'; });
+      marks = {}; snap.docs.forEach(function (doc) { var v = doc.data(); if (v.kind !== 'todo') marks[doc.id] = v; });
+      refreshFromStore(); if (got < 2) ready();
+    }, function () {});
     db.collection('recurring').onSnapshot(function (snap) {
       recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
         .sort(function (a, b) { return a.order - b.order; });
-      refresh();
+      refreshFromStore();
     }, function () {});
   }, function () {});
 
