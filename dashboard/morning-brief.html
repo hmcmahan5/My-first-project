@@ -100,7 +100,11 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 .mini:hover { filter: brightness(0.96); }
 .mini:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sub-head { font-family: var(--font-data); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 14px 0 2px; }
-.recur { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.recur { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.freq { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.freq select, .editor select { font: 15px var(--font-body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; }
+.add-recur { grid-template-columns: 1fr; padding: 0; }
+.add-recur .btn { justify-self: start; }
 @media (max-width: 760px) { .recur { grid-template-columns: 1fr; } }
 .todo-list label { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 10px 0; cursor: pointer; }
 .todo-list label span { min-width: 0; overflow-wrap: anywhere; }
@@ -381,10 +385,12 @@ a { color: var(--accent); }
 
   <section class="section" aria-labelledby="h-recur">
     <div class="section-head"><h2 id="h-recur">Recurring</h2><span class="count" id="recur-count"></span></div>
-    <div class="recur">
-      <div class="todo-card"><div class="sub-head">Every day</div><ul class="todo-list one" id="recur-daily"></ul></div>
-      <div class="todo-card"><div class="sub-head">Every week, before Sunday</div><ul class="todo-list one" id="recur-weekly"></ul></div>
-    </div>
+    <div class="recur" id="recur-groups"></div>
+    <form class="add add-recur" id="add-recur" aria-label="Add a recurring item">
+      <input type="text" id="add-recur-text" placeholder="Add something that repeats" aria-label="New recurring item">
+      <div id="add-recur-freq"></div>
+      <button class="btn primary" type="submit">Add</button>
+    </form>
   </section>
 
   <div class="notes">
@@ -439,9 +445,8 @@ a { color: var(--accent); }
   var todayStr = ymd(today);
   var monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7));
   var weekPeriod = 'wk-' + ymd(monday);
-  var isWeekendStretch = today.getDay() === 5 || today.getDay() === 6 || today.getDay() === 0;
   function daysUntil(s) { var dt = parseDay(s); return dt ? Math.round((dt - today) / 864e5) : null; }
-  function recurKey(r) { return 'r-' + r.id + '-' + (r.every === 'daily' ? todayStr : weekPeriod); }
+  function recurKey(r) { return 'r-' + r.id + '-' + (r.every === 'daily' || r.every === 'weekdays' ? todayStr : r.every === 'monthly' ? 'mo-' + todayStr.slice(0, 7) : weekPeriod); }
   function nowIso() { return new Date().toISOString(); }
   function showError(msg) { note.textContent = msg; }
 
@@ -660,29 +665,155 @@ a { color: var(--accent); }
     if (editingId && tasks[editingId] && (tasks[editingId].status === 'done')) dw.open = true;
     document.getElementById('done-sum').textContent = 'Checked off this week (' + finished + ')';
 
-    var daily = document.getElementById('recur-daily'), weekly = document.getElementById('recur-weekly');
-    daily.textContent = ''; weekly.textContent = '';
-    var recurLeft = 0;
-    recurring.forEach(function (r) {
-      var key = recurKey(r), on = !!marks[key];
-      if (!on) recurLeft++;
-      var li = el('li', on ? 'is-done' : 'is-open');
-      var label = el('label');
-      var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = on;
-      cb.addEventListener('change', function () { setMark(key, r.text, 'recurring', cb.checked); });
-      label.append(cb, el('span', 'task-text', r.text));
-      li.append(label);
-      if (r.every === 'weekly' && r.due) li.append(el('span', 'chip' + (!on && isWeekendStretch ? ' due' : ''), 'By ' + r.due.slice(0, 3)));
-      (r.every === 'daily' ? daily : weekly).append(li);
-    });
-    [daily, weekly].forEach(function (ul) {
-      if (!ul.children.length) { var e = el('li', 'todo-empty'); e.append(el('p', 'empty', 'Nothing here yet.')); ul.append(e); }
-    });
-    document.getElementById('recur-count').textContent = recurring.length ? (recurLeft ? recurLeft + ' to do' : 'All done') : '';
+    renderRecurring();
     renderEmails();
   }
+
+  // Recurring items: recurring/<id> {text, every: daily|weekdays|weekly|monthly, due, order}.
+  // "due" is a weekday name for weekly items and a day of the month ("15") for monthly ones.
+  var WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var FREQS = [['daily', 'Every day'], ['weekdays', 'Weekdays'], ['weekly', 'Weekly'], ['monthly', 'Monthly']];
+  var recEditId = null;
+  function ordinal(n) { n = +n; var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+  function monthDueDay(r) { var last = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); return Math.min(Math.max(+r.due || 1, 1), last); }
+  function recurChip(r, on) {
+    if (r.every === 'weekly') {
+      var due = WEEKDAYS.indexOf(r.due || 'Sunday'), now_ = (today.getDay() + 6) % 7;
+      return el('span', 'chip' + (!on && due - now_ <= 2 ? ' due' : ''), 'By ' + (r.due || 'Sunday').slice(0, 3));
+    }
+    if (r.every === 'monthly') {
+      var dd = monthDueDay(r);
+      return el('span', 'chip' + (!on && dd - today.getDate() <= 3 ? ' due' : ''), 'By the ' + ordinal(dd));
+    }
+    if (r.every === 'weekdays') return el('span', 'chip', 'Weekdays');
+    return null;
+  }
+  function saveRecurring(id, body) {
+    if (body) {
+      var i = recurring.findIndex(function (x) { return x.id === id; });
+      var item = { id: id, text: body.text, every: body.every, due: body.due, order: body.order };
+      if (i < 0) recurring.push(item); else recurring[i] = item;
+    } else {
+      recurring = recurring.filter(function (x) { return x.id !== id; });
+    }
+    refresh();
+    if (!db) { showError('Recurring changes need the synced page; open it from claude.ai.'); return; }
+    var ref = db.doc('recurring/' + id);
+    (body ? ref.set(body) : ref.delete()).catch(function () { showError("That change didn't save. Check your connection and try again."); });
+  }
+  // Frequency picker plus the day control it needs; returns {node, value()}.
+  function freqPicker(prefix, every, due) {
+    var wrap = el('div', 'freq');
+    var seg = el('div', 'seg'); seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-label', 'How often');
+    var day = el('select'); day.id = prefix + '-weekday'; day.setAttribute('aria-label', 'Due by');
+    WEEKDAYS.forEach(function (w) { var o = el('option', null, 'by ' + w); o.value = w; day.append(o); });
+    day.value = every === 'weekly' && due ? due : 'Sunday';
+    var mday = el('select'); mday.id = prefix + '-monthday'; mday.setAttribute('aria-label', 'Day of the month');
+    for (var n = 1; n <= 31; n++) { var o = el('option', null, 'by the ' + ordinal(n)); o.value = String(n); mday.append(o); }
+    mday.value = every === 'monthly' && due ? String(due) : '1';
+    function sync() { day.hidden = every !== 'weekly'; mday.hidden = every !== 'monthly'; }
+    FREQS.forEach(function (f) {
+      var b = el('button', 'seg-btn', f[1]); b.type = 'button';
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(f[0] === every));
+      b.addEventListener('click', function () {
+        every = f[0];
+        Array.prototype.forEach.call(seg.children, function (c) { c.setAttribute('aria-checked', String(c === b)); });
+        sync();
+      });
+      seg.append(b);
+    });
+    sync();
+    wrap.append(seg, day, mday);
+    return { node: wrap, value: function () { return { every: every, due: every === 'weekly' ? day.value : every === 'monthly' ? mday.value : '' }; } };
+  }
+
+  function recurEditor(r) {
+    var f = el('form', 'editor');
+    f.setAttribute('aria-label', 'Edit recurring item');
+    var txt = el('input'); txt.type = 'text'; txt.id = 'rec-text-' + r.id; txt.value = r.text; txt.required = true;
+    var fp = freqPicker('rec-' + r.id, r.every, r.due);
+    var tl = el('label', 'field'); tl.append(el('span', 'field-label', 'Item'), txt);
+    var fl = el('div', 'field'); fl.append(el('span', 'field-label', 'How often'), fp.node);
+    var actions = el('div', 'ed-actions');
+    var save = el('button', 'btn primary', 'Save'); save.type = 'submit';
+    var cancel = el('button', 'btn', 'Cancel'); cancel.type = 'button';
+    var del = el('button', 'btn danger', 'Delete'); del.type = 'button';
+    var confirmBox = el('span', 'confirm'); confirmBox.hidden = true;
+    var yes = el('button', 'btn danger', 'Yes, delete'); yes.type = 'button';
+    var no = el('button', 'btn', 'Keep it'); no.type = 'button';
+    confirmBox.append(el('span', null, 'Stop repeating this?'), yes, no);
+    actions.append(save, cancel, del, confirmBox);
+    f.append(tl, fl, actions);
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = txt.value.trim(); if (!text) { txt.focus(); return; }
+      var v = fp.value(); recEditId = null;
+      saveRecurring(r.id, { text: text, every: v.every, due: v.due, order: r.order || 0 });
+    });
+    cancel.addEventListener('click', function () { recEditId = null; refresh(); });
+    del.addEventListener('click', function () { del.hidden = true; confirmBox.hidden = false; yes.focus(); });
+    no.addEventListener('click', function () { del.hidden = false; confirmBox.hidden = true; });
+    yes.addEventListener('click', function () { recEditId = null; saveRecurring(r.id, null); });
+    setTimeout(function () { txt.focus(); }, 0);
+    return f;
+  }
+
+  function renderRecurring() {
+    var box = document.getElementById('recur-groups');
+    box.textContent = '';
+    var isWeekend = today.getDay() === 0 || today.getDay() === 6;
+    var groups = [
+      ['Every day', recurring.filter(function (r) { return r.every === 'daily' || (r.every === 'weekdays' && !isWeekend); })],
+      ['This week', recurring.filter(function (r) { return r.every === 'weekly'; })],
+      ['This month', recurring.filter(function (r) { return r.every === 'monthly'; })],
+      ['Off today', recurring.filter(function (r) { return r.every === 'weekdays' && isWeekend; })]
+    ];
+    var left = 0;
+    groups.forEach(function (g) {
+      if (!g[1].length) return;
+      var card = el('div', 'todo-card');
+      card.append(el('div', 'sub-head', g[0]));
+      var ul = el('ul', 'todo-list one');
+      g[1].forEach(function (r) {
+        var key = recurKey(r), on = !!marks[key], off = g[0] === 'Off today';
+        if (!on && !off) left++;
+        var li = el('li', 'task ' + (on ? 'is-done' : 'is-open'));
+        var label = el('label');
+        var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'chk-' + key; cb.checked = on; cb.disabled = off;
+        cb.addEventListener('change', function () { setMark(key, r.text, 'recurring', cb.checked); });
+        label.append(cb, el('span', 'task-text', r.text));
+        var side = el('div', 'task-side');
+        var chip = recurChip(r, on); if (chip) side.append(chip);
+        var edit = el('button', 'mini ghost', 'Edit'); edit.type = 'button';
+        edit.setAttribute('aria-label', 'Edit: ' + r.text); edit.setAttribute('aria-expanded', String(recEditId === r.id));
+        edit.addEventListener('click', function () { recEditId = recEditId === r.id ? null : r.id; refresh(); });
+        side.append(edit);
+        li.append(label, side);
+        if (recEditId === r.id) li.append(recurEditor(r));
+        ul.append(li);
+      });
+      card.append(ul);
+      box.append(card);
+    });
+    if (!recurring.length) box.append(el('p', 'empty', 'Nothing repeats yet. Add something below.'));
+    document.getElementById('recur-count').textContent = recurring.length ? (left ? left + ' to do' : 'All done') : '';
+  }
+
+  var addFreq = freqPicker('add-rec', 'weekly', 'Sunday');
+  document.getElementById('add-recur-freq').append(addFreq.node);
+  document.getElementById('add-recur').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('add-recur-text');
+    var text = input.value.trim(); if (!text) { input.focus(); return; }
+    var v = addFreq.value();
+    var order = recurring.reduce(function (m, r) { return Math.max(m, r.order || 0); }, 0) + 1;
+    saveRecurring(slug(text).slice(0, 40) + '-' + Date.now().toString(36), { text: text, every: v.every, due: v.due, order: order });
+    input.value = '';
+    input.focus();
+  });
+
   // A live update from another device shouldn't wipe a half-typed edit.
-  function refreshFromStore() { if (editingId) { deferred = true; return; } refresh(); }
+  function refreshFromStore() { if (editingId || recEditId) { deferred = true; return; } refresh(); }
 
   loadLocal();
   refresh();
