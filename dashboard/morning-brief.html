@@ -78,6 +78,7 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 .mail-body { display: grid; gap: 2px; min-width: 0; }
 .mail.is-cleared .mail-body { opacity: .6; }
 .mail.is-cleared .mail-ask { text-decoration: line-through; }
+.mail-head { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 #emails-cleared-wrap summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 8px 0 4px; }
 
 .notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -351,6 +352,7 @@ a { color: var(--accent); }
     </section>
     <section class="section" aria-labelledby="h-mail">
       <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="count" id="mail-count"></span></div>
+      <p class="empty">Unread emails stay here until you mark them read in Outlook or tap Handled.</p>
       <div class="list" id="emails"></div>
       <details id="emails-cleared-wrap" hidden>
         <summary id="emails-cleared-sum"></summary>
@@ -737,6 +739,8 @@ a { color: var(--accent); }
     var em = document.getElementById('emails'), cl = document.getElementById('emails-cleared');
     em.textContent = ''; cl.textContent = '';
     var open = 0, cleared = 0;
+    // "waiting" emails are unread threads Hobie already answered: open loops, not asks.
+    var groups = { action: [], waiting: [] };
     d.emails.forEach(function (m) {
       var key = 'e-' + slug(m.from + ' ' + m.subject);
       var on = !!marks[key];
@@ -749,7 +753,13 @@ a { color: var(--accent); }
       b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
       b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
       c.append(body, b);
-      if (on) { cleared++; cl.append(c); } else { open++; em.append(c); }
+      if (on) { cleared++; cl.append(c); } else { open++; groups[m.group === 'waiting' ? 'waiting' : 'action'].push(c); }
+    });
+    var hasWaiting = groups.waiting.length > 0;
+    [['action', 'Needs you'], ['waiting', 'Unread, waiting on a reply']].forEach(function (g) {
+      if (!groups[g[0]].length) return;
+      if (hasWaiting) em.append(el('div', 'sub-head mail-head', g[1] + ' (' + groups[g[0]].length + ')'));
+      groups[g[0]].forEach(function (c) { em.append(c); });
     });
     if (!open) em.append(el('p', 'empty', d.emails.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
     document.getElementById('mail-count').textContent = open + ' need you';
