@@ -1,0 +1,268 @@
+<title>Hobie's Morning Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column; a "first things" list on top, then schedule and inbox side by side on wide screens, then notes. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #17212b;
+  --muted: #5a6875;
+  --line: #d9e0e6;
+  --accent: #1f5f8b;
+  --accent-soft: #e3eef6;
+  --due: #b4442c;
+  --due-soft: #f8e6e1;
+  --ok: #2f7a4f;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171d; --surface: #18212a; --fg: #e6ecf1; --muted: #9aa8b5; --line: #2a3642;
+    --accent: #7fb6dd; --accent-soft: #1d3346; --due: #f08b72; --due-soft: #3a211c; --ok: #7ccf9c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e6ecf1; --muted: #9aa8b5; --line: #2a3642;
+  --accent: #7fb6dd; --accent-soft: #1d3346; --due: #f08b72; --due-soft: #3a211c; --ok: #7ccf9c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; margin: 0; text-wrap: balance; }
+.headline { color: var(--muted); max-width: 62ch; margin: 0; }
+h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin: 0; }
+.section { display: grid; gap: 12px; min-width: 0; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.count { font-family: var(--font-data); font-size: 12px; color: var(--muted); }
+
+/* First things */
+.first { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 0; }
+.first ol { list-style: none; margin: 0; padding: 0; counter-reset: p; }
+.first li { counter-increment: p; display: grid; grid-template-columns: 32px 1fr auto; gap: 4px 12px; padding: 14px 18px; border-top: 1px solid var(--line); align-items: start; }
+.first li:first-child { border-top: 0; }
+.first li::before { content: counter(p); font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--accent); line-height: 1.1; }
+.first li.done .p-title { text-decoration: line-through; color: var(--muted); }
+.p-body { min-width: 0; display: grid; gap: 2px; }
+.p-title { font-weight: 600; }
+.p-why { color: var(--muted); font-size: 15px; }
+.p-src { font-family: var(--font-data); font-size: 11px; color: var(--muted); letter-spacing: .03em; }
+.check { width: 22px; height: 22px; accent-color: var(--accent); margin-top: 2px; cursor: pointer; }
+.chip { display: inline-block; font-family: var(--font-data); font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.chip.due { background: var(--due-soft); color: var(--due); }
+
+/* Two-up */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } .first li { grid-template-columns: 26px 1fr auto; padding: 12px 14px; } }
+
+.list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.time { font-family: var(--font-data); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.r-title { font-weight: 600; }
+.r-sub { color: var(--muted); font-size: 14px; }
+.row.gap .r-title { color: var(--muted); font-weight: 400; font-style: italic; }
+.day { font-family: var(--font-data); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 14px 0 4px; }
+
+.mail { display: grid; gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.mail-top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.mail-from { font-weight: 600; }
+.mail-ask { font-size: 15px; }
+
+.notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 900px) { .notes { grid-template-columns: 1fr; } }
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.empty { color: var(--muted); font-size: 14px; margin: 0; }
+.empty code { font-family: var(--font-data); font-size: 12px; background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 4px; }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 4px; }
+input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+</style>
+
+<!-- The morning routine rewrites only this data block each day. -->
+<script type="application/json" id="brief-data">
+{
+  "date": "2026-10-12",
+  "dateLabel": "Monday, October 12",
+  "preparedAt": "Prepared Sunday evening, Oct 11 (first preview)",
+  "headline": "Staff and admin meetings fill 8:30 to 11:30. Two Ministry Platform follow-ups are past due, and Tuesday's Faith Leader's Breakfast isn't on your calendar yet.",
+  "priorities": [
+    {
+      "title": "Decide on Tuesday's Faith Leader's Breakfast and add it to your calendar",
+      "why": "Tue Oct 13, 7:30 to 8:00 a.m. at the T.C. Walker Education Center cafeteria (use entrance 7S). Marked high importance and still unread.",
+      "source": "Email from Leslie Cloer, Gloucester County",
+      "tag": "Tomorrow", "urgent": true
+    },
+    {
+      "title": "Clear the two overdue Ministry Platform tasks",
+      "why": "Baptism interest call with Anthony Alvarez was due Aug 30. Leadership Institute group inquiry for Diane Coppola was due Sep 22. Both are quick and long overdue.",
+      "source": "Ministry Platform task reminder",
+      "tag": "Overdue", "urgent": true
+    },
+    {
+      "title": "Route the school facility-use invoices for payment",
+      "why": "Gloucester County Public Schools sent statements for 13 Sundays (Jul 5 to Sep 27) plus Sep 20. Nikki Cox is now their billing contact.",
+      "source": "Email from Christina Long, GCPS",
+      "tag": "This week", "urgent": false
+    },
+    {
+      "title": "Plan for 455 MORE Guides (7 boxes)",
+      "why": "Scott confirmed the larger count. The 8:30 staff meeting is a natural place to decide who receives and hands them out.",
+      "source": "Email from Scott Payne",
+      "tag": "Staff mtg", "urgent": false
+    }
+  ],
+  "schedule": [
+    { "start": "8:30", "end": "10:30", "title": "Gloucester Staff Meeting", "where": "GTR Office" },
+    { "start": "10:30", "end": "11:30", "title": "Administrative Meeting", "where": "GTR Office" },
+    { "start": "11:30", "end": "", "title": "Open the rest of the day", "where": "Good window for priorities 2 and 3", "gap": true }
+  ],
+  "week": [
+    { "day": "Tue Oct 13", "items": [ { "time": "7:30", "title": "Faith Leader's Breakfast (not on calendar)" } ] },
+    { "day": "Wed Oct 14", "items": [ { "time": "9:00", "title": "Local Worship Meeting (Teams)" } ] },
+    { "day": "Thu Oct 15", "items": [] }
+  ],
+  "emails": [
+    { "from": "Leslie Cloer", "subject": "Faith Leader's Breakfast & Prayer", "ask": "Attend Tue 7:30 a.m.? No RSVP requested, but it isn't on your calendar.", "when": "Fri", "flag": "Unread" },
+    { "from": "Christina Long, GCPS", "subject": "Church Facility Use Invoices, July through September", "ask": "Two invoice PDFs to pay. Nikki Cox handles billing from here on.", "when": "Fri", "flag": "Action" },
+    { "from": "Scott Payne", "subject": "Re: MORE Initiative", "ask": "FYI: you're now receiving 455 MORE Guides (7 boxes).", "when": "Sat", "flag": "FYI" }
+  ],
+  "followups": [],
+  "todos": [],
+  "ideas": [],
+  "sources": [
+    "Outlook calendar, Oct 12 to 18",
+    "Inbox, Oct 9 to 11 (newsletters and promotions skipped)",
+    "Ministry Platform reminder email (no direct connection yet)"
+  ]
+}
+</script>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="prepared"></div>
+    <h1 id="date"></h1>
+    <p class="headline" id="headline"></p>
+  </header>
+
+  <section class="section" aria-labelledby="h-first">
+    <div class="section-head"><h2 id="h-first">Do these first</h2><span class="count" id="first-count"></span></div>
+    <div class="first"><ol id="priorities"></ol></div>
+  </section>
+
+  <div class="two">
+    <section class="section" aria-labelledby="h-today">
+      <h2 id="h-today">Today</h2>
+      <div class="list" id="schedule"></div>
+      <div id="week"></div>
+    </section>
+    <section class="section" aria-labelledby="h-mail">
+      <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="count" id="mail-count"></span></div>
+      <div class="list" id="emails"></div>
+    </section>
+  </div>
+
+  <div class="notes">
+    <section class="note" aria-labelledby="h-fu">
+      <h2 id="h-fu">Meeting follow-ups</h2>
+      <div id="followups"></div>
+    </section>
+    <section class="note" aria-labelledby="h-todo">
+      <h2 id="h-todo">From your to-do list</h2>
+      <div id="todos"></div>
+    </section>
+    <section class="note" aria-labelledby="h-ideas">
+      <h2 id="h-ideas">Ideas and learning</h2>
+      <div id="ideas"></div>
+    </section>
+  </div>
+
+  <footer>
+    <div><strong>Built from:</strong> <span id="sources"></span></div>
+    <div>Rebuilt automatically Monday through Thursday at about 7:30 a.m. Eastern, and Friday through Sunday only when something is due.</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var d = JSON.parse(document.getElementById('brief-data').textContent);
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  document.getElementById('prepared').textContent = d.preparedAt;
+  document.getElementById('date').textContent = d.dateLabel;
+  document.getElementById('headline').textContent = d.headline;
+  document.getElementById('sources').textContent = d.sources.join(' · ');
+
+  var ol = document.getElementById('priorities');
+  d.priorities.forEach(function (p, i) {
+    var li = el('li');
+    var body = el('div', 'p-body');
+    body.append(el('div', 'p-title', p.title), el('div', 'p-why', p.why), el('div', 'p-src', p.source));
+    var right = el('div');
+    right.style.display = 'grid'; right.style.gap = '8px'; right.style.justifyItems = 'end';
+    right.append(el('span', 'chip' + (p.urgent ? ' due' : ''), p.tag));
+    var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'p-' + d.date + '-' + i;
+    cb.setAttribute('aria-label', 'Mark done: ' + p.title);
+    if (store(cb.id) === '1') { cb.checked = true; li.classList.add('done'); }
+    cb.addEventListener('change', function () { li.classList.toggle('done', cb.checked); store(cb.id, cb.checked ? '1' : '0'); });
+    right.append(cb);
+    li.append(body, right);
+    ol.append(li);
+  });
+  document.getElementById('first-count').textContent = d.priorities.length + ' items';
+
+  var sch = document.getElementById('schedule');
+  if (!d.schedule.length) sch.append(el('p', 'empty', 'Nothing on your calendar today.'));
+  d.schedule.forEach(function (s) {
+    var r = el('div', 'row' + (s.gap ? ' gap' : ''));
+    r.append(el('div', 'time', s.end ? s.start + '–' + s.end : s.start));
+    var b = el('div'); b.style.minWidth = '0';
+    b.append(el('div', 'r-title', s.title));
+    if (s.where) b.append(el('div', 'r-sub', s.where));
+    r.append(b); sch.append(r);
+  });
+
+  var wk = document.getElementById('week');
+  if (d.week && d.week.length) {
+    wk.append(el('h2', null, 'Rest of the week')); wk.firstChild.style.marginTop = '12px';
+    d.week.forEach(function (w) {
+      wk.append(el('div', 'day', w.day));
+      var l = el('div', 'list');
+      if (!w.items.length) { var r = el('div', 'row gap'); r.append(el('div', 'time', ''), el('div', 'r-title', 'Nothing scheduled')); l.append(r); }
+      w.items.forEach(function (it) { var r = el('div', 'row'); r.append(el('div', 'time', it.time), el('div', 'r-title', it.title)); l.append(r); });
+      wk.append(l);
+    });
+  }
+
+  var em = document.getElementById('emails');
+  if (!d.emails.length) em.append(el('p', 'empty', 'Nothing in your inbox is waiting on you.'));
+  d.emails.forEach(function (m) {
+    var c = el('div', 'mail');
+    var top = el('div', 'mail-top');
+    top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (m.flag === 'Unread' || m.flag === 'Action' ? ' due' : ''), m.flag), el('span', 'count', m.when));
+    c.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
+    em.append(c);
+  });
+  document.getElementById('mail-count').textContent = d.emails.length + ' need you';
+
+  function fillNote(id, items, emptyHtml) {
+    var box = document.getElementById(id);
+    if (!items.length) { var p = el('p', 'empty'); p.innerHTML = emptyHtml; box.append(p); return; }
+    var ul = el('ul');
+    items.forEach(function (t) { ul.append(el('li', null, typeof t === 'string' ? t : t.text)); });
+    box.append(ul);
+  }
+  fillNote('followups', d.followups, 'No meeting notes yet. Email your Granola notes to yourself and action items show up here the next morning.');
+  fillNote('todos', d.todos, 'No list yet. At the end of the day, email your Apple Notes list to yourself with the subject <code>To-Do</code>.');
+  fillNote('ideas', d.ideas, 'Email yourself anything with the subject <code>Idea</code> or <code>Learning</code> and it collects here.');
+})();
+</script>
