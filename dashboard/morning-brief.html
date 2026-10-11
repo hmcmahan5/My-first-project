@@ -74,6 +74,11 @@ h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin
 .mail-top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .mail-from { font-weight: 600; }
 .mail-ask { font-size: 15px; }
+.mail { grid-template-columns: 1fr auto; align-items: start; column-gap: 12px; }
+.mail-body { display: grid; gap: 2px; min-width: 0; }
+.mail.is-cleared .mail-body { opacity: .6; }
+.mail.is-cleared .mail-ask { text-decoration: line-through; }
+#emails-cleared-wrap summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 8px 0 4px; }
 
 .notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
 @media (max-width: 760px) { .notes { grid-template-columns: 1fr; } }
@@ -347,6 +352,10 @@ a { color: var(--accent); }
     <section class="section" aria-labelledby="h-mail">
       <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="count" id="mail-count"></span></div>
       <div class="list" id="emails"></div>
+      <details id="emails-cleared-wrap" hidden>
+        <summary id="emails-cleared-sum"></summary>
+        <div class="list" id="emails-cleared"></div>
+      </details>
     </section>
   </div>
 
@@ -668,6 +677,7 @@ a { color: var(--accent); }
       if (!ul.children.length) { var e = el('li', 'todo-empty'); e.append(el('p', 'empty', 'Nothing here yet.')); ul.append(e); }
     });
     document.getElementById('recur-count').textContent = recurring.length ? (recurLeft ? recurLeft + ' to do' : 'All done') : '';
+    renderEmails();
   }
   // A live update from another device shouldn't wipe a half-typed edit.
   function refreshFromStore() { if (editingId) { deferred = true; return; } refresh(); }
@@ -721,16 +731,32 @@ a { color: var(--accent); }
     });
   }
 
-  var em = document.getElementById('emails');
-  if (!d.emails.length) em.append(el('p', 'empty', 'Nothing in your inbox is waiting on you.'));
-  d.emails.forEach(function (m) {
-    var c = el('div', 'mail');
-    var top = el('div', 'mail-top');
-    top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (m.flag === 'Unread' || m.flag === 'Action' ? ' due' : ''), m.flag), el('span', 'count', m.when));
-    c.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
-    em.append(c);
-  });
-  document.getElementById('mail-count').textContent = d.emails.length + ' need you';
+  // Emails: "Handled" clears one for the rest of the day; the morning run leaves it off
+  // unless a newer message arrives in that thread. Stored as done/e-<slug> (kind "email").
+  function renderEmails() {
+    var em = document.getElementById('emails'), cl = document.getElementById('emails-cleared');
+    em.textContent = ''; cl.textContent = '';
+    var open = 0, cleared = 0;
+    d.emails.forEach(function (m) {
+      var key = 'e-' + slug(m.from + ' ' + m.subject);
+      var on = !!marks[key];
+      var c = el('div', 'mail' + (on ? ' is-cleared' : ''));
+      var body = el('div', 'mail-body');
+      var top = el('div', 'mail-top');
+      top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (!on && (m.flag === 'Unread' || m.flag === 'Action') ? ' due' : ''), m.flag), el('span', 'count', m.when));
+      body.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
+      var b = el('button', on ? 'mini ghost' : 'mini', on ? 'Undo' : 'Handled'); b.type = 'button';
+      b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
+      b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
+      c.append(body, b);
+      if (on) { cleared++; cl.append(c); } else { open++; em.append(c); }
+    });
+    if (!open) em.append(el('p', 'empty', d.emails.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
+    document.getElementById('mail-count').textContent = open + ' need you';
+    var w = document.getElementById('emails-cleared-wrap');
+    w.hidden = cleared === 0;
+    document.getElementById('emails-cleared-sum').textContent = 'Handled (' + cleared + ')';
+  }
 
   function fillNote(id, items, emptyHtml) {
     var box = document.getElementById(id);
