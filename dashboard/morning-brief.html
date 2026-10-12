@@ -151,104 +151,116 @@ a { color: var(--accent); }
 @media (max-width: 520px) { .add { grid-template-columns: 1fr auto; } .add input[type=text] { grid-column: 1 / -1; } }
 .group .sub-head { padding-top: 16px; }
 .g-overdue .sub-head { color: var(--due); }
+
+/* Meeting prep, refresh, slipping */
+.mail-tools { display: inline-flex; gap: 10px; align-items: center; }
+#mail-status { margin: -4px 0 0; min-height: 1em; }
+.mail.is-new { background: var(--accent-soft); margin-inline: -8px; padding-inline: 8px; border-radius: 6px; }
+.mtg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.mtg { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.mtg.dragging { outline: 2px dashed var(--accent); outline-offset: -6px; }
+.mtg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.mtg h3 { font-family: var(--font-display); font-weight: 500; font-size: 18px; margin: 0; }
+.mtg-note { margin: 0; font-size: 15px; }
+.mtg .sub-head { padding-top: 8px; }
+.mtg-list { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 15px; }
+.mtg-list.sugg, .ask-out .mtg-list { padding-left: 0; list-style: none; }
+.mtg-list.sugg li, .sugg-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+.agenda, .ask input { font: 15px/1.45 var(--font-body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; resize: vertical; }
+.agenda:focus-visible, .ask input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.drop { display: block; border: 1px dashed var(--line); border-radius: 8px; padding: 10px; text-align: center; color: var(--muted); font-size: 14px; cursor: pointer; }
+.drop:hover { border-color: var(--accent); color: var(--accent); }
+.doc-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 14px; }
+.ask { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 4px; }
+.ask-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+@media (max-width: 520px) { .ask-row { grid-template-columns: 1fr auto; } .ask-row input { grid-column: 1 / -1; } }
+.ask-out { display: grid; gap: 6px; font-size: 15px; }
+.slip .todo-list li { padding: 10px 0; }
 </style>
 
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
 <script type="application/json" id="brief-data">
 {
-  "date": "2026-10-11",
-  "dateLabel": "Sunday, October 11",
-  "preparedAt": "Prepared Sunday 7:00 AM ET",
-  "headline": "Sunday service day: production call at 6:00, Welcome Team huddle at 8:40, services at 9:00 and 10:45. Your weekly Hospitality, Set up / tear down and Trailers items are due today. Monday's staff and admin meetings are a good place to settle Oct 18 volunteers before the MORE series starts.",
+  "date": "2026-10-12",
+  "dateLabel": "Monday, October 12",
+  "preparedAt": "Prepared Monday 7:30 AM ET",
+  "headline": "Staff meeting at 8:30 and admin meeting at 10:30, then the day opens up. MORE launches Sunday and install week starts now. Tuesday's 7:30 Faith Leader's Breakfast needs a yes or no today, and mileage and Tanner Schaller's blue card are due today.",
   "priorities": [
     {
-      "title": "Finish this week's Hospitality, Set up / tear down and Trailers",
-      "why": "All three weekly items are due today and aren't marked done this week. Huddle is 8:40, services 9:00 and 10:45, and you're on Trailer Blue set-up.",
-      "source": "Dashboard checklist + Planning Center",
+      "title": "Turn in mileage reimbursement and Tanner Schaller's blue card",
+      "why": "Both are due today. The 10:30 admin meeting is the natural place; the blue card goes to Hannah. Paycom 2027 benefits enrollment also opened this morning, which covers Hannah's health insurance.",
+      "source": "Your to-do note + Paycom email",
       "tag": "Today",
       "urgent": true
     },
     {
-      "title": "Line up Oct 18 greeter and set-up volunteers",
-      "why": "Christen Speight declined Worship Center Greeters for Oct 18 and blocked out Oct 18 and 25. Brant Ryan declined Trailer Green for Oct 18 (out of town). Oct 18 is MORE launch Sunday. Settle the front-door greeter (Gabriel, the Fahertys or the Moores) and Daniel Hogge for hospitality at Monday's staff meeting.",
-      "source": "Planning Center + your to-do note",
-      "tag": "Staff mtg",
+      "title": "Decide on Tuesday's Faith Leader's Breakfast and prayer",
+      "why": "Tue Oct 13, 7:30 a.m., T.C. Walker Education Center Cafeteria, entrance 7S. Jane Wenner (Gloucester emergency management) also asks you to email her if you can attend in person. Not on your calendar yet.",
+      "source": "Emails from Leslie Cloer and Jane Wenner",
+      "tag": "Tomorrow",
+      "urgent": true
+    },
+    {
+      "title": "Line up MORE launch help for Sunday Oct 18",
+      "why": "Portable displays and tablecloths should be in the campus closet this week, series guides arrive Wednesday, and each display needs a staffer or volunteer in a MORE lanyard. Christen Speight declined greeting, Brant is out and Chad needs help on Trailer Green, and the 9am front-door greeter is still open.",
+      "source": "Weston Hanna and Jennifer Ward emails + Planning Center + your to-do note",
+      "tag": "MORE launch",
       "urgent": false
     },
     {
       "title": "Clear the two overdue Ministry Platform tasks",
-      "why": "Baptism interest call for Anthony Alvarez was due Aug 30 (42 days overdue). Group inquiry follow-up for Diane Coppola, Liberty Leadership Institute Gloucester, was due Sep 22.",
+      "why": "Baptism interest call for Anthony Alvarez was due Aug 30 (43 days overdue). Group inquiry follow-up for Diane Coppola, Liberty Leadership Institute Gloucester, was due Sep 22 (20 days overdue). The open window after 11:30 fits both.",
       "source": "Ministry Platform task reminder",
       "tag": "Overdue",
       "urgent": true
     },
     {
-      "title": "Decide on Tuesday's Faith Leader's Breakfast and add it to your calendar",
-      "why": "Tue Oct 13, 7:30 to 8:00 a.m., T.C. Walker Education Center Cafeteria (6099 T.C. Walker Rd), enter by entrance 7S only. Marked high importance, still unread, and not on your calendar.",
-      "source": "Email from Leslie Cloer, Gloucester County",
-      "tag": "Tue",
-      "urgent": true
+      "title": "Answer Phil Humphreys' list from the 9/27 vision night",
+      "why": "Unread since Oct 6. Wet projectors with the dehumidifier missing, projectors focused for the old screens, stage displays rebuilt, a broken SM58 capsule. It ties to your \"Projectors getting wet\" task.",
+      "source": "Email from Phil Humphreys + your to-do note",
+      "tag": "This week",
+      "urgent": false
     },
     {
-      "title": "Bring the MORE walkthrough and paperwork to Monday's meetings",
-      "why": "You told Scott you'd walk the team through Oct 18 on Monday and pick up supplies from the closet. 455 MORE Guides (7 boxes) arrive by Wednesday. Use the 10:30 admin meeting for mileage reimbursement, Hannah's health insurance and Tanner Schaller's blue card.",
-      "source": "Scott Payne and Jennifer Ward emails + your to-do note",
-      "tag": "Mon mtgs",
+      "title": "Reply to Francesca about the Daffodil Festival sponsorship",
+      "why": "She followed up Oct 6 asking if you have more questions. You asked for the package details Aug 17 and the former marketing director has since moved to consulting.",
+      "source": "Email from Gloucester County",
+      "tag": "Follow up",
       "urgent": false
     }
   ],
   "schedule": [
     {
-      "start": "6:00",
-      "end": "7:00",
-      "title": "Production call (Campus Pastor)",
-      "where": "Gloucester · Tyler loaded your sermon bundle onto the computer last night"
+      "start": "8:30",
+      "end": "10:30",
+      "title": "Gloucester Staff Meeting",
+      "where": "GTR Office · Oct 18 greeter, hospitality, Bonars serving, Trunk or Treat photo op, MORE walkthrough"
     },
     {
-      "start": "7:00",
-      "end": "8:40",
-      "title": "Rehearsal",
-      "where": "Gloucester"
+      "start": "10:30",
+      "end": "11:30",
+      "title": "Administrative Meeting",
+      "where": "GTR Office · mileage, Hannah's insurance, Tanner's blue card"
     },
     {
-      "start": "8:40",
-      "end": "9:00",
-      "title": "Hospitality Huddle (Welcoming Pastor)",
-      "where": "Trailer Blue set-up also starts here"
-    },
-    {
-      "start": "9:00",
+      "start": "11:30",
       "end": "",
-      "title": "Service",
-      "where": "Welcoming Pastor, Set Up (Trailer Blue)"
-    },
-    {
-      "start": "10:45",
-      "end": "",
-      "title": "Second service",
-      "where": "Trailer Blue set-up"
+      "title": "Open the rest of the day",
+      "where": "Fits the Alvarez and Coppola Ministry Platform calls, the Phil Humphreys reply and picking up the MORE portable displays from the closet",
+      "gap": true
     }
   ],
   "week": [
-    {
-      "day": "Mon Oct 12",
-      "items": [
-        {
-          "time": "8:30",
-          "title": "Gloucester Staff Meeting, GTR Office (to 10:30). Settle Oct 18 greeter, hospitality, serving, Trunk or Treat photo op and the MORE walkthrough."
-        },
-        {
-          "time": "10:30",
-          "title": "Administrative Meeting, GTR Office (to 11:30). Mileage, Hannah's insurance, Tanner's blue card."
-        }
-      ]
-    },
     {
       "day": "Tue Oct 13",
       "items": [
         {
           "time": "7:30",
-          "title": "Faith Leader's Breakfast and Prayer (not on calendar)"
+          "title": "Faith Leader's Breakfast and Prayer, T.C. Walker Cafeteria (not on calendar)"
+        },
+        {
+          "time": "All day",
+          "title": "Hope for the Holidays listing details due (you sent Jewel the Riverbend edits Oct 11)"
         }
       ]
     },
@@ -258,67 +270,172 @@ a { color: var(--accent); }
         {
           "time": "9:00",
           "title": "Local Worship Meeting (Teams, to 10:00)"
+        },
+        {
+          "time": "All day",
+          "title": "MORE Series Guides delivered to campuses; Change Bordeaux to GTR due"
         }
       ]
     },
     {
       "day": "Thu Oct 15",
-      "items": []
+      "items": [
+        {
+          "time": "All day",
+          "title": "Facilities mounts MORE TVs and shelving on the displays"
+        }
+      ]
     }
   ],
   "emails": [
     {
       "from": "Leslie Cloer, Gloucester County",
       "subject": "Faith Leader's Breakfast & Prayer",
-      "ask": "Attend Tue Oct 13, 7:30 a.m.? No RSVP requested.",
-      "when": "Fri",
-      "flag": "Unread"
+      "ask": "Decide on Tue Oct 13, 7:30 a.m. breakfast. Marked high importance, not on your calendar.",
+      "when": "Fri · 3 days",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Jane Wenner, Gloucester County",
+      "subject": "School Prayer",
+      "ask": "Email her if you can pray in person at the T.C. Walker Building Tuesday morning.",
+      "when": "Mon",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Weston Hanna",
+      "subject": "MORE Install Week!",
+      "ask": "Portable displays and tablecloths will be in the campus closet this week, guides come Wednesday, and each display needs a lanyard-wearing staffer or volunteer Sunday.",
+      "when": "Sun",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Paycom",
+      "subject": "Annual Benefits Enrollment is Open",
+      "ask": "Log in to Paycom Self-Service and make 2027 benefit elections. Covers Hannah's health insurance.",
+      "when": "Mon",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Phillip Humphreys",
+      "subject": "Issues on 9/27/26",
+      "ask": "Read his list of vision night issues and reply. He says he is not upset with anyone.",
+      "when": "Oct 6 · 6 days",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Francesca, Gloucester County",
+      "subject": "RE: Daffodil Festival sponsorship",
+      "ask": "Reply to her Oct 6 follow-up: do you have more questions or want to commit?",
+      "when": "Oct 6 · 6 days",
+      "flag": "Unread",
+      "group": "action"
     },
     {
       "from": "Laura Smith, AP",
       "subject": "Fw: Invoice #698 - Liberty Live Church Ministry - June 2026 @ Page",
-      "ask": "Call the school to confirm the rate is the same, per Marcia's question. You said you'd find out; the new July to September invoices came Friday and you sent them to finance.",
-      "when": "Thu",
-      "flag": "Reply"
+      "ask": "Call the school to confirm the rate is the same, per Marcia's question. You said you'd find out.",
+      "when": "Oct 8 · 4 days",
+      "flag": "Reply",
+      "group": "action"
     },
     {
-      "from": "Planning Center",
-      "subject": "Christen Speight declined Oct 18 and blocked Oct 18 and 25",
-      "ask": "Find a replacement Worship Center greeter for Oct 18.",
-      "when": "Sat",
-      "flag": "Action"
+      "from": "Tammy Wilson-Jones",
+      "subject": "Campus Mission Projects",
+      "ask": "Review and update the monthly Campus Mission Projects spreadsheet.",
+      "when": "Sep 30 · 12 days",
+      "flag": "Unread",
+      "group": "action"
     },
     {
-      "from": "Planning Center",
-      "subject": "Brant Ryan declined Trailer Green for Oct 18",
-      "ask": "Find a replacement for Trailer Green set-up on Oct 18 (out of town).",
+      "from": "Steve Dykema",
+      "subject": "RE: SOM Courses",
+      "ask": "He isn't sure yet whether Hampton will offer an in-person SOM course next semester. Pass that to the person who asked.",
+      "when": "Sep 27 · 15 days",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "L. McAllister",
+      "subject": "Federal & State Labor Law Posters",
+      "ask": "Display the posters left in the GTR box using the command strips.",
+      "when": "Sep 14 · 4 wks",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Hannah McMahan",
+      "subject": "Reminder Email - Set Up Hannah Counseling",
+      "ask": "Set up Hannah's counseling at Wyndhurst Counseling Center.",
+      "when": "Aug 6 · 9 wks",
+      "flag": "Unread",
+      "group": "action"
+    },
+    {
+      "from": "Lifeway",
+      "subject": "Order Number AAB0-B874-24E0",
+      "ask": "Log in at ministrygrid.lifeway.com to start your Ministry Grid subscription.",
       "when": "Mon",
-      "flag": "Action"
+      "flag": "Unread",
+      "group": "action"
     },
     {
-      "from": "Scott Payne / Jennifer Ward",
-      "subject": "MORE Initiative and MORE Supplies for Oct 18",
-      "ask": "FYI: 455 MORE Guides (7 boxes) by Wednesday, portable display hubs very close, commitment cards already in the Campus Box.",
-      "when": "Sat",
-      "flag": "FYI"
+      "from": "R. Barnes",
+      "subject": "Liberty Basketball BRONCOS Team",
+      "ask": "Practice guidelines for the Broncos team. No request spelled out.",
+      "when": "Oct 7 · 5 days",
+      "flag": "FYI",
+      "group": "action"
     },
     {
-      "from": "Tyler Skaggs",
-      "subject": "Re: Sermon for Tomorrow",
-      "ask": "FYI: sermon bundle is loaded on the computer for this morning.",
-      "when": "Sat",
-      "flag": "FYI"
+      "from": "Amanda McWhirter",
+      "subject": "Fw: Cider and hot cocoa",
+      "ask": "Forwarded note from Elementary Kids. No request spelled out.",
+      "when": "Oct 7 · 5 days",
+      "flag": "FYI",
+      "group": "action"
     },
     {
-      "from": "Tyler Wilson-Jones",
-      "subject": "CP Meeting Notes 10/6/26",
-      "ask": "FYI: check the yellow-highlighted assignments for you.",
-      "when": "Thu",
-      "flag": "FYI"
+      "from": "Jennifer Ward",
+      "subject": "Re: MORE Supplies UPDATE for OCT 18",
+      "ask": "You thanked her Oct 8. Waiting on the portable displays (due any day) and the guides (middle of this week).",
+      "when": "Oct 8 · 4 days",
+      "flag": "Waiting",
+      "group": "waiting"
+    },
+    {
+      "from": "Michelle Brown, Page Middle School",
+      "subject": "RE: Page Middle School",
+      "ask": "You asked Sep 30 where the TV mount brackets are. Your notes show TV mount help checked off, so mark read if this is finished.",
+      "when": "Sep 29 · 2 wks",
+      "flag": "Waiting",
+      "group": "waiting"
+    },
+    {
+      "from": "Joy Dickerson",
+      "subject": "Re: Decision GTR Update",
+      "ask": "You said you'd double check that she no longer lives with her ex; Joy can then move her toward membership.",
+      "when": "Sep 17 · 3.5 wks",
+      "flag": "Waiting",
+      "group": "waiting"
+    },
+    {
+      "from": "Gabriel Goar",
+      "subject": "Re: leadership Course week 40",
+      "ask": "You agreed to talk through the course with the team. Set a time.",
+      "when": "Sep 15 · 4 wks",
+      "flag": "Waiting",
+      "group": "waiting"
     }
   ],
   "followups": [
-    "Check the yellow-highlighted assignments in the 10/6 CP Meeting Notes (Tyler Wilson-Jones)."
+    "Check the yellow-highlighted assignments in the 10/6 CP Meeting Notes (Tyler Wilson-Jones).",
+    "Hope for the Holidays: Gloucester listing details are due Tue Oct 13. Jewel has your Riverbend edits."
   ],
   "todos": [],
   "ideas": [
@@ -327,11 +444,117 @@ a { color: var(--accent); }
     "Leadership video notes: multiply through being an example, creating a big picture, aligning individual objectives with business goals"
   ],
   "sources": [
-    "Outlook calendar, Oct 11 to 15",
-    "Inbox, Oct 8 to 11 (newsletters, promotions and text notifications skipped)",
-    "\"Notes To Do\" email from Oct 10 (checked-off items left out)",
+    "Outlook calendar, Oct 12 to 15",
+    "All unread email plus read email since Oct 9 (newsletters, promotions and text notifications skipped)",
+    "\"Updated To-Do\" email from Oct 11 (checked-off items left out)",
     "Ministry Platform reminder email (no direct connection yet)",
     "Planning Center emails"
+  ],
+  "generatedAt": "2026-10-12T11:30:00Z",
+  "meetings": [
+    {
+      "key": "local-worship-meeting",
+      "title": "Local Worship Meeting",
+      "date": "2026-10-14",
+      "day": "Wed Oct 14",
+      "time": "9:00–10:00",
+      "where": "Teams",
+      "attendees": [
+        "Phil Humphreys",
+        "JP Ward",
+        "A. McGiffin",
+        "Thomas Scott"
+      ],
+      "note": "You walk through the Planning Center plan together on the call, so no separate agenda is needed. Have the Oct 18 plan open.",
+      "context": [
+        "Phil Humphreys' list of 9/27 vision night issues is unread since Oct 6: wet projectors, stage displays, a broken SM58 capsule",
+        "Your task: projectors getting wet (keys were wet too)"
+      ],
+      "suggestions": [
+        "Close the loop on Phil's 9/27 vision night list",
+        "Oct 18 MORE launch: anything worship or production needs to change"
+      ]
+    },
+    {
+      "key": "preschool-meeting",
+      "title": "Preschool Meeting",
+      "date": "2026-10-19",
+      "day": "Mon Oct 19",
+      "time": "11:00–12:00",
+      "where": "",
+      "attendees": [
+        "Heather Hogge"
+      ],
+      "context": [],
+      "suggestions": []
+    },
+    {
+      "key": "student-meeting",
+      "title": "Student Meeting",
+      "date": "2026-10-19",
+      "day": "Mon Oct 19",
+      "time": "1:00–2:00",
+      "where": "",
+      "attendees": [
+        "Bryan"
+      ],
+      "context": [
+        "Your task: Weston photo op for Trunk or Treat"
+      ],
+      "suggestions": []
+    },
+    {
+      "key": "elementary-meeting",
+      "title": "Elementary Meeting",
+      "date": "2026-10-19",
+      "day": "Mon Oct 19",
+      "time": "2:00–3:00",
+      "where": "",
+      "attendees": [
+        "K. Morgan"
+      ],
+      "context": [
+        "Waiting on Kaylin and Amanda: iPad issue in kids"
+      ],
+      "suggestions": [
+        "iPad issue in kids: where it stands now that Amanda is back"
+      ]
+    },
+    {
+      "key": "sunday-follow-up",
+      "title": "Sunday Follow Up",
+      "date": "2026-10-19",
+      "day": "Mon Oct 19",
+      "time": "3:00–4:00",
+      "where": "",
+      "attendees": [
+        "JP Ward"
+      ],
+      "context": [],
+      "suggestions": [
+        "MORE launch Sunday: what worked and what to fix"
+      ]
+    },
+    {
+      "key": "one-on-one-meeting-hobie-scott",
+      "title": "One on One: Hobie & Scott",
+      "date": "2026-10-20",
+      "day": "Tue Oct 20",
+      "time": "11:00–12:00",
+      "where": "Pastor Scott's Office",
+      "attendees": [
+        "Scott Payne"
+      ],
+      "context": [
+        "Daffodil Festival sponsorship reply to Francesca is still open",
+        "MORE launch Oct 18 with 455 guides"
+      ],
+      "suggestions": [
+        "MORE launch recap",
+        "Hospitality admin hire: timeline and role",
+        "Daffodil Festival sponsorship: yes or no"
+      ]
+    }
   ]
 }
 </script>
@@ -355,7 +578,8 @@ a { color: var(--accent); }
       <div id="week"></div>
     </section>
     <section class="section" aria-labelledby="h-mail">
-      <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="count" id="mail-count"></span></div>
+      <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="mail-tools"><span class="count" id="mail-count"></span><button class="btn" type="button" id="mail-refresh" hidden>Refresh</button></span></div>
+      <p class="count" id="mail-status" aria-live="polite"></p>
       <p class="empty">Unread emails stay here until you mark them read in Outlook or tap Handled.</p>
       <div class="list" id="emails"></div>
       <details id="emails-cleared-wrap" hidden>
@@ -364,6 +588,20 @@ a { color: var(--accent); }
       </details>
     </section>
   </div>
+
+  <section class="section" id="mtg-section" aria-labelledby="h-mtg" hidden>
+    <div class="section-head"><h2 id="h-mtg">Meeting prep</h2><span class="count" id="mtg-count"></span></div>
+    <div class="mtg-grid" id="mtg-near"></div>
+    <details id="mtg-later-wrap" hidden>
+      <summary id="mtg-later-sum"></summary>
+      <div class="mtg-grid" id="mtg-later"></div>
+    </details>
+  </section>
+
+  <section class="section" id="slip-section" aria-labelledby="h-slip" hidden>
+    <div class="section-head"><h2 id="h-slip">Slipping</h2><span class="count" id="slip-count"></span></div>
+    <div class="todo-card slip"><ul class="todo-list one" id="slip-list"></ul></div>
+  </section>
 
   <section class="section" aria-labelledby="h-todo">
     <div class="section-head"><h2 id="h-todo">To-do list</h2><span class="count" id="todo-count"></span></div>
@@ -667,6 +905,7 @@ a { color: var(--accent); }
 
     renderRecurring();
     renderEmails();
+    renderSlipping();
   }
 
   // Recurring items: recurring/<id> {text, every: daily|weekdays|weekly|monthly, due, order}.
@@ -812,34 +1051,251 @@ a { color: var(--accent); }
     input.focus();
   });
 
+
+  // Meeting prep. The morning run fills d.meetings; each card keeps a running agenda in
+  // agendas/<key> {title, text, updatedAt} and can ask Claude for tips and additions.
+  var agendaBoxes = {};
+  function addTaskFromPrep(text, mtg) {
+    var id = 't-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36), stamp = nowIso();
+    writeTask(id, { text: text, status: 'open', due: mtg.date || '', waitingOn: '', note: 'From ' + mtg.title + ' prep', source: 'Meeting prep: ' + mtg.title, createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
+  }
+  function loadJsZip() {
+    if (window.JSZip) return Promise.resolve(window.JSZip);
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      s.onload = function () { window.JSZip ? resolve(window.JSZip) : reject(new Error('JSZip missing')); };
+      s.onerror = reject;
+      document.head.append(s);
+    });
+  }
+  function readDoc(file) {
+    var name = (file.name || '').toLowerCase();
+    if (/\.docx$/.test(name)) {
+      return loadJsZip().then(function (JSZip) { return file.arrayBuffer().then(function (buf) { return JSZip.loadAsync(buf); }); })
+        .then(function (zip) { var f = zip.file('word/document.xml'); if (!f) throw new Error('not a Word document'); return f.async('string'); })
+        .then(function (xml) {
+          var txt = xml.replace(/<w:tab\/>/g, '\t').replace(/<\/w:p>/g, '\n').replace(/<w:br[^>]*\/>/g, '\n').replace(/<[^>]+>/g, '');
+          var t = document.createElement('textarea'); t.innerHTML = txt; return t.value.replace(/\n{3,}/g, '\n\n').trim();
+        });
+    }
+    if (/\.(txt|md|csv|text)$/.test(name) || /^text\//.test(file.type)) return file.text();
+    return Promise.reject(new Error('unsupported'));
+  }
+
+  function meetingCard(m) {
+    var card = el('article', 'mtg');
+    card.setAttribute('aria-label', m.title);
+    var head = el('div', 'mtg-head');
+    var h = el('h3', null, m.title);
+    var when = el('div', 'count', [m.day, m.time].filter(Boolean).join(' · '));
+    head.append(h, when);
+    card.append(head);
+    if (m.where || (m.attendees && m.attendees.length)) {
+      card.append(el('div', 'r-sub', [m.where, (m.attendees || []).join(', ')].filter(Boolean).join(' · ')));
+    }
+    if (m.note) card.append(el('p', 'mtg-note', m.note));
+    if (m.context && m.context.length) {
+      card.append(el('div', 'sub-head', 'Open items with these people'));
+      var ul = el('ul', 'mtg-list'); m.context.forEach(function (c) { ul.append(el('li', null, c)); }); card.append(ul);
+    }
+
+    // Running agenda
+    var agendaId = 'agenda-' + m.key;
+    var lab = el('label', 'sub-head', 'Running agenda'); lab.htmlFor = agendaId;
+    var ta = el('textarea', 'agenda'); ta.id = agendaId; ta.rows = 5; ta.placeholder = 'Paste or type your running agenda. It’s kept for next time.';
+    var save = el('button', 'btn', 'Save agenda'); save.type = 'button';
+    var saved = el('span', 'count', '');
+    var dirty = false;
+    ta.addEventListener('input', function () { dirty = true; saved.textContent = 'Not saved'; });
+    function saveAgenda() {
+      if (!dirty) return;
+      dirty = false;
+      var body = { title: m.title, text: ta.value, updatedAt: nowIso() };
+      if (!db) { try { localStorage.setItem('agenda-' + m.key, ta.value); } catch (e) {} saved.textContent = 'Saved in this browser'; return; }
+      saved.textContent = 'Saving…';
+      db.doc('agendas/' + m.key).set(body).then(function () { saved.textContent = 'Saved'; }, function () { dirty = true; saved.textContent = 'Didn’t save. Try again.'; });
+    }
+    save.addEventListener('click', saveAgenda);
+    ta.addEventListener('blur', saveAgenda);
+    agendaBoxes[m.key] = { ta: ta, isDirty: function () { return dirty; }, saved: saved };
+    function appendToAgenda(line) {
+      ta.value = (ta.value.replace(/\s+$/, '') + (ta.value.trim() ? '\n' : '') + '- ' + line);
+      dirty = true; saveAgenda();
+    }
+
+    if (m.suggestions && m.suggestions.length) {
+      card.append(el('div', 'sub-head', 'Suggested for the agenda'));
+      var sl = el('ul', 'mtg-list sugg');
+      m.suggestions.forEach(function (s) {
+        var li = el('li'); var add = el('button', 'mini', 'Add'); add.type = 'button';
+        add.setAttribute('aria-label', 'Add to agenda: ' + s);
+        add.addEventListener('click', function () { appendToAgenda(s); add.disabled = true; add.textContent = 'Added'; });
+        li.append(el('span', null, s), add); sl.append(li);
+      });
+      card.append(sl);
+    }
+    card.append(lab, ta);
+    var row = el('div', 'ed-actions'); row.append(save, saved); card.append(row);
+
+    // Attach a document
+    var doc = { name: '', text: '' };
+    var fileId = 'file-' + m.key;
+    var drop = el('label', 'drop'); drop.htmlFor = fileId;
+    drop.textContent = 'Drop a Word, text or Markdown file here, or tap to choose one';
+    var fi = el('input'); fi.type = 'file'; fi.id = fileId; fi.accept = '.docx,.txt,.md,.csv,text/plain'; fi.hidden = true;
+    var docLine = el('div', 'doc-line'); docLine.hidden = true;
+    function takeFile(file) {
+      if (!file) return;
+      docLine.hidden = false; docLine.textContent = 'Reading ' + file.name + '…';
+      readDoc(file).then(function (text) {
+        doc = { name: file.name, text: text };
+        docLine.textContent = '';
+        var words = text.split(/\s+/).filter(Boolean).length;
+        var use = el('button', 'mini ghost', 'Use as running agenda'); use.type = 'button';
+        use.addEventListener('click', function () { ta.value = text; dirty = true; saveAgenda(); });
+        var clear = el('button', 'mini ghost', 'Remove'); clear.type = 'button';
+        clear.addEventListener('click', function () { doc = { name: '', text: '' }; docLine.hidden = true; fi.value = ''; });
+        docLine.append(el('span', null, 'Attached: ' + file.name + ' (' + words + ' words)'), use, clear);
+      }, function (e) {
+        docLine.textContent = e && e.message === 'unsupported'
+          ? 'That file type can’t be read here. For a PDF, copy its text into the agenda box instead.'
+          : 'Couldn’t read ' + file.name + '. Try saving it as .docx or .txt.';
+      });
+    }
+    fi.addEventListener('change', function () { takeFile(fi.files && fi.files[0]); });
+    ['dragenter', 'dragover'].forEach(function (t) { card.addEventListener(t, function (e) { e.preventDefault(); card.classList.add('dragging'); }); });
+    ['dragleave', 'drop'].forEach(function (t) { card.addEventListener(t, function (e) { if (t === 'dragleave' && card.contains(e.relatedTarget)) return; card.classList.remove('dragging'); }); });
+    card.addEventListener('drop', function (e) { e.preventDefault(); takeFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]); });
+    card.append(drop, fi, docLine);
+
+    // Ask Claude
+    var ask = el('div', 'ask'); ask.hidden = !sampleFn;
+    var qId = 'ask-' + m.key;
+    var qLab = el('label', 'sub-head', 'Ask Claude about this meeting'); qLab.htmlFor = qId;
+    var q = el('input'); q.type = 'text'; q.id = qId; q.placeholder = 'Optional: what do you want help with?';
+    var go = el('button', 'btn primary', 'Review with Claude'); go.type = 'button';
+    var stop = el('button', 'btn', 'Stop'); stop.type = 'button'; stop.hidden = true;
+    var out = el('div', 'ask-out'); out.setAttribute('aria-live', 'polite');
+    var ctl = null;
+    stop.addEventListener('click', function () { if (ctl) ctl.abort(); });
+    go.addEventListener('click', function () {
+      if (!sampleFn) return;
+      saveAgenda();
+      ctl = new AbortController();
+      go.disabled = true; stop.hidden = false;
+      out.textContent = 'Thinking…';
+      var parts = [
+        'You are helping Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church, prepare for a meeting.',
+        'Meeting: ' + m.title + ' — ' + [m.day, m.time, m.where].filter(Boolean).join(', '),
+        m.attendees && m.attendees.length ? 'Attendees: ' + m.attendees.join(', ') : '',
+        m.note ? 'About this meeting: ' + m.note : '',
+        m.context && m.context.length ? 'Open items from his dashboard involving these people:\n- ' + m.context.join('\n- ') : '',
+        m.suggestions && m.suggestions.length ? 'Agenda ideas already suggested:\n- ' + m.suggestions.join('\n- ') : '',
+        'His running agenda:\n"""\n' + (ta.value.trim() || '(empty)').slice(0, 20000) + '\n"""',
+        doc.text ? 'Document he attached (' + doc.name + '):\n"""\n' + doc.text.slice(0, 40000) + '\n"""' : '',
+        'His request: ' + (q.value.trim() || 'Review my agenda and notes. Suggest what to add, what to prepare, and questions worth asking.'),
+        'Reply with only JSON: {"tips": [string], "additions": [{"item": string, "why": string}], "questions": [string]}. At most 4 tips, 6 additions and 4 questions; keep each string under 25 words. Only suggest additions that are not already on his agenda. Write plainly.'
+      ].filter(Boolean).join('\n\n');
+      sampleFn.json(parts, { signal: ctl.signal, cache: false }).then(function (r) {
+        out.textContent = '';
+        function block(title, items, render) {
+          if (!items || !items.length) return;
+          out.append(el('div', 'sub-head', title));
+          var l = el('ul', 'mtg-list'); items.forEach(function (it) { l.append(render(it)); }); out.append(l);
+        }
+        block('Tips', r && r.tips, function (t) { return el('li', null, String(t)); });
+        block('Add to the agenda', r && r.additions, function (a) {
+          var item = String(a && a.item || a), li = el('li', 'sugg-row');
+          var txt = el('span', null, item);
+          if (a && a.why) txt.append(el('small', 'since', String(a.why)));
+          var b1 = el('button', 'mini', 'Add to agenda'); b1.type = 'button';
+          b1.addEventListener('click', function () { appendToAgenda(item); b1.disabled = true; b1.textContent = 'Added'; });
+          var b2 = el('button', 'mini ghost', 'Add as task'); b2.type = 'button';
+          b2.addEventListener('click', function () { addTaskFromPrep(item, m); b2.disabled = true; b2.textContent = 'Task added'; });
+          var acts = el('span', 'task-side'); acts.append(b1, b2);
+          li.append(txt, acts); return li;
+        });
+        block('Questions to ask', r && r.questions, function (t) { return el('li', null, String(t)); });
+        if (!out.children.length) out.textContent = 'Claude didn’t have suggestions this time.';
+      }, function (e) {
+        var code = e && e.code;
+        if (code === 'cancelled') { out.textContent = ''; return; }
+        if (code === 'not_granted' || code === 'sampling_disabled' || code === 'not_declared' || code === 'capability_disabled' || code === 'capability_removed') { ask.hidden = true; return; }
+        out.textContent = code === 'rate_limited' ? 'You’ve hit a usage limit. Try again in a little while.'
+          : code === 'prompt_too_large' ? 'That document is too long. Attach a shorter one or paste the key part.'
+          : code === 'invalid_json' ? 'Claude’s answer came back garbled. Try again.'
+          : code === 'session_expired' ? 'Sign in to claude.ai again, then retry.'
+          : 'Claude couldn’t answer just now. Try again.';
+      }).then(function () { go.disabled = false; stop.hidden = true; });
+    });
+    var qRow = el('div', 'ask-row'); qRow.append(q, go, stop);
+    ask.append(qLab, qRow, out);
+    card.append(ask);
+    card._ask = ask;
+    return card;
+  }
+
+  function renderMeetings() {
+    var list = d.meetings || [];
+    var sec = document.getElementById('mtg-section');
+    sec.hidden = !list.length;
+    if (!list.length) return;
+    var near = document.getElementById('mtg-near'), later = document.getElementById('mtg-later'), laterWrap = document.getElementById('mtg-later-wrap');
+    near.textContent = ''; later.textContent = '';
+    var limit = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 3);
+    var laterCount = 0;
+    list.forEach(function (m) {
+      var dt = parseDay(m.date);
+      var isLater = dt && dt >= limit;
+      (isLater ? later : near).append(meetingCard(m));
+      if (isLater) laterCount++;
+    });
+    laterWrap.hidden = laterCount === 0;
+    document.getElementById('mtg-later-sum').textContent = 'Later (' + laterCount + ')';
+    document.getElementById('mtg-count').textContent = list.length + ' coming up';
+    try { Object.keys(agendaBoxes).forEach(function (k) { var v = localStorage.getItem('agenda-' + k); if (v && !agendaBoxes[k].ta.value) agendaBoxes[k].ta.value = v; }); } catch (e) {}
+  }
+  function applyAgendas(snap) {
+    snap.docs.forEach(function (doc) {
+      var box = agendaBoxes[doc.id]; if (!box) return;
+      if (document.activeElement === box.ta || box.isDirty()) return;
+      var v = doc.data(); box.ta.value = v.text || '';
+      if (v.updatedAt) box.saved.textContent = 'Saved ' + shortDate(v.updatedAt);
+    });
+  }
+
+  // Slipping: overdue tasks, anything waiting more than a week, and undated tasks sitting 2+ weeks.
+  function renderSlipping() {
+    var rows = [], now_ = Date.now(), week = 7 * 864e5;
+    Object.keys(tasks).forEach(function (id) {
+      var t = tasks[id], st = t.status || 'open';
+      if (st === 'done') return;
+      var n = daysUntil(t.due);
+      if (st === 'open' && n !== null && n < 0) rows.push({ text: t.text, why: 'Overdue ' + (-n) + (n === -1 ? ' day' : ' days'), w: 3000 - n });
+      else if (st === 'waiting' && t.since && now_ - Date.parse(t.since) > week) {
+        var dd = Math.floor((now_ - Date.parse(t.since)) / 864e5);
+        rows.push({ text: t.text, why: 'Waiting ' + dd + ' days' + (t.waitingOn ? ' on ' + t.waitingOn : ''), w: 2000 + dd });
+      } else if (st === 'open' && n === null && t.createdAt && now_ - Date.parse(t.createdAt) > 2 * week) {
+        var ad = Math.floor((now_ - Date.parse(t.createdAt)) / 864e5);
+        rows.push({ text: t.text, why: 'On the list ' + ad + ' days, no due date', w: 1000 + ad });
+      }
+    });
+    d.emails.forEach(function (m) {
+      if (m.group !== 'waiting' || !m.received || marks['e-' + slug(m.from + ' ' + m.subject)]) return;
+      var dd = Math.floor((now_ - Date.parse(m.received)) / 864e5);
+      if (dd > 7) rows.push({ text: m.subject + ' (' + m.from + ')', why: 'Email waiting ' + dd + ' days', w: 2000 + dd });
+    });
+    rows.sort(function (a, b) { return b.w - a.w; });
+    var sec = document.getElementById('slip-section'), ul = document.getElementById('slip-list');
+    sec.hidden = !rows.length;
+    ul.textContent = '';
+    rows.forEach(function (r) { var li = el('li'); li.append(el('span', 'task-text', r.text), el('span', 'chip due', r.why)); ul.append(li); });
+    document.getElementById('slip-count').textContent = rows.length ? rows.length + (rows.length === 1 ? ' item' : ' items') : '';
+  }
+
   // A live update from another device shouldn't wipe a half-typed edit.
   function refreshFromStore() { if (editingId || recEditId) { deferred = true; return; } refresh(); }
-
-  loadLocal();
-  refresh();
-  showError('Changes are saved in this browser only.');
-
-  var use = window.claude && window.claude.use ? window.claude.use('db') : Promise.resolve(null);
-  use.then(function (store_) {
-    if (!store_) return;
-    db = store_;
-    tasks = {}; marks = {};
-    var got = 0;
-    function ready() { if (++got >= 2) showError('Changes sync across your devices.'); }
-    db.collection('tasks').onSnapshot(function (snap) {
-      tasks = {}; snap.docs.forEach(function (doc) { tasks[doc.id] = doc.data(); });
-      refreshFromStore(); if (got < 2) ready();
-    }, function () { showError('Tasks stopped syncing. Reload the page to reconnect.'); });
-    db.collection('done').onSnapshot(function (snap) {
-      marks = {}; snap.docs.forEach(function (doc) { var v = doc.data(); if (v.kind !== 'todo') marks[doc.id] = v; });
-      refreshFromStore(); if (got < 2) ready();
-    }, function () {});
-    db.collection('recurring').onSnapshot(function (snap) {
-      recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
-        .sort(function (a, b) { return a.order - b.order; });
-      refreshFromStore();
-    }, function () {});
-  }, function () {});
 
   var sch = document.getElementById('schedule');
   if (!d.schedule.length) sch.append(el('p', 'empty', 'Nothing on your calendar today.'));
@@ -864,40 +1320,179 @@ a { color: var(--accent); }
     });
   }
 
-  // Emails: "Handled" clears one for the rest of the day; the morning run leaves it off
-  // unless a newer message arrives in that thread. Stored as done/e-<slug> (kind "email").
+  // Emails. "Handled" clears one (done/e-<slug>, kind "email"); the morning run leaves it off
+  // unless a newer message arrives in that thread. Refresh re-checks Outlook live: emails read
+  // since the brief drop off, and anything new since it was built shows under "New since".
+  var live = { readKeys: {}, fresh: [], at: null };
+  function normSubject(s) { return String(s || '').toLowerCase().replace(/^((re|fw|fwd)\s*:\s*)+/, '').replace(/\s+/g, ' ').trim(); }
+  function wasUnread(m) { return m.unread === true || m.flag === 'Unread' || m.flag === 'Waiting' || m.group === 'waiting'; }
+  function mailRow(m, group) {
+    var key = 'e-' + slug(m.from + ' ' + m.subject);
+    var on = !!marks[key], readHere = !on && !!live.readKeys[normSubject(m.subject)] && wasUnread(m);
+    var c = el('div', 'mail' + (on || readHere ? ' is-cleared' : '') + (group === 'new' ? ' is-new' : ''));
+    var body = el('div', 'mail-body');
+    var top = el('div', 'mail-top');
+    var flag = readHere ? 'Read in Outlook' : m.flag;
+    top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (!on && !readHere && (m.flag === 'Unread' || m.flag === 'Action') ? ' due' : ''), flag), el('span', 'count', m.when));
+    body.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
+    c.append(body);
+    if (!readHere) {
+      var b = el('button', on ? 'mini ghost' : 'mini', on ? 'Undo' : 'Handled'); b.type = 'button';
+      b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
+      b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
+      c.append(b);
+    }
+    return { node: c, cleared: on || readHere };
+  }
   function renderEmails() {
     var em = document.getElementById('emails'), cl = document.getElementById('emails-cleared');
     em.textContent = ''; cl.textContent = '';
     var open = 0, cleared = 0;
-    // "waiting" emails are unread threads Hobie already answered: open loops, not asks.
-    var groups = { action: [], waiting: [] };
-    d.emails.forEach(function (m) {
-      var key = 'e-' + slug(m.from + ' ' + m.subject);
-      var on = !!marks[key];
-      var c = el('div', 'mail' + (on ? ' is-cleared' : ''));
-      var body = el('div', 'mail-body');
-      var top = el('div', 'mail-top');
-      top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (!on && (m.flag === 'Unread' || m.flag === 'Action') ? ' due' : ''), m.flag), el('span', 'count', m.when));
-      body.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
-      var b = el('button', on ? 'mini ghost' : 'mini', on ? 'Undo' : 'Handled'); b.type = 'button';
-      b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
-      b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
-      c.append(body, b);
-      if (on) { cleared++; cl.append(c); } else { open++; groups[m.group === 'waiting' ? 'waiting' : 'action'].push(c); }
-    });
-    var hasWaiting = groups.waiting.length > 0;
-    [['action', 'Needs you'], ['waiting', 'Unread, waiting on a reply']].forEach(function (g) {
+    var groups = { fresh: [], action: [], waiting: [] };
+    function place(m, g) {
+      var r = mailRow(m, g === 'fresh' ? 'new' : g);
+      if (r.cleared) { cleared++; cl.append(r.node); } else { open++; groups[g].push(r.node); }
+    }
+    live.fresh.forEach(function (m) { place(m, 'fresh'); });
+    d.emails.forEach(function (m) { place(m, m.group === 'waiting' ? 'waiting' : 'action'); });
+    var many = (groups.fresh.length ? 1 : 0) + (groups.action.length ? 1 : 0) + (groups.waiting.length ? 1 : 0) > 1;
+    [['fresh', 'New since ' + briefTime()], ['action', 'Needs you'], ['waiting', 'Unread, waiting on a reply']].forEach(function (g) {
       if (!groups[g[0]].length) return;
-      if (hasWaiting) em.append(el('div', 'sub-head mail-head', g[1] + ' (' + groups[g[0]].length + ')'));
+      if (many) em.append(el('div', 'sub-head mail-head', g[1] + ' (' + groups[g[0]].length + ')'));
       groups[g[0]].forEach(function (c) { em.append(c); });
     });
-    if (!open) em.append(el('p', 'empty', d.emails.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
+    if (!open) em.append(el('p', 'empty', d.emails.length || live.fresh.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
     document.getElementById('mail-count').textContent = open + ' need you';
-    var w = document.getElementById('emails-cleared-wrap');
-    w.hidden = cleared === 0;
+    document.getElementById('emails-cleared-wrap').hidden = cleared === 0;
     document.getElementById('emails-cleared-sum').textContent = 'Handled (' + cleared + ')';
   }
+  function briefTime() {
+    var m = /(\d{1,2}:\d{2}\s*[AP]M)/i.exec(d.preparedAt || '');
+    return m ? m[1].replace(/\s+/, ' ') : 'this morning';
+  }
+  function briefStartMs() {
+    if (d.generatedAt && !isNaN(Date.parse(d.generatedAt))) return Date.parse(d.generatedAt);
+    var day = parseDay(d.date) || today, m = /(\d{1,2}):(\d{2})\s*([AP]M)/i.exec(d.preparedAt || '');
+    var h = m ? (+m[1] % 12) + (/p/i.test(m[3]) ? 12 : 0) : 7, mi = m ? +m[2] : 30;
+    return new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, mi).getTime();
+  }
+
+  // The Microsoft 365 connector answers with one JSON object per message, sometimes several
+  // objects in one text block, so read every object out of every text block.
+  function jsonObjects(text) {
+    var out = [], depth = 0, start = -1, inStr = false, esc = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (inStr) { if (esc) esc = false; else if (ch === '\\') esc = true; else if (ch === '"') inStr = false; continue; }
+      if (ch === '"') { inStr = true; continue; }
+      if (ch === '{') { if (depth === 0) start = i; depth++; }
+      else if (ch === '}' && depth > 0) { depth--; if (depth === 0 && start >= 0) { try { out.push(JSON.parse(text.slice(start, i + 1))); } catch (e) {} start = -1; } }
+    }
+    return out;
+  }
+  function mailPage(res) {
+    var objs = [];
+    (res && res.content || []).forEach(function (b) { if (b && b.type === 'text' && b.text) objs = objs.concat(jsonObjects(b.text)); });
+    if (!objs.length && res && res.payload && typeof res.payload === 'object') objs = [].concat(res.payload);
+    var more = objs.filter(function (o) { return o && o.nextOffset != null; })[0];
+    return { msgs: objs.filter(function (o) { return o && o.subject !== undefined && o.receivedDateTime; }), next: more ? more.nextOffset : null };
+  }
+
+  var mcp = null, sampleFn = null;
+  var MS = 'Microsoft 365';
+  var mailStatus = document.getElementById('mail-status'), refreshBtn = document.getElementById('mail-refresh');
+  function mailError(e) {
+    var code = e && e.code;
+    if (code === 'needs_reauth') return 'Microsoft 365 needs to reconnect. Reconnect it in claude.ai Settings, Connectors, then try again.';
+    if (code === 'server_not_connected' || code === 'selection_required') return 'Add the Microsoft 365 connector in claude.ai Settings, Connectors to refresh from here.';
+    if (code === 'not_in_manifest' || code === 'not_granted' || code === 'consent_required' || code === 'approval_required') return 'This page isn’t allowed to read Outlook yet. Tap Refresh and choose Allow, or turn it on in the page’s Permissions menu.';
+    if (code === 'blocked_by_policy') return 'Your organization blocks this page from reading Outlook.';
+    return 'Couldn’t reach Outlook just now. Try again in a minute.';
+  }
+  function callMail(input) {
+    return mcp.callTool(MS, 'outlook_email_search', input, { cache: false }).catch(function (e) {
+      if (!e || !e.retryable) throw e;
+      return new Promise(function (r) { setTimeout(r, (e.retryAfterMs || 1200) + Math.random() * 800); })
+        .then(function () { return mcp.callTool(MS, 'outlook_email_search', input, { cache: false }); });
+    });
+  }
+  function fetchAll(input, maxPages) {
+    var all = [];
+    function step(offset, n) {
+      var q = {}; Object.keys(input).forEach(function (k) { q[k] = input[k]; }); q.offset = offset;
+      return callMail(q).then(function (res) {
+        var p = mailPage(res); all = all.concat(p.msgs);
+        return p.next != null && n + 1 < maxPages ? step(p.next, n + 1) : all;
+      });
+    }
+    return step(0, 0);
+  }
+  var NOISE = /(newsletter|offers|deals|promo|marketing|e-offers|em\.walmart|nba\.com|imdb|hubspot|mailchimp)/i;
+  var ME = 'hmcmahan@libertylive.church';
+  function refreshMail() {
+    if (!mcp) return;
+    refreshBtn.disabled = true; refreshBtn.textContent = 'Checking…';
+    mailStatus.textContent = 'Checking Outlook…';
+    Promise.all([
+      fetchAll({ query: 'isread:false', limit: 25 }, 6),
+      fetchAll({ folderName: 'Inbox', order: 'newest', limit: 25 }, 2)
+    ]).then(function (r) {
+      var unread = r[0], recent = r[1];
+      var unreadSet = {}; unread.forEach(function (m) { unreadSet[normSubject(m.subject)] = true; });
+      var readKeys = {};
+      recent.concat(unread).forEach(function (m) { var k = normSubject(m.subject); if (m.isRead && !unreadSet[k]) readKeys[k] = true; });
+      // An email the brief listed as unread that no longer shows as unread anywhere has been read.
+      d.emails.forEach(function (m) { var k = normSubject(m.subject); if (wasUnread(m) && !unreadSet[k]) readKeys[k] = true; });
+      var listed = {}; d.emails.forEach(function (m) { listed[normSubject(m.subject)] = true; });
+      var since = briefStartMs(), seen = {}, fresh = [];
+      unread.concat(recent).forEach(function (m) {
+        var k = normSubject(m.subject), t = Date.parse(m.receivedDateTime), from = String(m.sender || '').toLowerCase();
+        if (seen[k] || listed[k] || !(t > since)) return;
+        seen[k] = true;
+        if (from === ME || from.indexOf('no-reply-claude') >= 0 || NOISE.test(from)) return;
+        fresh.push({ raw: m, k: k });
+      });
+      fresh.sort(function (a, b) { return Date.parse(b.raw.receivedDateTime) - Date.parse(a.raw.receivedDateTime); });
+      live.readKeys = readKeys;
+      live.at = new Date();
+      live.fresh = fresh.map(function (f) {
+        var m = f.raw, t = new Date(Date.parse(m.receivedDateTime));
+        return { from: m.sender, subject: m.subject || '(no subject)', ask: String(m.summary || '').replace(/\s+/g, ' ').slice(0, 160), when: t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), flag: m.isRead ? 'New' : 'Unread', unread: !m.isRead, group: 'fresh' };
+      });
+      renderEmails();
+      var stamp = live.at.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      var readCount = d.emails.filter(function (m) { return wasUnread(m) && readKeys[normSubject(m.subject)]; }).length;
+      mailStatus.textContent = 'Updated ' + stamp + ' · ' + live.fresh.length + ' new' + (readCount ? ' · ' + readCount + ' read in Outlook' : '');
+      if (live.fresh.length && sampleFn) triageFresh();
+    }).catch(function (e) {
+      mailStatus.textContent = mailError(e);
+    }).then(function () { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh'; });
+  }
+  // Ask Claude to drop noise among the new emails and say what each one asks of Hobie.
+  function triageFresh() {
+    var list = live.fresh.map(function (m, i) { return { i: i, from: m.from, subject: m.subject, preview: m.ask }; });
+    var prompt = 'You help Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church, sort new email.\n'
+      + 'For each email below, decide whether it needs his attention (an ask, a decision, a deadline, a reply, or news that changes his plans) or is noise (ads, newsletters, automated notices that need nothing).\n'
+      + 'Reply with only a JSON array, one object per email: {"i": number, "keep": boolean, "ask": string, "flag": "Action" | "Reply" | "FYI"}. "ask" is one plain sentence under 20 words saying what he needs to do.\n\n'
+      + JSON.stringify(list);
+    mailStatus.textContent += ' · sorting with Claude…';
+    sampleFn.json(prompt, { modelTier: 'quick' }).then(function (rows) {
+      if (!Array.isArray(rows)) return;
+      var byI = {}; rows.forEach(function (r) { if (r && typeof r.i === 'number') byI[r.i] = r; });
+      live.fresh = live.fresh.filter(function (m, i) {
+        var r = byI[i]; if (!r) return true;
+        if (r.keep === false) return false;
+        if (r.ask) m.ask = String(r.ask);
+        if (r.flag && !m.unread) m.flag = String(r.flag);
+        return true;
+      });
+      renderEmails();
+      mailStatus.textContent = mailStatus.textContent.replace(/ · sorting with Claude…$/, '').replace(/\d+ new/, live.fresh.length + ' new');
+    }).catch(function () {
+      mailStatus.textContent = mailStatus.textContent.replace(/ · sorting with Claude…$/, '');
+    });
+  }
+  refreshBtn.addEventListener('click', refreshMail);
 
   function fillNote(id, items, emptyHtml) {
     var box = document.getElementById(id);
@@ -908,5 +1503,45 @@ a { color: var(--accent); }
   }
   fillNote('followups', d.followups, 'No meeting notes yet. Email your Granola notes to yourself and action items show up here the next morning.');
   fillNote('ideas', d.ideas, 'Email yourself anything with the subject <code>Idea</code> or <code>Learning</code> and it collects here.');
+  loadLocal();
+  refresh();
+  renderMeetings();
+  showError('Changes are saved in this browser only.');
+
+  var use = window.claude && window.claude.use ? window.claude.use('db') : Promise.resolve(null);
+  use.then(function (store_) {
+    if (!store_) return;
+    db = store_;
+    tasks = {}; marks = {};
+    var got = 0;
+    function ready() { if (++got >= 2) showError('Changes sync across your devices.'); }
+    db.collection('tasks').onSnapshot(function (snap) {
+      tasks = {}; snap.docs.forEach(function (doc) { tasks[doc.id] = doc.data(); });
+      refreshFromStore(); if (got < 2) ready();
+    }, function () { showError('Tasks stopped syncing. Reload the page to reconnect.'); });
+    db.collection('done').onSnapshot(function (snap) {
+      marks = {}; snap.docs.forEach(function (doc) { var v = doc.data(); if (v.kind !== 'todo') marks[doc.id] = v; });
+      refreshFromStore(); if (got < 2) ready();
+    }, function () {});
+    db.collection('agendas').onSnapshot(applyAgendas, function () {});
+    db.collection('recurring').onSnapshot(function (snap) {
+      recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
+        .sort(function (a, b) { return a.order - b.order; });
+      refreshFromStore();
+    }, function () {});
+  }, function () {});
+
+  if (window.claude && window.claude.use) {
+    window.claude.use('mcp').then(function (ns) {
+      if (!ns) return;
+      mcp = ns;
+      refreshBtn.hidden = false;
+    }, function () {});
+    window.claude.use('sample').then(function (fn) {
+      if (!fn) return;
+      sampleFn = fn;
+      Array.prototype.forEach.call(document.querySelectorAll('.mtg'), function (c) { if (c._ask) c._ask.hidden = false; });
+    }, function () {});
+  }
 })();
 </script>
