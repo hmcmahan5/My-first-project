@@ -1056,11 +1056,11 @@ a { color: var(--accent); }
     return (d.schedule || []).filter(function (s) { return !s.gap; }).map(function (s) { return '- ' + (s.end ? s.start + '–' + s.end : s.start) + ' ' + s.title; });
   }
 
-  // Day plan: from now until 5:00 PM, or tomorrow when it's already late in the day.
+  // Day plan: from now until 4:30 PM (end of his workday), or the next workday once it is 4:00 PM.
   function planDay() {
     var btn = document.getElementById('plan-day-btn'), status = document.getElementById('plan-day-status');
     if (!sampleFn) return;
-    var now = new Date(), late = now.getHours() * 60 + now.getMinutes() >= 16 * 60 + 30;
+    var now = new Date(), late = now.getHours() * 60 + now.getMinutes() >= 16 * 60;
     var target = new Date(today);
     if (late) { do { target.setDate(target.getDate() + 1); } while (target.getDay() === 0 || target.getDay() === 6); }
     var startAt = late ? '8:30 AM' : hm(new Date(Math.ceil(now.getTime() / 9e5) * 9e5));
@@ -1081,7 +1081,7 @@ a { color: var(--accent); }
         var asks = d.emails.filter(function (m) { return m.group !== 'waiting' && !marks['e-' + slug(m.from + ' ' + m.subject)]; }).slice(0, 6).map(function (m) { return '- ' + m.from + ': ' + m.ask; });
         var prompt = [
           'You plan the workday for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church.',
-          'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at 5:00 PM.',
+          'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at 4:30 PM, when his workday ends.',
           'Calendar (fixed, do not move):\n' + (cal.length ? cal.join('\n') : '- Nothing scheduled'),
           openPri.length ? 'This morning’s priorities:\n' + openPri.join('\n') : '',
           'Open tasks ([id] task, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
@@ -1123,7 +1123,7 @@ a { color: var(--accent); }
     }).then(function (cal) {
       status.textContent = 'Planning with Claude…';
       var prompt = [
-        'You plan the work week for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church. Sundays are service days; he isn’t preaching soon.',
+        'You plan the work week for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church. His workday ends at 4:30 PM. Sundays are service days; he isn’t preaching soon.',
         'Days to plan: ' + days.map(function (dd) { return ymd(dd) + ' (' + dd.toDateString().slice(0, 3) + ')'; }).join(', ') + '. Today is ' + today.toDateString() + '.',
         'Calendar so far:\n' + cal.join('\n\n'),
         'Open tasks ([id] task, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
@@ -1161,7 +1161,7 @@ a { color: var(--accent); }
   function renderPlans() {
     var dayBox = document.getElementById('plan-day'), sched = document.getElementById('sched-wrap');
     var dp = plans['day-' + todayStr] || null;
-    // After 4:30 PM a plan for the next workday may exist; show it instead.
+    // From 4:00 PM a plan for the next workday may exist; show it instead.
     if (!dp) Object.keys(plans).forEach(function (k) { if (/^day-/.test(k) && plans[k].date > todayStr && (!dp || plans[k].date < dp.date)) dp = plans[k]; });
     dayBox.textContent = '';
     sched.open = !dp;
