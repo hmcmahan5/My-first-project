@@ -189,6 +189,32 @@ a { color: var(--accent); }
 .ask-text { white-space: pre-wrap; font-size: 15px; line-height: 1.5; min-width: 0; overflow-wrap: anywhere; }
 .ask-text:empty { display: none; }
 .item-ask .mini.ghost { justify-self: start; }
+
+/* Tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: 4px; overflow-x: auto; background: var(--bg); padding-block: 8px; margin-block: -8px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { font: 600 15px var(--font-body); color: var(--muted); background: transparent; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
+.tab:hover { color: var(--fg); background: var(--accent-soft); }
+.tab[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.badge { font: 500 11px var(--font-data); background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
+.badge:empty { display: none; }
+.badge.hot { background: var(--due-soft); color: var(--due); border-color: transparent; }
+.panel { display: grid; gap: 28px; }
+.today-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.today-list li { display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.today-list li.is-done .linkish { text-decoration: line-through; color: var(--muted); }
+.today-list .empty { grid-column: 1 / -1; }
+.linkish { font: inherit; color: var(--fg); background: none; border: 0; padding: 0; text-align: left; cursor: pointer; min-width: 0; overflow-wrap: anywhere; }
+.linkish:hover { color: var(--accent); text-decoration: underline; }
+.linkish:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#today-mail-link { color: var(--accent); font-weight: 600; justify-self: start; }
+#today-mail-link:empty { display: none; }
+
+/* Priorities show title and tag; tap for the reason, source and Ask Claude. */
+.first li:not(.open) .p-why, .first li:not(.open) .p-src { display: none; }
+.first li .p-title::after { content: " \203A"; color: var(--muted); font-weight: 400; }
+.first li.open .p-title::after { content: " \2039"; }
 </style>
 
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
@@ -576,20 +602,38 @@ a { color: var(--accent); }
   <header>
     <div class="eyebrow" id="prepared"></div>
     <h1 id="date"></h1>
-    <p class="headline" id="headline"></p>
   </header>
 
-  <section class="section" aria-labelledby="h-first">
-    <div class="section-head"><h2 id="h-first">Do these first</h2><span class="count" id="first-count"></span></div>
-    <div class="first"><ol id="priorities"></ol></div>
-  </section>
+  <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab" role="tab" type="button" id="tab-today" aria-controls="panel-today" data-tab="today">Today</button>
+    <button class="tab" role="tab" type="button" id="tab-email" aria-controls="panel-email" data-tab="email">Email <span class="badge" id="badge-email"></span></button>
+    <button class="tab" role="tab" type="button" id="tab-tasks" aria-controls="panel-tasks" data-tab="tasks">Tasks <span class="badge" id="badge-tasks"></span></button>
+    <button class="tab" role="tab" type="button" id="tab-meetings" aria-controls="panel-meetings" data-tab="meetings">Meetings <span class="badge" id="badge-meetings"></span></button>
+    <button class="tab" role="tab" type="button" id="tab-notes" aria-controls="panel-notes" data-tab="notes">Notes</button>
+  </nav>
 
-  <div class="two">
-    <section class="section" aria-labelledby="h-today">
-      <h2 id="h-today">Today</h2>
-      <div class="list" id="schedule"></div>
-      <div id="week"></div>
+  <div class="panel" role="tabpanel" id="panel-today" aria-labelledby="tab-today">
+    <p class="headline" id="headline"></p>
+
+    <section class="section" aria-labelledby="h-first">
+      <div class="section-head"><h2 id="h-first">Do these first</h2><span class="count" id="first-count"></span></div>
+      <div class="first"><ol id="priorities"></ol></div>
     </section>
+
+    <div class="two">
+      <section class="section" aria-labelledby="h-today">
+        <h2 id="h-today">Schedule</h2>
+        <div class="list" id="schedule"></div>
+      </section>
+      <section class="section" aria-labelledby="h-due">
+        <div class="section-head"><h2 id="h-due">Also on your plate today</h2><span class="count" id="due-count"></span></div>
+        <ul class="today-list" id="today-list"></ul>
+        <button class="linkish" type="button" id="today-mail-link" data-goto="email"></button>
+      </section>
+    </div>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-email" aria-labelledby="tab-email" hidden>
     <section class="section" aria-labelledby="h-mail">
       <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="mail-tools"><span class="count" id="mail-count"></span><button class="btn" type="button" id="mail-refresh" hidden>Refresh</button></span></div>
       <p class="count" id="mail-status" aria-live="polite"></p>
@@ -602,63 +646,73 @@ a { color: var(--accent); }
     </section>
   </div>
 
-  <section class="section" id="mtg-section" aria-labelledby="h-mtg" hidden>
-    <div class="section-head"><h2 id="h-mtg">Meeting prep</h2><span class="count" id="mtg-count"></span></div>
-    <div class="mtg-grid" id="mtg-near"></div>
-    <details id="mtg-later-wrap" hidden>
-      <summary id="mtg-later-sum"></summary>
-      <div class="mtg-grid" id="mtg-later"></div>
-    </details>
-  </section>
+  <div class="panel" role="tabpanel" id="panel-tasks" aria-labelledby="tab-tasks" hidden>
+    <section class="section" id="slip-section" aria-labelledby="h-slip" hidden>
+      <div class="section-head"><h2 id="h-slip">Slipping</h2><span class="count" id="slip-count"></span></div>
+      <div class="todo-card slip"><ul class="todo-list one" id="slip-list"></ul></div>
+    </section>
 
-  <section class="section" id="slip-section" aria-labelledby="h-slip" hidden>
-    <div class="section-head"><h2 id="h-slip">Slipping</h2><span class="count" id="slip-count"></span></div>
-    <div class="todo-card slip"><ul class="todo-list one" id="slip-list"></ul></div>
-  </section>
+    <section class="section" aria-labelledby="h-todo">
+      <div class="section-head"><h2 id="h-todo">To-do list</h2><span class="count" id="todo-count"></span></div>
+      <div class="progress" role="progressbar" aria-labelledby="h-todo" id="todo-progress" aria-valuemin="0" aria-valuemax="100"><span id="todo-bar"></span></div>
+      <div class="todo-card">
+        <form class="add" id="add-form" aria-label="Add a task">
+          <input type="text" id="add-text" placeholder="Add a task" aria-label="New task">
+          <input type="date" id="add-due" aria-label="Due date (optional)">
+          <button class="btn primary" type="submit">Add</button>
+        </form>
+        <div id="task-groups"></div>
+        <details id="done-wrap" hidden>
+          <summary id="done-sum"></summary>
+          <ul class="todo-list one done-list" id="done-list"></ul>
+        </details>
+      </div>
+      <p class="empty" id="todo-note"></p>
+    </section>
 
-  <section class="section" aria-labelledby="h-todo">
-    <div class="section-head"><h2 id="h-todo">To-do list</h2><span class="count" id="todo-count"></span></div>
-    <div class="progress" role="progressbar" aria-labelledby="h-todo" id="todo-progress" aria-valuemin="0" aria-valuemax="100"><span id="todo-bar"></span></div>
-    <div class="todo-card">
-      <form class="add" id="add-form" aria-label="Add a task">
-        <input type="text" id="add-text" placeholder="Add a task" aria-label="New task">
-        <input type="date" id="add-due" aria-label="Due date (optional)">
+    <section class="section" aria-labelledby="h-recur">
+      <div class="section-head"><h2 id="h-recur">Recurring</h2><span class="count" id="recur-count"></span></div>
+      <div class="recur" id="recur-groups"></div>
+      <form class="add add-recur" id="add-recur" aria-label="Add a recurring item">
+        <input type="text" id="add-recur-text" placeholder="Add something that repeats" aria-label="New recurring item">
+        <div id="add-recur-freq"></div>
         <button class="btn primary" type="submit">Add</button>
       </form>
-      <div id="task-groups"></div>
-      <details id="done-wrap" hidden>
-        <summary id="done-sum"></summary>
-        <ul class="todo-list one done-list" id="done-list"></ul>
-      </details>
-    </div>
-    <p class="empty" id="todo-note"></p>
-  </section>
-
-  <section class="section" aria-labelledby="h-recur">
-    <div class="section-head"><h2 id="h-recur">Recurring</h2><span class="count" id="recur-count"></span></div>
-    <div class="recur" id="recur-groups"></div>
-    <form class="add add-recur" id="add-recur" aria-label="Add a recurring item">
-      <input type="text" id="add-recur-text" placeholder="Add something that repeats" aria-label="New recurring item">
-      <div id="add-recur-freq"></div>
-      <button class="btn primary" type="submit">Add</button>
-    </form>
-  </section>
-
-  <div class="notes">
-    <section class="note" aria-labelledby="h-fu">
-      <h2 id="h-fu">Meeting follow-ups</h2>
-      <div id="followups"></div>
-    </section>
-    <section class="note" aria-labelledby="h-ideas">
-      <h2 id="h-ideas">Ideas and learning</h2>
-      <div id="ideas"></div>
     </section>
   </div>
 
-  <footer>
-    <div><strong>Built from:</strong> <span id="sources"></span></div>
-    <div>Rebuilt automatically Monday through Thursday at about 7:30 a.m. Eastern, and Friday through Sunday only when something is due.</div>
-  </footer>
+  <div class="panel" role="tabpanel" id="panel-meetings" aria-labelledby="tab-meetings" hidden>
+    <section class="section" aria-labelledby="h-week">
+      <h2 id="h-week">This week</h2>
+      <div id="week"></div>
+    </section>
+    <section class="section" id="mtg-section" aria-labelledby="h-mtg" hidden>
+      <div class="section-head"><h2 id="h-mtg">Meeting prep</h2><span class="count" id="mtg-count"></span></div>
+      <div class="mtg-grid" id="mtg-near"></div>
+      <details id="mtg-later-wrap" hidden>
+        <summary id="mtg-later-sum"></summary>
+        <div class="mtg-grid" id="mtg-later"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" hidden>
+    <div class="notes">
+      <section class="note" aria-labelledby="h-fu">
+        <h2 id="h-fu">Meeting follow-ups</h2>
+        <div id="followups"></div>
+      </section>
+      <section class="note" aria-labelledby="h-ideas">
+        <h2 id="h-ideas">Ideas and learning</h2>
+        <div id="ideas"></div>
+      </section>
+    </div>
+
+    <footer>
+      <div><strong>Built from:</strong> <span id="sources"></span></div>
+      <div>Rebuilt automatically Monday through Thursday at about 7:30 a.m. Eastern, and Friday through Sunday only when something is due.</div>
+    </footer>
+  </div>
 </div>
 
 <script>
@@ -821,6 +875,95 @@ a { color: var(--accent); }
     node.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   }
 
+  // Tabs. Today is the default every time the page opens; a bare #email, #tasks, #meetings
+  // or #notes in the link opens that tab instead.
+  var TABS = ['today', 'email', 'tasks', 'meetings', 'notes'];
+  function showTab(name, focusTab) {
+    if (TABS.indexOf(name) < 0) name = 'today';
+    TABS.forEach(function (t) {
+      var b = document.getElementById('tab-' + t), panel = document.getElementById('panel-' + t);
+      var on = t === name;
+      b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1;
+      panel.hidden = !on;
+    });
+    if (focusTab) document.getElementById('tab-' + name).focus();
+    window.scrollTo(0, 0);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) {
+    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+    b.addEventListener('keydown', function (e) {
+      var i = TABS.indexOf(b.dataset.tab);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        showTab(TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length], true);
+      }
+    });
+  });
+  document.getElementById('today-mail-link').addEventListener('click', function () { showTab('email'); });
+  function setBadge(tab, n, hot) {
+    var b = document.getElementById('badge-' + tab); if (!b) return;
+    b.textContent = n ? String(n) : '';
+    b.classList.toggle('hot', !!hot);
+  }
+  function openTask(id) {
+    showTab('tasks');
+    editingId = id;
+    refresh();
+    var cb = document.getElementById('chk-' + id);
+    if (cb) cb.closest('li').scrollIntoView({ block: 'center' });
+  }
+
+  // Today: open tasks due today or overdue, plus recurring items due now.
+  function renderToday() {
+    var ul = document.getElementById('today-list');
+    ul.textContent = '';
+    var due = Object.keys(tasks).filter(function (id) {
+      var t = tasks[id], n = daysUntil(t.due);
+      return (t.status || 'open') === 'open' && n !== null && n <= 0;
+    }).sort(function (a, b) { return (tasks[a].due || '').localeCompare(tasks[b].due || ''); });
+    var dow = (today.getDay() + 6) % 7, isWeekend = dow > 4;
+    var recurNow = recurring.filter(function (r) {
+      if (r.every === 'daily') return true;
+      if (r.every === 'weekdays') return !isWeekend;
+      if (r.every === 'weekly') return WEEKDAYS.indexOf(r.due || 'Sunday') - dow <= 1;
+      if (r.every === 'monthly') return monthDueDay(r) - today.getDate() <= 2;
+      return false;
+    });
+    var left = 0;
+    due.forEach(function (id) {
+      var t = tasks[id], n = daysUntil(t.due);
+      left++;
+      var li = el('li');
+      var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'td-' + id;
+      cb.setAttribute('aria-label', 'Mark done: ' + t.text);
+      cb.addEventListener('change', function () { patchTask(id, { status: 'done' }); });
+      var name = el('button', 'linkish', t.text); name.type = 'button';
+      name.setAttribute('aria-label', 'Open in Tasks: ' + t.text);
+      name.addEventListener('click', function () { openTask(id); });
+      li.append(cb, name, el('span', 'chip due', n < 0 ? 'Overdue ' + (-n) + 'd' : 'Today'));
+      ul.append(li);
+    });
+    recurNow.forEach(function (r) {
+      var key = recurKey(r), on = !!marks[key];
+      if (!on) left++;
+      var li = el('li', on ? 'is-done' : '');
+      var cb = el('input', 'check'); cb.type = 'checkbox'; cb.id = 'tr-' + key; cb.checked = on;
+      cb.setAttribute('aria-label', 'Mark done: ' + r.text);
+      cb.addEventListener('change', function () { setMark(key, r.text, 'recurring', cb.checked); });
+      var name = el('button', 'linkish', r.text); name.type = 'button';
+      name.addEventListener('click', function () { showTab('tasks'); document.getElementById('h-recur').scrollIntoView(); });
+      li.append(cb, name, recurChip(r, on) || el('span', 'chip', 'Daily'));
+      ul.append(li);
+    });
+    if (!ul.children.length) {
+      var e = el('li'); e.append(el('p', 'empty', 'Nothing else is due today. Your full list is under Tasks.')); ul.append(e);
+    }
+    document.getElementById('due-count').textContent = left ? left + ' to do' : 'All clear';
+    var open = Object.keys(tasks).filter(function (id) { return (tasks[id].status || 'open') === 'open'; }).length;
+    var overdue = due.filter(function (id) { return daysUntil(tasks[id].due) < 0; }).length;
+    setBadge('tasks', open, overdue > 0);
+  }
+
   // Do these first
   var ol = document.getElementById('priorities');
   d.priorities.forEach(function (p) {
@@ -840,11 +983,13 @@ a { color: var(--accent); }
     function drawP() {
       panelWrap.textContent = '';
       body.setAttribute('aria-expanded', String(!!openItems[key]));
+      li.classList.toggle('open', !!openItems[key]);
       if (openItems[key]) panelWrap.append(askPanel(key, function () {
         return itemFacts([['Priority', p.title], ['Why it matters', p.why], ['Source', p.source], ['Tag', p.tag]]);
       }, ['What should I do first?', 'Draft a message about this', 'Break this into steps']));
     }
     makeOpener(body, key, p.title, drawP);
+    drawP();
     li.append(panelWrap);
     ol.append(li);
     priorityRows.push({ key: key, cb: cb, li: li });
@@ -1042,6 +1187,7 @@ a { color: var(--accent); }
     renderRecurring();
     renderEmails();
     renderSlipping();
+    renderToday();
   }
 
   // Recurring items: recurring/<id> {text, every: daily|weekdays|weekly|monthly, due, order}.
@@ -1402,6 +1548,7 @@ a { color: var(--accent); }
     laterWrap.hidden = laterCount === 0;
     document.getElementById('mtg-later-sum').textContent = 'Later (' + laterCount + ')';
     document.getElementById('mtg-count').textContent = list.length + ' coming up';
+    setBadge('meetings', list.length, false);
     try { Object.keys(agendaBoxes).forEach(function (k) { var v = localStorage.getItem('agenda-' + k); if (v && !agendaBoxes[k].ta.value) agendaBoxes[k].ta.value = v; }); } catch (e) {}
   }
   function applyAgendas(snap) {
@@ -1458,7 +1605,6 @@ a { color: var(--accent); }
 
   var wk = document.getElementById('week');
   if (d.week && d.week.length) {
-    wk.append(el('h2', null, 'Rest of the week')); wk.firstChild.style.marginTop = '12px';
     d.week.forEach(function (w) {
       wk.append(el('div', 'day', w.day));
       var l = el('div', 'list');
@@ -1526,6 +1672,9 @@ a { color: var(--accent); }
     });
     if (!open) em.append(el('p', 'empty', d.emails.length || live.fresh.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
     document.getElementById('mail-count').textContent = open + ' need you';
+    setBadge('email', open, groups.fresh.length + groups.action.length > 0);
+    document.getElementById('today-mail-link').textContent = groups.fresh.length + groups.action.length
+      ? (groups.fresh.length + groups.action.length) + ' email' + (groups.fresh.length + groups.action.length === 1 ? '' : 's') + ' need you \u2192' : '';
     document.getElementById('emails-cleared-wrap').hidden = cleared === 0;
     document.getElementById('emails-cleared-sum').textContent = 'Handled (' + cleared + ')';
   }
@@ -1706,5 +1855,6 @@ a { color: var(--accent); }
       Array.prototype.forEach.call(document.querySelectorAll('.mtg'), function (c) { if (c._ask) c._ask.hidden = false; });
     }, function () {});
   }
+  showTab((location.hash || '').replace('#', '') || 'today');
 })();
 </script>
