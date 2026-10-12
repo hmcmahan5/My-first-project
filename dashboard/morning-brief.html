@@ -138,6 +138,7 @@ a { color: var(--accent); }
 }
 .editor textarea { resize: vertical; }
 .editor input:focus-visible, .editor textarea:focus-visible, .add input:focus-visible, .btn:focus-visible, .seg-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rep-toggle { display: flex !important; gap: 10px; align-items: center; cursor: pointer; padding: 2px 0; }
 .quick { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 4px; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; gap: 2px; width: max-content; max-width: 100%; }
 .seg-btn { font: 600 14px var(--font-body); border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
@@ -805,12 +806,32 @@ a { color: var(--accent); }
     var no = el('button', 'btn', 'Keep it'); no.type = 'button';
     confirmBox.append(el('span', null, 'Delete this task?'), yes, no);
     actions.append(save, cancel, del, confirmBox);
-    f.append(field('Task', txt), field('Status', seg), whoField, dueField, field('Note', nt), actions);
+    // Repeats: turning this on moves the task to the Recurring list when saved.
+    var repId = 'ed-rep-' + id;
+    var rep = el('input'); rep.type = 'checkbox'; rep.id = repId; rep.className = 'check';
+    var repLab = el('label', 'rep-toggle'); repLab.htmlFor = repId;
+    repLab.append(rep, el('span', null, 'Make this a recurring item'));
+    var dueDay = parseDay(t.due);
+    var repFp = freqPicker('ed-rep-' + id, 'weekly', dueDay ? WEEKDAYS[(dueDay.getDay() + 6) % 7] : 'Sunday');
+    var repWrap = el('div', 'field'); repWrap.append(el('span', 'field-label', 'How often'), repFp.node); repWrap.hidden = true;
+    var repField = el('div', 'field'); repField.append(el('span', 'field-label', 'Repeats'), repLab, repWrap);
+    rep.addEventListener('change', function () {
+      repWrap.hidden = !rep.checked;
+      save.textContent = rep.checked ? 'Move to recurring' : 'Save';
+    });
+    f.append(field('Task', txt), field('Status', seg), whoField, dueField, repField, field('Note', nt), actions);
     function close() { editingId = null; if (deferred) { deferred = false; } refresh(); }
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var text = txt.value.trim(); if (!text) { txt.focus(); return; }
       editingId = null;
+      if (rep.checked) {
+        var v = repFp.value();
+        var order = recurring.reduce(function (mx, r) { return Math.max(mx, r.order || 0); }, 0) + 1;
+        saveRecurring(slug(text).slice(0, 40) + '-' + Date.now().toString(36), { text: text, every: v.every, due: v.due, order: order });
+        writeTask(id, null);
+        return;
+      }
       patchTask(id, { text: text, due: due.value || '', status: status, waitingOn: status === 'waiting' ? who.value.trim() : (t.waitingOn || ''), note: nt.value.trim() });
     });
     cancel.addEventListener('click', close);
@@ -981,7 +1002,14 @@ a { color: var(--accent); }
     var yes = el('button', 'btn danger', 'Yes, delete'); yes.type = 'button';
     var no = el('button', 'btn', 'Keep it'); no.type = 'button';
     confirmBox.append(el('span', null, 'Stop repeating this?'), yes, no);
-    actions.append(save, cancel, del, confirmBox);
+    var once = el('button', 'btn', 'Make it a one-time task'); once.type = 'button';
+    once.addEventListener('click', function () {
+      var text = txt.value.trim() || r.text, stamp = nowIso();
+      recEditId = null;
+      writeTask('t-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36), { text: text, status: 'open', due: '', waitingOn: '', note: 'Was recurring (' + r.every + ')', source: 'dashboard', createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
+      saveRecurring(r.id, null);
+    });
+    actions.append(save, cancel, once, del, confirmBox);
     f.append(tl, fl, actions);
     f.addEventListener('submit', function (e) {
       e.preventDefault();
