@@ -177,6 +177,18 @@ a { color: var(--accent); }
 @media (max-width: 520px) { .ask-row { grid-template-columns: 1fr auto; } .ask-row input { grid-column: 1 / -1; } }
 .ask-out { display: grid; gap: 6px; font-size: 15px; }
 .slip .todo-list li { padding: 10px 0; }
+
+/* Ask Claude on any item */
+.openable { cursor: pointer; border-radius: 6px; }
+.openable:hover .p-title, .openable:hover .mail-from { color: var(--accent); }
+.openable:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.item-panel { grid-column: 1 / -1; display: grid; gap: 8px; min-width: 0; }
+.item-panel:empty { display: none; }
+.item-ask { grid-column: 1 / -1; padding-bottom: 12px; }
+.item-panel > .mini { justify-self: start; }
+.ask-text { white-space: pre-wrap; font-size: 15px; line-height: 1.5; min-width: 0; overflow-wrap: anywhere; }
+.ask-text:empty { display: none; }
+.item-ask .mini.ghost { justify-self: start; }
 </style>
 
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
@@ -722,6 +734,93 @@ a { color: var(--accent); }
     (on ? ref.set(marks[key]) : ref.delete()).catch(function () { showError("That change didn't save. Check your connection and try again."); });
   }
 
+  // Ask Claude about any single item. The panel only appears once the item is opened;
+  // its question and answer are kept in askState so a re-render doesn't lose them.
+  var askState = {};
+  function askPanel(key, describe, chips) {
+    var st = askState[key] || (askState[key] = { q: '', text: '', busy: false, ctl: null, note: '' });
+    var safe = slug(key);
+    var box = el('div', 'ask item-ask');
+    var lab = el('label', 'sub-head', 'Ask Claude'); lab.htmlFor = 'aq-' + safe;
+    box.append(lab);
+    if (!sampleFn) { box.append(el('p', 'empty', 'Ask Claude works when this page is open on claude.ai.')); return box; }
+    var chipRow = el('div', 'quick');
+    chips.forEach(function (c) {
+      var b = el('button', 'mini', c); b.type = 'button';
+      b.addEventListener('click', function () { q.value = c; run(); });
+      chipRow.append(b);
+    });
+    var q = el('input'); q.type = 'text'; q.id = 'aq-' + safe; q.value = st.q; q.placeholder = 'Or ask your own question';
+    q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); run(); } });
+    var go = el('button', 'btn primary', 'Ask'); go.type = 'button';
+    var stop = el('button', 'btn', 'Stop'); stop.type = 'button';
+    var out = el('div', 'ask-text'); out.id = 'ao-' + safe; out.setAttribute('aria-live', 'polite'); out.textContent = st.text;
+    var noteEl = el('p', 'count'); noteEl.id = 'an-' + safe; noteEl.textContent = st.note;
+    var copy = el('button', 'mini ghost', 'Copy answer'); copy.type = 'button';
+    function sync() {
+      go.disabled = st.busy; stop.hidden = !st.busy; copy.hidden = st.busy || !st.text;
+    }
+    copy.addEventListener('click', function () {
+      var done = function () { copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy answer'; }, 1500); };
+      try {
+        navigator.clipboard.writeText(st.text).then(done, function () { selectOut(); });
+      } catch (e) { selectOut(); }
+    });
+    function selectOut() { var r = document.createRange(); r.selectNodeContents(out); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); copy.textContent = 'Selected, press copy'; }
+    stop.addEventListener('click', function () { if (st.ctl) st.ctl.abort(); });
+    go.addEventListener('click', run);
+    function setOut(t) { st.text = t; var o = document.getElementById('ao-' + safe); if (o) o.textContent = t; }
+    function setNote(t) { st.note = t; var n = document.getElementById('an-' + safe); if (n) n.textContent = t; }
+    function run() {
+      if (st.busy) return;
+      var question = q.value.trim() || chips[0];
+      st.q = question; st.busy = true; st.ctl = new AbortController();
+      setOut('Thinking…'); setNote(''); sync();
+      var prompt = [
+        'You are helping Hobie McMahan, Campus Pastor at the Gloucester (GTR) campus of Liberty Live Church in Virginia. Today is ' + d.dateLabel + '.',
+        'He is asking about this item from his daily dashboard:',
+        describe(),
+        'His request: ' + question,
+        'Answer plainly and briefly, in short paragraphs or a short list, with no headings. If he asks for a message, write it ready to send in his voice: warm, direct, and signed "Hobie". If you would need facts you don’t have, say what to check instead of guessing.'
+      ].join('\n\n');
+      sampleFn(prompt, { signal: st.ctl.signal, cache: false, onText: function (u) { setOut(u.text); } })
+        .then(function (r) { setOut(r.text); if (r.truncated) setNote('The answer was cut short. Ask for less at a time.'); }, function (e) {
+          var code = e && e.code;
+          setOut(e && e.text ? e.text : '');
+          if (code === 'cancelled') return;
+          setNote(code === 'not_granted' || code === 'sampling_disabled' ? 'Ask Claude isn’t allowed on this page. Turn it on from the page’s Permissions menu.'
+            : code === 'rate_limited' ? 'You’ve hit a usage limit. Try again in a little while.'
+            : code === 'session_expired' ? 'Sign in to claude.ai again, then retry.'
+            : code === 'refused' ? 'Claude couldn’t help with that one. Try asking a different way.'
+            : 'Claude couldn’t answer just now. Try again.');
+        })
+        .then(function () {
+          st.busy = false;
+          var g = document.getElementById('ag-' + safe); if (g) { g.disabled = false; }
+          var s2 = document.getElementById('as-' + safe); if (s2) s2.hidden = true;
+          var c2 = document.getElementById('ac-' + safe); if (c2) c2.hidden = !st.text;
+        });
+    }
+    go.id = 'ag-' + safe; stop.id = 'as-' + safe; copy.id = 'ac-' + safe;
+    var row = el('div', 'ask-row'); row.append(q, go, stop);
+    box.append(chipRow, row, out, noteEl, copy);
+    sync();
+    return box;
+  }
+  function itemFacts(pairs) { return pairs.filter(function (p) { return p[1]; }).map(function (p) { return p[0] + ': ' + p[1]; }).join('\n'); }
+  // Clicking the body of a priority or email opens it; that's where its Ask Claude panel lives.
+  var openItems = {};
+  function makeOpener(node, key, label, onToggle) {
+    node.classList.add('openable');
+    node.tabIndex = 0;
+    node.setAttribute('role', 'button');
+    node.setAttribute('aria-expanded', String(!!openItems[key]));
+    node.setAttribute('aria-label', (openItems[key] ? 'Close: ' : 'Open: ') + label);
+    function toggle() { openItems[key] = !openItems[key]; onToggle(); }
+    node.addEventListener('click', function (e) { if (e.target.closest('button, input, a, textarea, select')) return; toggle(); });
+    node.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  }
+
   // Do these first
   var ol = document.getElementById('priorities');
   d.priorities.forEach(function (p) {
@@ -737,6 +836,16 @@ a { color: var(--accent); }
     cb.addEventListener('change', function () { setMark(key, p.title, 'priority', cb.checked); });
     right.append(cb);
     li.append(body, right);
+    var panelWrap = el('div', 'item-panel');
+    function drawP() {
+      panelWrap.textContent = '';
+      body.setAttribute('aria-expanded', String(!!openItems[key]));
+      if (openItems[key]) panelWrap.append(askPanel(key, function () {
+        return itemFacts([['Priority', p.title], ['Why it matters', p.why], ['Source', p.source], ['Tag', p.tag]]);
+      }, ['What should I do first?', 'Draft a message about this', 'Break this into steps']));
+    }
+    makeOpener(body, key, p.title, drawP);
+    li.append(panelWrap);
     ol.append(li);
     priorityRows.push({ key: key, cb: cb, li: li });
   });
@@ -869,7 +978,13 @@ a { color: var(--accent); }
     edit.addEventListener('click', function () { editingId = editingId === id ? null : id; refresh(); });
     side.append(edit);
     li.append(label, side);
-    if (editingId === id) li.append(editor(id, t));
+    if (editingId === id) {
+      li.append(editor(id, t));
+      li.append(askPanel('t:' + id, function () {
+        var x = tasks[id] || t;
+        return itemFacts([['Task', x.text], ['Status', x.status], ['Due', x.due], ['Waiting on', x.waitingOn], ['Note', x.note], ['Came from', x.source]]);
+      }, ['Break this into steps', 'Draft a message about this', 'What should I do first?']));
+    }
     return li;
   }
 
@@ -1056,7 +1171,12 @@ a { color: var(--accent); }
         edit.addEventListener('click', function () { recEditId = recEditId === r.id ? null : r.id; refresh(); });
         side.append(edit);
         li.append(label, side);
-        if (recEditId === r.id) li.append(recurEditor(r));
+        if (recEditId === r.id) {
+          li.append(recurEditor(r));
+          li.append(askPanel('r:' + r.id, function () {
+            return itemFacts([['Recurring item', r.text], ['How often', r.every + (r.due ? ', due by ' + r.due : '')]]);
+          }, ['Make this faster each week', 'Make a checklist for this', 'Who could take this on?']));
+        }
         ul.append(li);
       });
       card.append(ul);
@@ -1364,11 +1484,26 @@ a { color: var(--accent); }
     top.append(el('span', 'mail-from', m.from), el('span', 'chip' + (!on && !readHere && (m.flag === 'Unread' || m.flag === 'Action') ? ' due' : ''), flag), el('span', 'count', m.when));
     body.append(top, el('div', 'r-sub', m.subject), el('div', 'mail-ask', m.ask));
     c.append(body);
+    var openKey = 'm:' + key;
+    makeOpener(body, openKey, m.subject, renderEmails);
     if (!readHere) {
       var b = el('button', on ? 'mini ghost' : 'mini', on ? 'Undo' : 'Handled'); b.type = 'button';
       b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
       b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
       c.append(b);
+    }
+    if (openItems[openKey]) {
+      var extra = el('div', 'item-panel');
+      var addT = el('button', 'mini ghost', 'Add as task'); addT.type = 'button';
+      addT.addEventListener('click', function () {
+        var stamp = nowIso(), text = m.ask || m.subject;
+        writeTask('t-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36), { text: text, status: 'open', due: '', waitingOn: '', note: 'Email from ' + m.from + ': ' + m.subject, source: 'Email', createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
+        addT.disabled = true; addT.textContent = 'Task added';
+      });
+      extra.append(addT, askPanel(openKey, function () {
+        return itemFacts([['Email from', m.from], ['Subject', m.subject], ['What it asks', m.ask], ['Received', m.when], ['Status', m.flag]]);
+      }, ['Draft a reply', 'What is being asked of me?', 'What should I do next?']));
+      c.append(extra);
     }
     return { node: c, cleared: on || readHere };
   }
