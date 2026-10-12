@@ -215,6 +215,27 @@ a { color: var(--accent); }
 .first li:not(.open) .p-why, .first li:not(.open) .p-src { display: none; }
 .first li .p-title::after { content: " \203A"; color: var(--muted); font-weight: 400; }
 .first li.open .p-title::after { content: " \2039"; }
+
+/* Plans */
+#sched-wrap summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 0 8px; }
+#sched-wrap[open] summary { display: none; }
+#plan-day:empty, #plan-week:empty, #plan-day-status:empty, #plan-week-status:empty { display: none; }
+.plan-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.plan-sum { margin: 0; color: var(--muted); font-size: 15px; }
+.plan-blocks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.blk { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.blk.k-meeting .r-title { color: var(--accent); }
+.blk.k-buffer .r-title, .blk.k-break .r-title { color: var(--muted); font-weight: 400; font-style: italic; }
+.blk-main { min-width: 0; display: grid; gap: 4px; }
+.plan-tasks { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 6px; }
+.plan-task { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
+.plan-task small { grid-column: 2; }
+.plan-task.is-done .linkish { text-decoration: line-through; color: var(--muted); }
+.week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.week-day { padding: 10px 14px 14px; display: grid; gap: 6px; align-content: start; }
+.week-day.is-today { border-color: var(--accent); }
+#plan-day details summary, #plan-week details summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 8px 0 4px; }
+@media (max-width: 520px) { .blk { grid-template-columns: 92px 1fr; } }
 </style>
 
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
@@ -606,7 +627,7 @@ a { color: var(--accent); }
 
   <nav class="tabs" role="tablist" aria-label="Dashboard sections">
     <button class="tab" role="tab" type="button" id="tab-today" aria-controls="panel-today" data-tab="today">Today</button>
-    <button class="tab" role="tab" type="button" id="tab-email" aria-controls="panel-email" data-tab="email">Email <span class="badge" id="badge-email"></span></button>
+    <button class="tab" role="tab" type="button" id="tab-email" aria-controls="panel-email" data-tab="email">Inbox <span class="badge" id="badge-email"></span></button>
     <button class="tab" role="tab" type="button" id="tab-tasks" aria-controls="panel-tasks" data-tab="tasks">Tasks <span class="badge" id="badge-tasks"></span></button>
     <button class="tab" role="tab" type="button" id="tab-meetings" aria-controls="panel-meetings" data-tab="meetings">Meetings <span class="badge" id="badge-meetings"></span></button>
     <button class="tab" role="tab" type="button" id="tab-notes" aria-controls="panel-notes" data-tab="notes">Notes</button>
@@ -622,8 +643,13 @@ a { color: var(--accent); }
 
     <div class="two">
       <section class="section" aria-labelledby="h-today">
-        <h2 id="h-today">Schedule</h2>
-        <div class="list" id="schedule"></div>
+        <div class="section-head"><h2 id="h-today">Schedule</h2><button class="btn" type="button" id="plan-day-btn" hidden>Plan my day</button></div>
+        <p class="count" id="plan-day-status" aria-live="polite"></p>
+        <div id="plan-day"></div>
+        <details id="sched-wrap" open>
+          <summary>Calendar from the morning brief</summary>
+          <div class="list" id="schedule"></div>
+        </details>
       </section>
       <section class="section" aria-labelledby="h-due">
         <div class="section-head"><h2 id="h-due">Also on your plate today</h2><span class="count" id="due-count"></span></div>
@@ -635,7 +661,7 @@ a { color: var(--accent); }
 
   <div class="panel" role="tabpanel" id="panel-email" aria-labelledby="tab-email" hidden>
     <section class="section" aria-labelledby="h-mail">
-      <div class="section-head"><h2 id="h-mail">Emails waiting on you</h2><span class="mail-tools"><span class="count" id="mail-count"></span><button class="btn" type="button" id="mail-refresh" hidden>Refresh</button></span></div>
+      <div class="section-head"><h2 id="h-mail">Waiting on you</h2><span class="mail-tools"><span class="count" id="mail-count"></span><button class="btn" type="button" id="mail-refresh" hidden>Refresh</button></span></div>
       <p class="count" id="mail-status" aria-live="polite"></p>
       <p class="empty">Unread emails stay here until you mark them read in Outlook or tap Handled.</p>
       <div class="list" id="emails"></div>
@@ -683,7 +709,9 @@ a { color: var(--accent); }
 
   <div class="panel" role="tabpanel" id="panel-meetings" aria-labelledby="tab-meetings" hidden>
     <section class="section" aria-labelledby="h-week">
-      <h2 id="h-week">This week</h2>
+      <div class="section-head"><h2 id="h-week">This week</h2><button class="btn" type="button" id="plan-week-btn" hidden>Plan my week</button></div>
+      <p class="count" id="plan-week-status" aria-live="polite"></p>
+      <div id="plan-week"></div>
       <div id="week"></div>
     </section>
     <section class="section" id="mtg-section" aria-labelledby="h-mtg" hidden>
@@ -964,6 +992,254 @@ a { color: var(--accent); }
     setBadge('tasks', open, overdue > 0);
   }
 
+
+  // Plan my day / Plan my week. Claude fits open tasks around the calendar, read live from
+  // Outlook when the page can (so meetings added after the brief count) and from the brief
+  // otherwise. Plans are kept in plans/day-<date> and plans/week-<monday>.
+  var plans = {};
+  function hm(dt) { return dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+  function hm24(s) {
+    var m = /^(\d{1,2}):(\d{2})/.exec(s || ''); if (!m) return s || '';
+    var h = +m[1], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    return h + ':' + m[2] + ' ' + ap;
+  }
+  function calTime(t) {
+    if (!t || !t.dateTime) return null;
+    var s = String(t.dateTime).replace(/\.\d+$/, '');
+    return /utc/i.test(t.timeZone || '') ? new Date(s + 'Z') : new Date(s);
+  }
+  function fetchCalendar(from, to) {
+    if (!mcp) return Promise.reject({ code: 'no_mcp' });
+    var all = [];
+    function step(offset, n) {
+      return mcp.callTool(MS, 'outlook_calendar_search', { query: '*', afterDateTime: ymd(from) + 'T00:00:00', beforeDateTime: ymd(to) + 'T23:59:59', order: 'oldest', limit: 25, offset: offset }, { cache: false })
+        .then(function (res) {
+          var objs = []; (res && res.content || []).forEach(function (b) { if (b && b.type === 'text') objs = objs.concat(jsonObjects(b.text)); });
+          var more = objs.filter(function (o) { return o.nextOffset != null; })[0];
+          all = all.concat(objs.filter(function (o) { return o.subject !== undefined && o.start; }));
+          return more && n < 3 ? step(more.nextOffset, n + 1) : all;
+        });
+    }
+    return step(0, 0).then(function (evs) {
+      return evs.filter(function (e) { return !e.isCancelled; }).map(function (e) {
+        return { title: e.subject, start: calTime(e.start), end: calTime(e.end), allDay: !!e.isAllDay, where: e.location || '', people: (e.attendees || []).length };
+      });
+    });
+  }
+  function calendarLines(evs, dayFilter) {
+    return evs.filter(function (e) { return !dayFilter || ymd(e.start) === dayFilter; }).map(function (e) {
+      return e.allDay ? '- All day: ' + e.title : '- ' + hm(e.start) + '–' + hm(e.end) + ' ' + e.title + (e.where ? ' (' + e.where + ')' : '');
+    });
+  }
+  function taskLines(limit) {
+    return Object.keys(tasks).filter(function (id) { return (tasks[id].status || 'open') === 'open'; })
+      .sort(function (a, b) { return (tasks[a].due || '9999').localeCompare(tasks[b].due || '9999'); })
+      .slice(0, limit).map(function (id) {
+        var t = tasks[id];
+        return '- [' + id + '] ' + t.text + (t.due ? ' (due ' + t.due + ')' : '') + (t.note ? ' — ' + String(t.note).slice(0, 80) : '');
+      });
+  }
+  function savePlan(id, body) {
+    plans[id] = body;
+    renderPlans();
+    if (db) db.doc('plans/' + id).set(body).catch(function () {});
+  }
+  function planError(e) {
+    var code = e && e.code;
+    if (code === 'cancelled') return '';
+    if (code === 'rate_limited') return 'You’ve hit a usage limit. Try again in a little while.';
+    if (code === 'not_granted' || code === 'sampling_disabled') return 'Planning needs permission to use Claude. Turn it on from the page’s Permissions menu.';
+    if (code === 'invalid_json') return 'The plan came back garbled. Try again.';
+    return 'Couldn’t build a plan just now. Try again.';
+  }
+  function scheduleFallback() {
+    return (d.schedule || []).filter(function (s) { return !s.gap; }).map(function (s) { return '- ' + (s.end ? s.start + '–' + s.end : s.start) + ' ' + s.title; });
+  }
+
+  // Day plan: from now until 5:00 PM, or tomorrow when it's already late in the day.
+  function planDay() {
+    var btn = document.getElementById('plan-day-btn'), status = document.getElementById('plan-day-status');
+    if (!sampleFn) return;
+    var now = new Date(), late = now.getHours() * 60 + now.getMinutes() >= 16 * 60 + 30;
+    var target = new Date(today);
+    if (late) { do { target.setDate(target.getDate() + 1); } while (target.getDay() === 0 || target.getDay() === 6); }
+    var startAt = late ? '8:30 AM' : hm(new Date(Math.ceil(now.getTime() / 9e5) * 9e5));
+    btn.disabled = true; status.textContent = 'Checking your calendar…';
+    fetchCalendar(target, target).then(function (evs) { return calendarLines(evs); }, function () { return late ? [] : scheduleFallback(); })
+      .then(function (cal) {
+        status.textContent = 'Planning with Claude…';
+        var dow = (target.getDay() + 6) % 7;
+        var recur = recurring.filter(function (r) {
+          if (marks[recurKey(r)]) return false;
+          if (r.every === 'daily') return true;
+          if (r.every === 'weekdays') return dow < 5;
+          if (r.every === 'weekly') return WEEKDAYS.indexOf(r.due || 'Sunday') - dow <= 1;
+          if (r.every === 'monthly') return monthDueDay(r) - target.getDate() <= 2;
+          return false;
+        }).map(function (r) { return '- ' + r.text; });
+        var openPri = (late ? [] : d.priorities.filter(function (p) { return !marks['p-' + slug(p.title)]; })).map(function (p) { return '- ' + p.title + ' (' + p.tag + ')'; });
+        var asks = d.emails.filter(function (m) { return m.group !== 'waiting' && !marks['e-' + slug(m.from + ' ' + m.subject)]; }).slice(0, 6).map(function (m) { return '- ' + m.from + ': ' + m.ask; });
+        var prompt = [
+          'You plan the workday for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church.',
+          'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at 5:00 PM.',
+          'Calendar (fixed, do not move):\n' + (cal.length ? cal.join('\n') : '- Nothing scheduled'),
+          openPri.length ? 'This morning’s priorities:\n' + openPri.join('\n') : '',
+          'Open tasks ([id] task, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
+          recur.length ? 'Recurring items due now:\n' + recur.join('\n') : '',
+          asks.length ? 'Messages waiting on him (' + asks.length + '):\n' + asks.join('\n') : '',
+          'Rules: keep calendar events where they are and include them as "meeting" blocks. Put overdue and due-today tasks first, then the priorities. Group small related tasks into one block. Include one 20 to 30 minute block for messages. Leave about a quarter of the open time unplanned, as "buffer", for interruptions. Never overlap blocks. Don’t plan more than fits; list the rest under notToday.',
+          'Reply with only JSON: {"summary": string, "blocks": [{"start": "HH:MM", "end": "HH:MM", "title": string, "kind": "meeting" | "task" | "email" | "buffer" | "break", "taskIds": [string], "why": string}], "notToday": [{"taskId": string | null, "title": string, "why": string}]}. Use 24-hour times. taskIds are ids from the task list (empty for anything else). Keep "why" under 15 words and the summary to one sentence.'
+        ].filter(Boolean).join('\n\n');
+        return sampleFn.json(prompt, { cache: false });
+      })
+      .then(function (r) {
+        if (!r || !Array.isArray(r.blocks)) throw { code: 'invalid_json' };
+        savePlan('day-' + ymd(target), { date: ymd(target), summary: String(r.summary || ''), blocks: r.blocks, notToday: r.notToday || [], createdAt: nowIso() });
+        status.textContent = '';
+      }, function (e) { status.textContent = planError(e); })
+      .then(function () { btn.disabled = false; });
+  }
+
+  // Week plan: the remaining weekdays (next week's once it's Friday afternoon or the weekend).
+  function weekDays() {
+    var start = new Date(today), now = new Date();
+    if (start.getDay() === 6 || start.getDay() === 0 || (start.getDay() === 5 && now.getHours() >= 13)) {
+      do { start.setDate(start.getDate() + 1); } while (start.getDay() !== 1);
+    }
+    var days = [], cur = new Date(start);
+    while (cur.getDay() >= 1 && cur.getDay() <= 5) { days.push(new Date(cur)); cur.setDate(cur.getDate() + 1); }
+    return days;
+  }
+  function weekKey(days) { var m = new Date(days[0]); m.setDate(m.getDate() - ((m.getDay() + 6) % 7)); return 'week-' + ymd(m); }
+  function planWeek() {
+    var btn = document.getElementById('plan-week-btn'), status = document.getElementById('plan-week-status');
+    if (!sampleFn) return;
+    var days = weekDays();
+    btn.disabled = true; status.textContent = 'Checking your calendar…';
+    fetchCalendar(days[0], days[days.length - 1]).then(function (evs) {
+      return days.map(function (dd) { return dd.toDateString() + ':\n' + (calendarLines(evs, ymd(dd)).join('\n') || '- Nothing scheduled yet'); });
+    }, function () {
+      return (d.week || []).map(function (w) { return w.day + ':\n' + (w.items.map(function (it) { return '- ' + it.time + ' ' + it.title; }).join('\n') || '- Nothing scheduled yet'); });
+    }).then(function (cal) {
+      status.textContent = 'Planning with Claude…';
+      var prompt = [
+        'You plan the work week for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church. Sundays are service days; he isn’t preaching soon.',
+        'Days to plan: ' + days.map(function (dd) { return ymd(dd) + ' (' + dd.toDateString().slice(0, 3) + ')'; }).join(', ') + '. Today is ' + today.toDateString() + '.',
+        'Calendar so far:\n' + cal.join('\n\n'),
+        'Open tasks ([id] task, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
+        'Recurring items: ' + (recurring.map(function (r) { return r.text + ' (' + r.every + (r.due ? ', by ' + r.due : '') + ')'; }).join('; ') || 'none'),
+        'Rules: give each day 2 to 4 focus tasks that fit around its meetings. Assume more meetings will land, so keep at least 40 percent of each day unplanned. Respect due dates; overdue tasks go early in the week. Put things needed for Sunday on Thursday or Friday. Lighter days get more. Anything that doesn’t fit goes in later.',
+        'Reply with only JSON: {"summary": string, "days": [{"date": "YYYY-MM-DD", "theme": string, "focus": [{"taskId": string | null, "title": string, "why": string}]}], "later": [{"taskId": string | null, "title": string}]}. taskIds are ids from the task list. Keep theme under 8 words and why under 12 words.'
+      ].join('\n\n');
+      return sampleFn.json(prompt, { cache: false });
+    }).then(function (r) {
+      if (!r || !Array.isArray(r.days)) throw { code: 'invalid_json' };
+      savePlan(weekKey(days), { start: ymd(days[0]), summary: String(r.summary || ''), days: r.days, later: r.later || [], createdAt: nowIso() });
+      status.textContent = '';
+    }, function (e) { status.textContent = planError(e); })
+    .then(function () { btn.disabled = false; });
+  }
+
+  function planTaskRow(taskId, title, extraNode) {
+    var li = el('li', 'plan-task');
+    var t = taskId && tasks[taskId];
+    if (t) {
+      var done = (t.status || 'open') === 'done';
+      var cb = el('input', 'check'); cb.type = 'checkbox'; cb.checked = done;
+      cb.setAttribute('aria-label', 'Mark done: ' + t.text);
+      cb.addEventListener('change', function () { patchTask(taskId, { status: cb.checked ? 'done' : 'open' }); });
+      var name = el('button', 'linkish', t.text); name.type = 'button';
+      name.addEventListener('click', function () { openTask(taskId); });
+      if (done) li.classList.add('is-done');
+      li.append(cb, name);
+    } else {
+      li.append(el('span'), el('span', null, title));
+    }
+    if (extraNode) li.append(extraNode);
+    return li;
+  }
+  function renderPlans() {
+    var dayBox = document.getElementById('plan-day'), sched = document.getElementById('sched-wrap');
+    var dp = plans['day-' + todayStr] || null;
+    // After 4:30 PM a plan for the next workday may exist; show it instead.
+    if (!dp) Object.keys(plans).forEach(function (k) { if (/^day-/.test(k) && plans[k].date > todayStr && (!dp || plans[k].date < dp.date)) dp = plans[k]; });
+    dayBox.textContent = '';
+    sched.open = !dp;
+    document.getElementById('plan-day-btn').textContent = dp ? 'Replan' : 'Plan my day';
+    if (dp) {
+      var head = el('div', 'plan-head');
+      head.append(el('strong', null, dp.date === todayStr ? 'Your plan for today' : 'Your plan for ' + (parseDay(dp.date) || today).toDateString().slice(0, 10)));
+      if (dp.createdAt) head.append(el('span', 'count', 'Planned ' + hm(new Date(dp.createdAt))));
+      dayBox.append(head);
+      if (dp.summary) dayBox.append(el('p', 'plan-sum', dp.summary));
+      var ul = el('ul', 'plan-blocks');
+      (dp.blocks || []).forEach(function (b) {
+        var li = el('li', 'blk k-' + (b.kind || 'task'));
+        var time = el('div', 'time', hm24(b.start) + (b.end ? '–' + hm24(b.end) : ''));
+        var main = el('div', 'blk-main');
+        main.append(el('div', 'r-title', b.title || ''));
+        if (b.why) main.append(el('div', 'r-sub', b.why));
+        var ids = (b.taskIds || []).filter(function (id) { return tasks[id]; });
+        if (ids.length) { var tl = el('ul', 'plan-tasks'); ids.forEach(function (id) { tl.append(planTaskRow(id)); }); main.append(tl); }
+        li.append(time, main);
+        ul.append(li);
+      });
+      dayBox.append(ul);
+      if (dp.notToday && dp.notToday.length) {
+        var det = el('details'); det.append(el('summary', null, 'Not today (' + dp.notToday.length + ')'));
+        var nl = el('ul', 'plan-tasks');
+        dp.notToday.forEach(function (n) { nl.append(planTaskRow(n.taskId, n.title, n.why ? el('small', 'since', n.why) : null)); });
+        det.append(nl); dayBox.append(det);
+      }
+    }
+
+    var weekBox = document.getElementById('plan-week'), wk = weekKey(weekDays()), wp = plans[wk];
+    weekBox.textContent = '';
+    document.getElementById('plan-week-btn').textContent = wp ? 'Replan week' : 'Plan my week';
+    if (!wp) return;
+    var wh = el('div', 'plan-head'); wh.append(el('strong', null, 'Your week'));
+    if (wp.createdAt) wh.append(el('span', 'count', 'Planned ' + new Date(wp.createdAt).toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + hm(new Date(wp.createdAt))));
+    weekBox.append(wh);
+    if (wp.summary) weekBox.append(el('p', 'plan-sum', wp.summary));
+    var grid = el('div', 'week-grid');
+    var toDate = [];
+    (wp.days || []).forEach(function (dd) {
+      var card = el('div', 'todo-card week-day' + (dd.date === todayStr ? ' is-today' : ''));
+      var dt = parseDay(dd.date);
+      card.append(el('div', 'sub-head', dt ? dt.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) : dd.date));
+      if (dd.theme) card.append(el('div', 'r-sub', dd.theme));
+      var ul = el('ul', 'plan-tasks');
+      (dd.focus || []).forEach(function (f) {
+        ul.append(planTaskRow(f.taskId, f.title, f.why ? el('small', 'since', f.why) : null));
+        var t = f.taskId && tasks[f.taskId];
+        if (t && (t.status || 'open') === 'open' && t.due !== dd.date) toDate.push({ id: f.taskId, date: dd.date });
+      });
+      card.append(ul);
+      grid.append(card);
+    });
+    weekBox.append(grid);
+    if (wp.later && wp.later.length) {
+      var det = el('details'); det.append(el('summary', null, 'Later (' + wp.later.length + ')'));
+      var ll = el('ul', 'plan-tasks'); wp.later.forEach(function (l) { ll.append(planTaskRow(l.taskId, l.title)); });
+      det.append(ll); weekBox.append(det);
+    }
+    if (toDate.length) {
+      var row = el('div', 'ed-actions');
+      var apply = el('button', 'btn', 'Set these as due dates (' + toDate.length + ')'); apply.type = 'button';
+      var conf = el('span', 'confirm'); conf.hidden = true;
+      var yes = el('button', 'btn primary', 'Yes, set ' + toDate.length); yes.type = 'button';
+      var no = el('button', 'btn', 'Cancel'); no.type = 'button';
+      conf.append(el('span', null, 'Give each task the day it’s planned for?'), yes, no);
+      apply.addEventListener('click', function () { apply.hidden = true; conf.hidden = false; });
+      no.addEventListener('click', function () { apply.hidden = false; conf.hidden = true; });
+      yes.addEventListener('click', function () { toDate.forEach(function (x) { patchTask(x.id, { due: x.date }); }); });
+      row.append(apply, conf);
+      weekBox.append(row);
+    }
+  }
+  document.getElementById('plan-day-btn').addEventListener('click', planDay);
+  document.getElementById('plan-week-btn').addEventListener('click', planWeek);
+
   // Do these first
   var ol = document.getElementById('priorities');
   d.priorities.forEach(function (p) {
@@ -1188,6 +1464,7 @@ a { color: var(--accent); }
     renderEmails();
     renderSlipping();
     renderToday();
+    renderPlans();
   }
 
   // Recurring items: recurring/<id> {text, every: daily|weekdays|weekly|monthly, due, order}.
@@ -1621,8 +1898,9 @@ a { color: var(--accent); }
   function normSubject(s) { return String(s || '').toLowerCase().replace(/^((re|fw|fwd)\s*:\s*)+/, '').replace(/\s+/g, ' ').trim(); }
   function wasUnread(m) { return m.unread === true || m.flag === 'Unread' || m.flag === 'Waiting' || m.group === 'waiting'; }
   function mailRow(m, group) {
-    var key = 'e-' + slug(m.from + ' ' + m.subject);
-    var on = !!marks[key], readHere = !on && !!live.readKeys[normSubject(m.subject)] && wasUnread(m);
+    var isTeams = m.kind === 'teams';
+    var key = isTeams ? 'tm-' + slug(m.from + ' ' + m.subject + ' ' + (m.received || m.when)) : 'e-' + slug(m.from + ' ' + m.subject);
+    var on = !!marks[key], readHere = !isTeams && !on && !!live.readKeys[normSubject(m.subject)] && wasUnread(m);
     var c = el('div', 'mail' + (on || readHere ? ' is-cleared' : '') + (group === 'new' ? ' is-new' : ''));
     var body = el('div', 'mail-body');
     var top = el('div', 'mail-top');
@@ -1635,19 +1913,20 @@ a { color: var(--accent); }
     if (!readHere) {
       var b = el('button', on ? 'mini ghost' : 'mini', on ? 'Undo' : 'Handled'); b.type = 'button';
       b.setAttribute('aria-label', (on ? 'Put back: ' : 'Mark handled: ') + m.subject);
-      b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, 'email', !on); });
+      b.addEventListener('click', function () { setMark(key, m.from + ': ' + m.subject, isTeams ? 'teams' : 'email', !on); });
       c.append(b);
     }
     if (openItems[openKey]) {
       var extra = el('div', 'item-panel');
+      if (m.link) { var a = el('a', 'mini ghost', 'Open in Teams'); a.href = m.link; a.target = '_blank'; a.rel = 'noopener'; extra.append(a); }
       var addT = el('button', 'mini ghost', 'Add as task'); addT.type = 'button';
       addT.addEventListener('click', function () {
         var stamp = nowIso(), text = m.ask || m.subject;
-        writeTask('t-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36), { text: text, status: 'open', due: '', waitingOn: '', note: 'Email from ' + m.from + ': ' + m.subject, source: 'Email', createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
+        writeTask('t-' + slug(text).slice(0, 60) + '-' + Date.now().toString(36), { text: text, status: 'open', due: '', waitingOn: '', note: (isTeams ? 'Teams message from ' : 'Email from ') + m.from + ': ' + m.subject, source: isTeams ? 'Teams' : 'Email', createdAt: stamp, updatedAt: stamp, doneAt: '', since: '' });
         addT.disabled = true; addT.textContent = 'Task added';
       });
       extra.append(addT, askPanel(openKey, function () {
-        return itemFacts([['Email from', m.from], ['Subject', m.subject], ['What it asks', m.ask], ['Received', m.when], ['Status', m.flag]]);
+        return itemFacts([[isTeams ? 'Teams message from' : 'Email from', m.from], [isTeams ? 'Chat' : 'Subject', m.subject], ['What it asks', m.ask], ['Received', m.when], ['Status', m.flag]]);
       }, ['Draft a reply', 'What is being asked of me?', 'What should I do next?']));
       c.append(extra);
     }
@@ -1657,24 +1936,25 @@ a { color: var(--accent); }
     var em = document.getElementById('emails'), cl = document.getElementById('emails-cleared');
     em.textContent = ''; cl.textContent = '';
     var open = 0, cleared = 0;
-    var groups = { fresh: [], action: [], waiting: [] };
+    var groups = { fresh: [], teams: [], action: [], waiting: [] };
     function place(m, g) {
       var r = mailRow(m, g === 'fresh' ? 'new' : g);
       if (r.cleared) { cleared++; cl.append(r.node); } else { open++; groups[g].push(r.node); }
     }
     live.fresh.forEach(function (m) { place(m, 'fresh'); });
+    (d.teams || []).forEach(function (m) { m.kind = 'teams'; place(m, 'teams'); });
     d.emails.forEach(function (m) { place(m, m.group === 'waiting' ? 'waiting' : 'action'); });
-    var many = (groups.fresh.length ? 1 : 0) + (groups.action.length ? 1 : 0) + (groups.waiting.length ? 1 : 0) > 1;
-    [['fresh', 'New since ' + briefTime()], ['action', 'Needs you'], ['waiting', 'Unread, waiting on a reply']].forEach(function (g) {
+    var many = ['fresh', 'teams', 'action', 'waiting'].filter(function (g) { return groups[g].length; }).length > 1;
+    [['fresh', 'New since ' + briefTime()], ['teams', 'Teams'], ['action', 'Needs you'], ['waiting', 'Unread, waiting on a reply']].forEach(function (g) {
       if (!groups[g[0]].length) return;
       if (many) em.append(el('div', 'sub-head mail-head', g[1] + ' (' + groups[g[0]].length + ')'));
       groups[g[0]].forEach(function (c) { em.append(c); });
     });
-    if (!open) em.append(el('p', 'empty', d.emails.length || live.fresh.length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
+    if (!open) em.append(el('p', 'empty', d.emails.length || live.fresh.length || (d.teams || []).length ? 'All handled. Nice work.' : 'Nothing in your inbox is waiting on you.'));
     document.getElementById('mail-count').textContent = open + ' need you';
-    setBadge('email', open, groups.fresh.length + groups.action.length > 0);
-    document.getElementById('today-mail-link').textContent = groups.fresh.length + groups.action.length
-      ? (groups.fresh.length + groups.action.length) + ' email' + (groups.fresh.length + groups.action.length === 1 ? '' : 's') + ' need you \u2192' : '';
+    var needs = groups.fresh.length + groups.teams.length + groups.action.length;
+    setBadge('email', open, needs > 0);
+    document.getElementById('today-mail-link').textContent = needs ? needs + ' message' + (needs === 1 ? '' : 's') + ' need you in your inbox \u2192' : '';
     document.getElementById('emails-cleared-wrap').hidden = cleared === 0;
     document.getElementById('emails-cleared-sum').textContent = 'Handled (' + cleared + ')';
   }
@@ -1747,9 +2027,14 @@ a { color: var(--accent); }
     mailStatus.textContent = 'Checking Outlook…';
     Promise.all([
       fetchAll({ query: 'isread:false', limit: 25 }, 6),
-      fetchAll({ folderName: 'Inbox', order: 'newest', limit: 25 }, 2)
+      fetchAll({ folderName: 'Inbox', order: 'newest', limit: 25 }, 2),
+      mcp.callTool(MS, 'chat_message_search', { query: '*', afterDateTime: new Date(briefStartMs()).toISOString(), limit: 25 }, { cache: false })
+        .then(function (res) {
+          var objs = []; (res && res.content || []).forEach(function (b) { if (b && b.type === 'text') objs = objs.concat(jsonObjects(b.text)); });
+          return objs.filter(function (o) { return o && o.createdDateTime && o.from; });
+        }, function () { return []; })
     ]).then(function (r) {
-      var unread = r[0], recent = r[1];
+      var unread = r[0], recent = r[1], chats = r[2];
       var unreadSet = {}; unread.forEach(function (m) { unreadSet[normSubject(m.subject)] = true; });
       var readKeys = {};
       recent.concat(unread).forEach(function (m) { var k = normSubject(m.subject); if (m.isRead && !unreadSet[k]) readKeys[k] = true; });
@@ -1770,6 +2055,13 @@ a { color: var(--accent); }
       live.fresh = fresh.map(function (f) {
         var m = f.raw, t = new Date(Date.parse(m.receivedDateTime));
         return { from: m.sender, subject: m.subject || '(no subject)', ask: String(m.summary || '').replace(/\s+/g, ' ').slice(0, 160), when: t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), flag: m.isRead ? 'New' : 'Unread', unread: !m.isRead, group: 'fresh' };
+      });
+      // New Teams messages from people (bots have no email address), skipping ones the brief already listed.
+      var known = {}; (d.teams || []).forEach(function (t) { if (t.id) known[t.id] = true; });
+      chats.forEach(function (c) {
+        var email = String(c.from.email || '').toLowerCase();
+        if (!email || email === ME || known[c.id] || !(Date.parse(c.createdDateTime) > since)) return;
+        live.fresh.push({ kind: 'teams', id: c.id, from: c.from.displayName || email, subject: 'Teams message', ask: String(c.summary || '').replace(/\s+/g, ' ').slice(0, 160), when: hm(new Date(Date.parse(c.createdDateTime))), received: c.createdDateTime, flag: 'Teams', link: c.webUrl || '', group: 'fresh' });
       });
       renderEmails();
       var stamp = live.at.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -1836,6 +2128,7 @@ a { color: var(--accent); }
       refreshFromStore(); if (got < 2) ready();
     }, function () {});
     db.collection('agendas').onSnapshot(applyAgendas, function () {});
+    db.collection('plans').onSnapshot(function (snap) { plans = {}; snap.docs.forEach(function (doc) { plans[doc.id] = doc.data(); }); renderPlans(); }, function () {});
     db.collection('recurring').onSnapshot(function (snap) {
       recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
         .sort(function (a, b) { return a.order - b.order; });
@@ -1852,6 +2145,8 @@ a { color: var(--accent); }
     window.claude.use('sample').then(function (fn) {
       if (!fn) return;
       sampleFn = fn;
+      document.getElementById('plan-day-btn').hidden = false;
+      document.getElementById('plan-week-btn').hidden = false;
       Array.prototype.forEach.call(document.querySelectorAll('.mtg'), function (c) { if (c._ask) c._ask.hidden = false; });
     }, function () {});
   }
