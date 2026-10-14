@@ -236,266 +236,276 @@ a { color: var(--accent); }
 .week-day.is-today { border-color: var(--accent); }
 #plan-day details summary, #plan-week details summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 8px 0 4px; }
 @media (max-width: 520px) { .blk { grid-template-columns: 92px 1fr; } }
+
+/* Rebuild */
+.head-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.rebuild { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+#rebuild-status { margin: 0; }
+#rebuild-status:empty { display: none; }
 </style>
 
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
 <script type="application/json" id="brief-data">
 {
-  "date": "2026-10-12",
-  "dateLabel": "Monday, October 12",
-  "preparedAt": "Prepared Monday 7:30 AM ET",
-  "headline": "Staff meeting at 8:30 and admin meeting at 10:30, then the day opens up. MORE launches Sunday and install week starts now. Tuesday's 7:30 Faith Leader's Breakfast needs a yes or no today, and mileage and Tanner Schaller's blue card are due today.",
+  "date": "2026-10-14",
+  "dateLabel": "Wednesday, October 14",
+  "preparedAt": "Prepared Wednesday 7:30 AM ET",
+  "headline": "One meeting today, the 9:00 Local Worship Meeting on Teams, so most of the day is open. The Dekker wedding script is due tomorrow, Chad and Laurie are stepping away from LSM students, and MORE launches Sunday with an installer delay.",
   "priorities": [
     {
-      "title": "Turn in mileage reimbursement and Tanner Schaller's blue card",
-      "why": "Both are due today. The 10:30 admin meeting is the natural place; the blue card goes to Hannah. Paycom 2027 benefits enrollment also opened this morning, which covers Hannah's health insurance.",
-      "source": "Your to-do note + Paycom email",
-      "tag": "Today",
-      "urgent": true
-    },
-    {
-      "title": "Decide on Tuesday's Faith Leader's Breakfast and prayer",
-      "why": "Tue Oct 13, 7:30 a.m., T.C. Walker Education Center Cafeteria, entrance 7S. Jane Wenner (Gloucester emergency management) also asks you to email her if you can attend in person. Not on your calendar yet.",
-      "source": "Emails from Leslie Cloer and Jane Wenner",
+      "title": "Finish the Dekker wedding script",
+      "why": "Due Thursday Oct 15. You marked it started Monday.",
+      "source": "Your to-do list",
       "tag": "Tomorrow",
       "urgent": true
     },
     {
-      "title": "Line up MORE launch help for Sunday Oct 18",
-      "why": "Portable displays and tablecloths should be in the campus closet this week, series guides arrive Wednesday, and each display needs a staffer or volunteer in a MORE lanyard. Christen Speight declined greeting, Brant is out and Chad needs help on Trailer Green, and the 9am front-door greeter is still open.",
-      "source": "Weston Hanna and Jennifer Ward emails + Planning Center + your to-do note",
+      "title": "Find a new LSM student leader for MORE",
+      "why": "Chad and Laurie Scott told you and Brant Tuesday they won't lead LSM students next series. Brant is also out Sunday, so Chad is covering set up and tear down.",
+      "source": "Chad Scott email + your to-do list",
+      "tag": "This week",
+      "urgent": true
+    },
+    {
+      "title": "Get MORE launch ready for Sunday",
+      "why": "Jennifer Ward says a main installer lost his dad Tuesday and install timelines may slip. Series guides are due this week, your MORE series ushers item is open, and Hospitality is due Friday.",
+      "source": "Jennifer Ward emails + your to-do list",
       "tag": "MORE launch",
       "urgent": false
     },
     {
-      "title": "Clear the two overdue Ministry Platform tasks",
-      "why": "Baptism interest call for Anthony Alvarez was due Aug 30 (43 days overdue). Group inquiry follow-up for Diane Coppola, Liberty Leadership Institute Gloucester, was due Sep 22 (20 days overdue). The open window after 11:30 fits both.",
-      "source": "Ministry Platform task reminder",
-      "tag": "Overdue",
-      "urgent": true
-    },
-    {
-      "title": "Answer Phil Humphreys' list from the 9/27 vision night",
-      "why": "Unread since Oct 6. Wet projectors with the dehumidifier missing, projectors focused for the old screens, stage displays rebuilt, a broken SM58 capsule. It ties to your \"Projectors getting wet\" task.",
-      "source": "Email from Phil Humphreys + your to-do note",
-      "tag": "This week",
+      "title": "Prepare your Campus Pastor Moment for Sunday Oct 18",
+      "why": "Daniel Ethridge sent the 4-minute outline Tuesday. He wants your own testimony in the Re-Gather section, with a start date and a story.",
+      "source": "Daniel Ethridge email",
+      "tag": "Sun Oct 18",
       "urgent": false
     },
     {
-      "title": "Reply to Francesca about the Daffodil Festival sponsorship",
-      "why": "She followed up Oct 6 asking if you have more questions. You asked for the package details Aug 17 and the former marketing director has since moved to consulting.",
-      "source": "Email from Gloucester County",
-      "tag": "Follow up",
+      "title": "Local Worship Meeting at 9:00",
+      "why": "Teams call with Phil Humphreys and the worship team. Have Sunday's Planning Center plan open and raise the wet projectors and MORE ushers.",
+      "source": "Calendar",
+      "tag": "Today",
+      "urgent": false
+    },
+    {
+      "title": "Trunk or Treat: answer Steve Faherty and email group leaders",
+      "why": "Steve texted Tuesday asking if his four decoration photos are acceptable. Your group leader email is still open, and cider and cocoa are set for Oct 22.",
+      "source": "RingCentral text email + your to-do list",
+      "tag": "Trunk or Treat",
       "urgent": false
     }
   ],
   "schedule": [
     {
-      "start": "8:30",
-      "end": "10:30",
-      "title": "Gloucester Staff Meeting",
-      "where": "GTR Office · Oct 18 greeter, hospitality, Bonars serving, Trunk or Treat photo op, MORE walkthrough"
+      "start": "9:00",
+      "end": "10:00",
+      "title": "Local Worship Meeting",
+      "where": "Microsoft Teams · with Thomas Scott, JP Ward, A. McGiffin, Phil Humphreys · bring up projectors and MORE ushers"
     },
     {
-      "start": "10:30",
-      "end": "11:30",
-      "title": "Administrative Meeting",
-      "where": "GTR Office · mileage, Hannah's insurance, Tanner's blue card"
-    },
-    {
-      "start": "11:30",
+      "start": "10:00",
       "end": "",
-      "title": "Open the rest of the day",
-      "where": "Fits the Alvarez and Coppola Ministry Platform calls, the Phil Humphreys reply and picking up the MORE portable displays from the closet",
+      "title": "Open for the rest of the day",
+      "where": "Fits the wedding script, a call to Chad about LSM leaders, your Campus Pastor Moment and the Steve Faherty reply",
       "gap": true
     }
   ],
   "week": [
     {
-      "day": "Tue Oct 13",
-      "items": [
-        {
-          "time": "7:30",
-          "title": "Faith Leader's Breakfast and Prayer, T.C. Walker Cafeteria (not on calendar)"
-        },
-        {
-          "time": "All day",
-          "title": "Hope for the Holidays listing details due (you sent Jewel the Riverbend edits Oct 11)"
-        }
-      ]
-    },
-    {
-      "day": "Wed Oct 14",
-      "items": [
-        {
-          "time": "9:00",
-          "title": "Local Worship Meeting (Teams, to 10:00)"
-        },
-        {
-          "time": "All day",
-          "title": "MORE Series Guides delivered to campuses; Change Bordeaux to GTR due"
-        }
-      ]
-    },
-    {
       "day": "Thu Oct 15",
       "items": [
         {
           "time": "All day",
-          "title": "Facilities mounts MORE TVs and shelving on the displays"
+          "title": "Dekker wedding script due"
+        }
+      ]
+    },
+    {
+      "day": "Fri Oct 16",
+      "items": [
+        {
+          "time": "All day",
+          "title": "Hospitality due for Sunday"
+        }
+      ]
+    },
+    {
+      "day": "Sat Oct 17",
+      "items": [
+        {
+          "time": "All day",
+          "title": "Set up / tear down and trailers due"
+        }
+      ]
+    },
+    {
+      "day": "Sun Oct 18",
+      "items": [
+        {
+          "time": "All day",
+          "title": "MORE launches; Campus Pastor Moment; Brant is out"
+        }
+      ]
+    },
+    {
+      "day": "Mon Oct 19",
+      "items": [
+        {
+          "time": "11:00",
+          "title": "Preschool Meeting (to 12:00)"
+        },
+        {
+          "time": "1:00",
+          "title": "Student Meeting (to 2:00)"
+        },
+        {
+          "time": "2:00",
+          "title": "Elementary Meeting (to 3:00)"
+        },
+        {
+          "time": "3:00",
+          "title": "Sunday Follow Up (to 4:00)"
+        },
+        {
+          "time": "All day",
+          "title": "Payroll time card verification reminder"
+        }
+      ]
+    },
+    {
+      "day": "Tue Oct 20",
+      "items": [
+        {
+          "time": "8:30",
+          "title": "All-Staff Breakfast (to 10:30, HPT Campus Dining Hall)"
+        },
+        {
+          "time": "9:00",
+          "title": "Campus Pastor Meeting (W131). Overlaps the breakfast; two invites, one to 10:00 and one to 10:30"
+        },
+        {
+          "time": "11:00",
+          "title": "One on One with Scott (to 12:00, Pastor Scott's Office)"
         }
       ]
     }
   ],
   "emails": [
     {
-      "from": "Leslie Cloer, Gloucester County",
-      "subject": "Faith Leader's Breakfast & Prayer",
-      "ask": "Decide on Tue Oct 13, 7:30 a.m. breakfast. Marked high importance, not on your calendar.",
-      "when": "Fri · 3 days",
+      "from": "Chad Scott",
+      "subject": "LSM status",
+      "ask": "He and Laurie won't lead LSM students next series. Find someone to teach the MORE curriculum; he'll do set up and tear down Sunday.",
+      "when": "Tue",
+      "flag": "Action",
+      "group": "action",
+      "unread": false,
+      "received": "2026-10-13T12:05:55Z"
+    },
+    {
+      "from": "Daniel Ethridge",
+      "subject": "CP Moment (Oct 18th)",
+      "ask": "Prepare your 4-minute Campus Pastor Moment for Sunday; add your own testimony in the Re-Gather section.",
+      "when": "Tue",
       "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Jane Wenner, Gloucester County",
-      "subject": "School Prayer",
-      "ask": "Email her if you can pray in person at the T.C. Walker Building Tuesday morning.",
-      "when": "Mon",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Weston Hanna",
-      "subject": "MORE Install Week!",
-      "ask": "Portable displays and tablecloths will be in the campus closet this week, guides come Wednesday, and each display needs a lanyard-wearing staffer or volunteer Sunday.",
-      "when": "Sun",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Paycom",
-      "subject": "Annual Benefits Enrollment is Open",
-      "ask": "Log in to Paycom Self-Service and make 2027 benefit elections. Covers Hannah's health insurance.",
-      "when": "Mon",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Phillip Humphreys",
-      "subject": "Issues on 9/27/26",
-      "ask": "Read his list of vision night issues and reply. He says he is not upset with anyone.",
-      "when": "Oct 6 · 6 days",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Francesca, Gloucester County",
-      "subject": "RE: Daffodil Festival sponsorship",
-      "ask": "Reply to her Oct 6 follow-up: do you have more questions or want to commit?",
-      "when": "Oct 6 · 6 days",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Laura Smith, AP",
-      "subject": "Fw: Invoice #698 - Liberty Live Church Ministry - June 2026 @ Page",
-      "ask": "Call the school to confirm the rate is the same, per Marcia's question. You said you'd find out.",
-      "when": "Oct 8 · 4 days",
-      "flag": "Reply",
-      "group": "action"
-    },
-    {
-      "from": "Tammy Wilson-Jones",
-      "subject": "Campus Mission Projects",
-      "ask": "Review and update the monthly Campus Mission Projects spreadsheet.",
-      "when": "Sep 30 · 12 days",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Steve Dykema",
-      "subject": "RE: SOM Courses",
-      "ask": "He isn't sure yet whether Hampton will offer an in-person SOM course next semester. Pass that to the person who asked.",
-      "when": "Sep 27 · 15 days",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "L. McAllister",
-      "subject": "Federal & State Labor Law Posters",
-      "ask": "Display the posters left in the GTR box using the command strips.",
-      "when": "Sep 14 · 4 wks",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Hannah McMahan",
-      "subject": "Reminder Email - Set Up Hannah Counseling",
-      "ask": "Set up Hannah's counseling at Wyndhurst Counseling Center.",
-      "when": "Aug 6 · 9 wks",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "Lifeway",
-      "subject": "Order Number AAB0-B874-24E0",
-      "ask": "Log in at ministrygrid.lifeway.com to start your Ministry Grid subscription.",
-      "when": "Mon",
-      "flag": "Unread",
-      "group": "action"
-    },
-    {
-      "from": "R. Barnes",
-      "subject": "Liberty Basketball BRONCOS Team",
-      "ask": "Practice guidelines for the Broncos team. No request spelled out.",
-      "when": "Oct 7 · 5 days",
-      "flag": "FYI",
-      "group": "action"
-    },
-    {
-      "from": "Amanda McWhirter",
-      "subject": "Fw: Cider and hot cocoa",
-      "ask": "Forwarded note from Elementary Kids. No request spelled out.",
-      "when": "Oct 7 · 5 days",
-      "flag": "FYI",
-      "group": "action"
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-13T19:33:55Z"
     },
     {
       "from": "Jennifer Ward",
-      "subject": "Re: MORE Supplies UPDATE for OCT 18",
-      "ask": "You thanked her Oct 8. Waiting on the portable displays (due any day) and the guides (middle of this week).",
-      "when": "Oct 8 · 4 days",
-      "flag": "Waiting",
-      "group": "waiting"
+      "subject": "Re: MORE Install Week! ",
+      "ask": "An installer's dad died; staff are covering installs and timelines may shift. Check your campus displays are ready for Sunday.",
+      "when": "Tue",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-13T16:05:54Z"
     },
     {
-      "from": "Michelle Brown, Page Middle School",
-      "subject": "RE: Page Middle School",
-      "ask": "You asked Sep 30 where the TV mount brackets are. Your notes show TV mount help checked off, so mark read if this is finished.",
-      "when": "Sep 29 · 2 wks",
-      "flag": "Waiting",
-      "group": "waiting"
+      "from": "Steve Faherty (text)",
+      "subject": "New Text Message from Steve Faherty on 10/13/2026 4:24 PM",
+      "ask": "Asks if the four decoration photos are acceptable for Trunk or Treat. Reply by text.",
+      "when": "Tue",
+      "flag": "Action",
+      "group": "action",
+      "unread": false,
+      "received": "2026-10-13T20:25:12Z"
     },
     {
-      "from": "Joy Dickerson",
-      "subject": "Re: Decision GTR Update",
-      "ask": "You said you'd double check that she no longer lives with her ex; Joy can then move her toward membership.",
-      "when": "Sep 17 · 3.5 wks",
-      "flag": "Waiting",
-      "group": "waiting"
+      "from": "Jane Wenner, Gloucester County",
+      "subject": "Leadership Presentation-Patrick Billups",
+      "ask": "Invite to a leadership talk Nov 9 at 2:00 PM, 7478 Justice Dr. RSVP to jwenner@gloucesterva.info if you want to go.",
+      "when": "Tue",
+      "flag": "FYI",
+      "group": "action",
+      "unread": false,
+      "received": "2026-10-13T18:56:48Z"
+    },
+    {
+      "from": "Lifeway",
+      "subject": "Invoice 37005608 from Lifeway Christian Resources",
+      "ask": "Invoice for your Lifeway order. Send it to finance if they still need it.",
+      "when": "Tue",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-14T04:16:52Z"
     },
     {
       "from": "Gabriel Goar",
       "subject": "Re: leadership Course week 40",
-      "ask": "You agreed to talk through the course with the team. Set a time.",
+      "ask": "He wants to dissect the course and talk about how it helps the whole team. Set a time. You checked off the leadership videos in your notes; mark handled if done.",
       "when": "Sep 15 · 4 wks",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-09-15T13:19:48Z"
+    },
+    {
+      "from": "Steve Dykema",
+      "subject": "RE: SOM Courses",
+      "ask": "Hampton probably has no in-person SOM course on Wednesdays this winter. You checked this off in your notes; mark handled if you passed it on.",
+      "when": "Sep 27 · 2 wks",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-09-27T16:09:46Z"
+    },
+    {
+      "from": "Michelle Brown, Page Middle School",
+      "subject": "RE: Page Middle School",
+      "ask": "Page IT approved the TV install, any time after 2:40 dismissal. You checked off TV mount help in your notes; mark handled if installed.",
+      "when": "Sep 29 · 2 wks",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-09-29T14:58:45Z"
+    },
+    {
+      "from": "Amanda McWhirter",
+      "subject": "Fw: Cider and hot cocoa",
+      "ask": "Forwarded thread confirms Oct 22 for cider (50) and cocoa (100). Check what she needs from you.",
+      "when": "Oct 7 · 1 wk",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-07T15:47:21Z"
+    },
+    {
+      "from": "Jennifer Ward",
+      "subject": "Re: MORE Supplies UPDATE for OCT 18",
+      "ask": "You thanked her Oct 8. Waiting on the portable displays (due Oct 8) and series guides (due this week). Still unread.",
+      "when": "Oct 8 · 6 days",
       "flag": "Waiting",
-      "group": "waiting"
+      "group": "waiting",
+      "unread": true,
+      "received": "2026-10-08T20:18:17Z"
     }
   ],
   "followups": [
-    "Check the yellow-highlighted assignments in the 10/6 CP Meeting Notes (Tyler Wilson-Jones).",
-    "Hope for the Holidays: Gloucester listing details are due Tue Oct 13. Jewel has your Riverbend edits."
+    "Ministry Platform (Oct 12 email): baptism interest call for Anthony Alvarez was due Aug 30 (45 days overdue); group leader follow-up for Diane Coppola, Liberty Leadership Institute Gloucester, was due Sep 22 (22 days overdue).",
+    "Planning Center: Kaja Dunston confirmed as a Worship Center greeter for Oct 25.",
+    "Chad and Laurie Scott are stepping down from LSM students after this series."
   ],
   "todos": [],
   "ideas": [
@@ -504,13 +514,14 @@ a { color: var(--accent); }
     "Leadership video notes: multiply through being an example, creating a big picture, aligning individual objectives with business goals"
   ],
   "sources": [
-    "Outlook calendar, Oct 12 to 15",
-    "All unread email plus read email since Oct 9 (newsletters, promotions and text notifications skipped)",
-    "\"Updated To-Do\" email from Oct 11 (checked-off items left out)",
-    "Ministry Platform reminder email (no direct connection yet)",
-    "Planning Center emails"
+    "Outlook calendar, Oct 14 to 21",
+    "All unread email plus read email since Oct 11 (newsletters, promotions and text notifications skipped unless they ask something)",
+    "Self-sent note: \"Updated To-Do\" (Oct 13)",
+    "Ministry Platform reminder email from Oct 12 (no new one since)",
+    "Planning Center emails",
+    "Teams chats since Oct 11 (none needed you)"
   ],
-  "generatedAt": "2026-10-12T11:30:00Z",
+  "generatedAt": "2026-10-14T11:30:00Z",
   "meetings": [
     {
       "key": "local-worship-meeting",
@@ -520,19 +531,21 @@ a { color: var(--accent); }
       "time": "9:00–10:00",
       "where": "Teams",
       "attendees": [
-        "Phil Humphreys",
+        "Thomas Scott",
         "JP Ward",
         "A. McGiffin",
-        "Thomas Scott"
+        "Phil Humphreys"
       ],
-      "note": "You walk through the Planning Center plan together on the call, so no separate agenda is needed. Have the Oct 18 plan open.",
+      "note": "You walk through the Planning Center plan together on the Teams call, so have Sunday's plan open.",
       "context": [
-        "Phil Humphreys' list of 9/27 vision night issues is unread since Oct 6: wet projectors, stage displays, a broken SM58 capsule",
-        "Your task: projectors getting wet (keys were wet too)"
+        "Your task: projectors getting wet; you sent Phil your condensation research Oct 12",
+        "Your tasks: MORE series ushers and Where do kids gifts go?",
+        "Planning Center: Kaja Dunston confirmed as a greeter for Oct 25"
       ],
       "suggestions": [
-        "Close the loop on Phil's 9/27 vision night list",
-        "Oct 18 MORE launch: anything worship or production needs to change"
+        "Projector condensation: dehumidifier and next steps",
+        "MORE launch Oct 18: ushers and anything production needs",
+        "Installer delay: what it means for Sunday's displays"
       ]
     },
     {
@@ -556,12 +569,18 @@ a { color: var(--accent); }
       "time": "1:00–2:00",
       "where": "",
       "attendees": [
-        "Bryan"
+        "Brant Ryan"
       ],
       "context": [
+        "Chad and Laurie Scott won't lead LSM students next series; you need a new leader",
+        "Brant is out Oct 18; Chad covers set up and tear down",
         "Your task: Weston photo op for Trunk or Treat"
       ],
-      "suggestions": []
+      "suggestions": [
+        "Who could teach MORE curriculum to LSM students",
+        "Oct 18 coverage plan with Chad",
+        "Trunk or Treat student help"
+      ]
     },
     {
       "key": "elementary-meeting",
@@ -574,10 +593,14 @@ a { color: var(--accent); }
         "K. Morgan"
       ],
       "context": [
-        "Waiting on Kaylin and Amanda: iPad issue in kids"
+        "Waiting on Kaylin and Amanda: iPad issue in kids",
+        "Amanda forwarded the Oct 22 cider and cocoa plan for Trunk or Treat",
+        "Your tasks: talk to Scott about Amanda and Kaylin's hours; schedule meeting with Amanda"
       ],
       "suggestions": [
-        "iPad issue in kids: where it stands now that Amanda is back"
+        "iPad issue in kids: where it stands",
+        "Trunk or Treat cider and cocoa for Oct 22",
+        "Where do kids gifts go?"
       ]
     },
     {
@@ -590,9 +613,33 @@ a { color: var(--accent); }
       "attendees": [
         "JP Ward"
       ],
-      "context": [],
+      "context": [
+        "Your tasks: Daniel Hogge for hospitality, Bonars serving"
+      ],
       "suggestions": [
-        "MORE launch Sunday: what worked and what to fix"
+        "MORE launch Sunday: what worked and what to fix",
+        "Hospitality and serving gaps for next week"
+      ]
+    },
+    {
+      "key": "campus-pastor-meeting",
+      "title": "Campus Pastor Meeting",
+      "date": "2026-10-20",
+      "day": "Tue Oct 20",
+      "time": "9:00–10:00",
+      "where": "W131",
+      "attendees": [
+        "Campus pastors (11)"
+      ],
+      "note": "Two invites cover this slot: a 9:00 to 10:00 meeting and the 3rd Tuesday meeting to 10:30. Both overlap the All-Staff Breakfast (8:30 to 10:30).",
+      "context": [
+        "MORE launched Oct 18 at every campus",
+        "Daniel Ethridge's CP Moment outline for Oct 18",
+        "Hope for the Holidays: Gloucester listing details were due Oct 13"
+      ],
+      "suggestions": [
+        "MORE launch recap from Gloucester",
+        "Hope for the Holidays listings"
       ]
     },
     {
@@ -606,23 +653,40 @@ a { color: var(--accent); }
         "Scott Payne"
       ],
       "context": [
-        "Daffodil Festival sponsorship reply to Francesca is still open",
-        "MORE launch Oct 18 with 455 guides"
+        "Your task: talk to Scott about Amanda and Kaylin's hours",
+        "Your task: Scott's not serving during MORE and getting Trevor",
+        "Your tasks: health insurance for Hannah and finances behind Hannah's hours",
+        "Brooke Goar's ministry assistant role waits on next steps from Scott"
       ],
       "suggestions": [
-        "MORE launch recap",
-        "Hospitality admin hire: timeline and role",
-        "Daffodil Festival sponsorship: yes or no"
+        "Amanda and Kaylin's hours",
+        "Scott not serving during MORE; getting Trevor",
+        "Hannah's hours and health insurance",
+        "MORE launch recap"
       ]
     }
-  ]
+  ],
+  "teams": []
 }
 </script>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="prepared"></div>
-    <h1 id="date"></h1>
+    <div class="head-row">
+      <div>
+        <div class="eyebrow" id="prepared"></div>
+        <h1 id="date"></h1>
+      </div>
+      <div class="rebuild" id="rebuild" hidden>
+        <button class="btn" type="button" id="rebuild-btn">Rebuild everything</button>
+        <span class="confirm" id="rebuild-confirm" hidden>
+          <span>Run the full brief again? It takes about 3 minutes.</span>
+          <button class="btn primary" type="button" id="rebuild-yes">Rebuild</button>
+          <button class="btn" type="button" id="rebuild-no">Cancel</button>
+        </span>
+      </div>
+    </div>
+    <p class="count" id="rebuild-status" aria-live="polite"></p>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Dashboard sections">
@@ -2128,6 +2192,7 @@ a { color: var(--accent); }
       refreshFromStore(); if (got < 2) ready();
     }, function () {});
     db.collection('agendas').onSnapshot(applyAgendas, function () {});
+    db.doc('meta/rebuild').onSnapshot(function (doc) { if (doc.exists) { rebuildAt = doc.data().requestedAt || null; if (mcp) rebuildStatus(); } }, function () {});
     db.collection('plans').onSnapshot(function (snap) { plans = {}; snap.docs.forEach(function (doc) { plans[doc.id] = doc.data(); }); renderPlans(); }, function () {});
     db.collection('recurring').onSnapshot(function (snap) {
       recurring = snap.docs.map(function (doc) { var v = doc.data(); return { id: doc.id, text: v.text, every: v.every, due: v.due, order: v.order || 0 }; })
@@ -2141,6 +2206,8 @@ a { color: var(--accent); }
       if (!ns) return;
       mcp = ns;
       refreshBtn.hidden = false;
+      document.getElementById('rebuild').hidden = false;
+      rebuildStatus();
     }, function () {});
     window.claude.use('sample').then(function (fn) {
       if (!fn) return;
@@ -2150,6 +2217,56 @@ a { color: var(--accent); }
       Array.prototype.forEach.call(document.querySelectorAll('.mtg'), function (c) { if (c._ask) c._ask.hidden = false; });
     }, function () {});
   }
+
+  // Rebuild everything: start the same routine that builds the morning brief. It re-reads
+  // email, Teams, calendar and notes, republishes this page, and every open view updates itself.
+  // The request time is kept in meta/rebuild so other devices show it too.
+  var ROUTINE = 'trig_01RZJcCGr8qkMJkJU7PVppN8', CCR = 'Claude Code Remote';
+  var rebuildAt = null;
+  function rebuildStatus() {
+    var st = document.getElementById('rebuild-status'), btn = document.getElementById('rebuild-btn');
+    var gen = Date.parse(d.generatedAt || '') || 0, req = rebuildAt ? Date.parse(rebuildAt) : 0;
+    var pending = req && req > gen && Date.now() - req < 15 * 6e4;
+    btn.disabled = !!pending;
+    btn.textContent = pending ? 'Rebuilding\u2026' : 'Rebuild everything';
+    if (pending) st.textContent = 'Rebuilding since ' + hm(new Date(req)) + '. This page updates by itself when it\u2019s done.';
+    else if (req && gen >= req) st.textContent = 'Rebuilt at ' + hm(new Date(gen)) + '.';
+    else if (req) st.textContent = 'The last rebuild didn\u2019t finish. Try again.';
+  }
+  function rebuildError(e) {
+    var code = e && e.code;
+    if (code === 'not_in_manifest' || code === 'consent_required' || code === 'approval_required' || code === 'not_granted') return 'This page needs permission to start your morning routine. Tap Rebuild again and choose Allow.';
+    if (code === 'server_not_connected' || code === 'needs_reauth') return 'Couldn\u2019t reach your Claude routines. Reconnect in claude.ai Settings, then try again.';
+    if (code === 'tool_error') return 'The routine didn\u2019t start: ' + (e.message || 'unknown reason') + '.';
+    return 'Couldn\u2019t start the rebuild just now. Try again in a minute.';
+  }
+  document.getElementById('rebuild-btn').addEventListener('click', function () {
+    document.getElementById('rebuild-btn').hidden = true;
+    document.getElementById('rebuild-confirm').hidden = false;
+    document.getElementById('rebuild-yes').focus();
+  });
+  document.getElementById('rebuild-no').addEventListener('click', function () {
+    document.getElementById('rebuild-btn').hidden = false;
+    document.getElementById('rebuild-confirm').hidden = true;
+  });
+  document.getElementById('rebuild-yes').addEventListener('click', function () {
+    document.getElementById('rebuild-btn').hidden = false;
+    document.getElementById('rebuild-confirm').hidden = true;
+    if (!mcp) return;
+    var now = new Date(), stamp = nowIso();
+    var note = 'Manual rebuild requested from the dashboard at ' + now.toLocaleString('en-US', { weekday: 'long', hour: 'numeric', minute: '2-digit' }) + ' ET. '
+      + 'Skip STEP 2 and build and publish the brief now, whatever the day. Plan from the current time, not the morning: '
+      + 'drop schedule rows that have already ended, and set preparedAt to "Refreshed <weekday> <time> ET".';
+    rebuildAt = stamp; rebuildStatus();
+    document.getElementById('rebuild-status').textContent = 'Starting the rebuild\u2026';
+    mcp.callTool(CCR, 'fire_trigger', { trigger_id: ROUTINE, text: note }, { cache: false }).then(function () {
+      if (db) db.doc('meta/rebuild').set({ requestedAt: stamp }).catch(function () {});
+      rebuildStatus();
+    }, function (e) {
+      rebuildAt = null; rebuildStatus();
+      document.getElementById('rebuild-status').textContent = rebuildError(e);
+    });
+  });
   showTab((location.hash || '').replace('#', '') || 'today');
 })();
 </script>
