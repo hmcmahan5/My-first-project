@@ -76,7 +76,7 @@ Chart rules:
 | Stat tile | `stat()` inside `renderStats` | Progress summary |
 | Ask Claude panel | `askPanel(key, describe, chips)` | Any opened item |
 | Opener | `makeOpener(node, key, label, onToggle)` | Priorities and emails |
-| Drag handle | `grip(item, id, label, group, onDrop)` + `saveOrder` | Reordering tasks and emails by pointer, touch or arrow keys; the order is saved in `meta/order` |
+| Drag handle | `grip(item, id, label, group, onDrop)` + `saveOrder` | Reordering tasks and emails by pointer, touch or arrow keys, and moving tasks between the Today, This week and Not urgent sections; order and sections are saved in `meta/order` |
 | Chips and badges | `.chip`, `.chip.due`, `.badge`, `.badge.hot` | Due dates, tags, counts |
 | Buttons | `.btn`, `.btn.primary`, `.mini`, `.mini.ghost` | Actions, from strongest to quietest |
 

@@ -457,6 +457,14 @@ li > .empty-state { grid-column: 1 / -1; }
 .sort-hint { margin: 0; color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
 .sort-hint svg { width: 16px; height: 16px; fill: currentColor; }
 .chip.new { background: var(--warn-soft); color: var(--warn); }
+.todo-list li.bucket-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 18px 0 8px; border-bottom: 2px solid var(--line); }
+.todo-list li.bucket-head:first-child { padding-top: 6px; }
+.bucket-name { font: 600 13px var(--font-data); letter-spacing: .08em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
+.bucket-name::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.b-today .bucket-name { color: var(--accent); } .b-today .bucket-name::before { background: var(--accent); }
+.b-today { border-bottom-color: var(--accent) !important; }
+.b-week .bucket-name { color: var(--warn); } .b-week .bucket-name::before { background: var(--warn); }
+.b-later .bucket-name { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .lifting { box-shadow: none; } }
 </style>
 
@@ -1293,10 +1301,25 @@ li > .empty-state { grid-column: 1 / -1; }
   // meta/order {tasks: [task ids], emails: [email keys], updatedAt} so it follows you across
   // devices and the morning brief reads it as your ranking. Items not in the list yet are new
   // and show first until you place them.
-  var order = { tasks: [], emails: [] }, orderIdx = { tasks: {}, emails: {} };
+  // Tasks also sit in one of three sections, kept in meta/order.buckets {taskId: today|week|later}.
+  // A task you haven't placed yet goes by its due date.
+  var order = { tasks: [], emails: [], buckets: {} }, orderIdx = { tasks: {}, emails: {} };
+  var BUCKETS = [['today', 'Today'], ['week', 'This week'], ['later', 'Not urgent']];
+  var BUCKET_NAMES = { today: 'Today', week: 'This week', later: 'Not urgent' };
+  function bucketOf(id) {
+    var b = order.buckets[id];
+    if (BUCKET_NAMES[b]) return b;
+    var n = daysUntil((tasks[id] || {}).due);
+    return n !== null && n <= 0 ? 'today' : n !== null && n < 7 ? 'week' : 'later';
+  }
+  function setBucket(id, b) {
+    var bk = {}; bk[id] = b;
+    saveOrder('tasks', [], bk);
+    refresh();
+  }
   var dragging = false;
   function setOrder(o) {
-    order = { tasks: (o && o.tasks) || [], emails: (o && o.emails) || [] };
+    order = { tasks: (o && o.tasks) || [], emails: (o && o.emails) || [], buckets: (o && o.buckets) || {} };
     ['tasks', 'emails'].forEach(function (k) { orderIdx[k] = {}; order[k].forEach(function (id, i) { orderIdx[k][id] = i; }); });
   }
   function isPlaced(kind, id) { return orderIdx[kind][id] != null; }
@@ -1309,16 +1332,18 @@ li > .empty-state { grid-column: 1 / -1; }
       return ia - ib;
     };
   }
-  function saveOrder(kind, ids) {
+  function saveOrder(kind, ids, buckets) {
     var seen = {}; ids.forEach(function (id) { seen[id] = true; });
     var rest = order[kind].filter(function (id) { return !seen[id] && (kind !== 'tasks' || tasks[id]); });
     // Everything already on the list counts as placed, so only later arrivals show as New.
     if (kind === 'tasks') { rest.forEach(function (id) { seen[id] = true; }); Object.keys(tasks).sort(function (a, b) { return (tasks[a].due || '9999').localeCompare(tasks[b].due || '9999'); }).forEach(function (id) { if (!seen[id] && tasks[id].status !== 'done') rest.push(id); }); }
-    var next = { tasks: order.tasks, emails: order.emails };
+    var next = { tasks: order.tasks, emails: order.emails, buckets: {} };
     next[kind] = ids.concat(rest).slice(0, 400);
+    Object.keys(order.buckets).forEach(function (k) { if (tasks[k] && tasks[k].status !== 'done') next.buckets[k] = order.buckets[k]; });
+    Object.keys(buckets || {}).forEach(function (k) { next.buckets[k] = buckets[k]; });
     setOrder(next);
     try { localStorage.setItem('brief-order', JSON.stringify(order)); } catch (e) {}
-    if (db) db.doc('meta/order').set({ tasks: order.tasks, emails: order.emails, updatedAt: nowIso() }).catch(function () { showError('Your new order didn’t save. Check your connection and try again.'); });
+    if (db) db.doc('meta/order').set({ tasks: order.tasks, emails: order.emails, buckets: order.buckets, updatedAt: nowIso() }).catch(function () { showError('Your new order didn’t save. Check your connection and try again.'); });
   }
   var sortLive = document.createElement('div');
   sortLive.className = 'sk-label'; sortLive.setAttribute('aria-live', 'assertive');
@@ -1333,9 +1358,12 @@ li > .empty-state { grid-column: 1 / -1; }
     g.title = 'Drag to reorder';
     item.dataset.sortId = id; item.dataset.sortGroup = group;
     item.classList.add('has-grip');
-    function same(n) { return n && n.dataset && n.dataset.sortGroup === group ? n : null; }
+    // Section headers (data-sort-head) sit between items; dragging past one moves the item into that section.
+    function same(n) { return n && n.dataset && (n.dataset.sortGroup === group || n.dataset.sortHead === group) ? n : null; }
     function members() { return Array.prototype.filter.call(item.parentNode.children, function (n) { return n.dataset && n.dataset.sortGroup === group; }); }
     function ids() { return members().map(function (n) { return n.dataset.sortId; }); }
+    function layout() { return Array.prototype.filter.call(item.parentNode.children, function (n) { return n.dataset && (n.dataset.sortGroup === group || n.dataset.bucket); }).map(function (n) { return n.dataset.sortId || 'H:' + n.dataset.bucket; }); }
+    function sectionName() { for (var n = item.previousElementSibling; n; n = n.previousElementSibling) if (n.dataset && n.dataset.bucket) return BUCKET_NAMES[n.dataset.bucket]; return ''; }
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function flip(sib, mutate) {
       var first = sib.getBoundingClientRect().top;
@@ -1347,17 +1375,15 @@ li > .empty-state { grid-column: 1 / -1; }
       sib.style.transition = 'transform .18s ease'; sib.style.transform = '';
     }
     function finish(before) {
-      var after = ids();
-      if (after.join('|') !== before.join('|')) {
-        var pos = after.indexOf(id) + 1;
-        sortLive.textContent = label + ' moved to ' + pos + ' of ' + after.length + '.';
-        onDrop(after);
-      }
+      if (layout().join('|') === before.join('|')) return;
+      var after = ids(), sec = sectionName();
+      sortLive.textContent = label + (sec ? ' moved to ' + sec + '.' : ' moved to ' + (after.indexOf(id) + 1) + ' of ' + after.length + '.');
+      onDrop(after);
     }
     g.addEventListener('keydown', function (e) {
       if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
       e.preventDefault();
-      var before = ids();
+      var before = layout();
       var sib = e.key === 'ArrowUp' ? same(item.previousElementSibling) : same(item.nextElementSibling);
       if (!sib) return;
       item.parentNode.insertBefore(item, e.key === 'ArrowUp' ? sib : sib.nextSibling);
@@ -1368,7 +1394,7 @@ li > .empty-state { grid-column: 1 / -1; }
     g.addEventListener('pointerdown', function (e) {
       if (e.button !== 0) return;
       e.preventDefault();
-      var before = ids();
+      var before = layout();
       var startY = e.clientY, startTop = item.offsetTop, startScroll = window.scrollY, lastY = e.clientY, scrollTimer = null;
       dragging = true;
       item.classList.add('lifting'); item.parentNode.classList.add('sorting');
@@ -1650,7 +1676,7 @@ li > .empty-state { grid-column: 1 / -1; }
     ul.textContent = '';
     var due = Object.keys(tasks).filter(function (id) {
       var t = tasks[id], n = daysUntil(t.due);
-      return (t.status || 'open') === 'open' && n !== null && n <= 0;
+      return (t.status || 'open') === 'open' && ((n !== null && n <= 0) || bucketOf(id) === 'today');
     }).sort(byOrder('tasks', function (a, b) { return (tasks[a].due || '').localeCompare(tasks[b].due || ''); }));
     var dow = (today.getDay() + 6) % 7, isWeekend = dow > 4;
     var recurNow = recurring.filter(function (r) {
@@ -1671,7 +1697,7 @@ li > .empty-state { grid-column: 1 / -1; }
       var name = el('button', 'linkish', t.text); name.type = 'button';
       name.setAttribute('aria-label', 'Open in Tasks: ' + t.text);
       name.addEventListener('click', function () { openTask(id); });
-      li.append(cb, name, el('span', 'chip due', n < 0 ? 'Overdue ' + (-n) + 'd' : 'Today'));
+      li.append(cb, name, n !== null && n <= 0 ? el('span', 'chip due', n < 0 ? 'Overdue ' + (-n) + 'd' : 'Due today') : el('span', 'chip', 'Today'));
       ul.append(li);
     });
     recurNow.forEach(function (r) {
@@ -1691,7 +1717,7 @@ li > .empty-state { grid-column: 1 / -1; }
     }
     document.getElementById('due-count').textContent = left ? left + ' to do' : 'All clear';
     var open = Object.keys(tasks).filter(function (id) { return (tasks[id].status || 'open') === 'open'; }).length;
-    var overdue = due.filter(function (id) { return daysUntil(tasks[id].due) < 0; }).length;
+    var overdue = due.filter(function (id) { var n = daysUntil(tasks[id].due); return n !== null && n < 0; }).length;
     setBadge('tasks', open, overdue > 0);
     renderGlance(left, due.length + recurNow.length);
   }
@@ -2103,7 +2129,7 @@ li > .empty-state { grid-column: 1 / -1; }
       .sort(byOrder('tasks', function (a, b) { return (tasks[a].due || '9999').localeCompare(tasks[b].due || '9999'); }))
       .slice(0, limit).map(function (id) {
         var t = tasks[id];
-        return '- [' + id + '] ' + t.text + (t.due ? ' (due ' + t.due + ')' : '') + (t.note ? ' — ' + String(t.note).slice(0, 80) : '');
+        return '- [' + id + '] ' + t.text + ' {' + BUCKET_NAMES[bucketOf(id)] + '}' + (t.due ? ' (due ' + t.due + ')' : '') + (t.note ? ' — ' + String(t.note).slice(0, 80) : '');
       });
   }
   function savePlan(id, body) {
@@ -2152,10 +2178,10 @@ li > .empty-state { grid-column: 1 / -1; }
           'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at 4:30 PM, when his workday ends.',
           'Calendar (fixed, do not move):\n' + (cal.length ? cal.join('\n') : '- Nothing scheduled'),
           openPri.length ? 'This morning’s priorities:\n' + openPri.join('\n') : '',
-          'Open tasks, in Hobie’s own priority order with the most important first ([id] task, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
+          'Open tasks, in Hobie’s own priority order with the most important first ([id] task {the section he put it in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
           recur.length ? 'Recurring items due now:\n' + recur.join('\n') : '',
           asks.length ? 'Messages waiting on him (' + asks.length + '):\n' + asks.join('\n') : '',
-          'Rules: keep calendar events where they are and include them as "meeting" blocks. Events marked [personal] come from his personal calendar: keep that time free and label the block plainly. Put overdue and due-today tasks first, then the priorities, then follow the order of his task list, which is his own ranking. Group small related tasks into one block. Include one 20 to 30 minute block for messages. Leave about a quarter of the open time unplanned, as "buffer", for interruptions. Never overlap blocks. Don’t plan more than fits; list the rest under notToday.',
+          'Rules: keep calendar events where they are and include them as "meeting" blocks. Events marked [personal] come from his personal calendar: keep that time free and label the block plainly. Put overdue and due-today tasks first, then the priorities, then the tasks in his Today section in his order. This week tasks fill the remaining time; Not urgent tasks only if the day is otherwise clear. Group small related tasks into one block. Include one 20 to 30 minute block for messages. Leave about a quarter of the open time unplanned, as "buffer", for interruptions. Never overlap blocks. Don’t plan more than fits; list the rest under notToday.',
           'Reply with only JSON: {"summary": string, "blocks": [{"start": "HH:MM", "end": "HH:MM", "title": string, "kind": "meeting" | "task" | "email" | "buffer" | "break", "taskIds": [string], "why": string}], "notToday": [{"taskId": string | null, "title": string, "why": string}]}. Use 24-hour times. taskIds are ids from the task list (empty for anything else). Keep "why" under 15 words and the summary to one sentence.'
         ].filter(Boolean).join('\n\n');
         return sampleFn.json(prompt, { cache: false });
@@ -2195,9 +2221,9 @@ li > .empty-state { grid-column: 1 / -1; }
         'You plan the work week for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church. His workday ends at 4:30 PM. Sundays are service days; he isn’t preaching soon.',
         'Days to plan: ' + days.map(function (dd) { return ymd(dd) + ' (' + dd.toDateString().slice(0, 3) + ')'; }).join(', ') + '. Today is ' + today.toDateString() + '.',
         'Calendar so far:\n' + cal.join('\n\n'),
-        'Open tasks, in Hobie’s own priority order with the most important first ([id] task, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
+        'Open tasks, in Hobie’s own priority order with the most important first ([id] task {the section he put it in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
         'Recurring items: ' + (recurring.map(function (r) { return r.text + ' (' + r.every + (r.due ? ', by ' + r.due : '') + ')'; }).join('; ') || 'none'),
-        'Rules: give each day 2 to 4 focus tasks that fit around its meetings and personal commitments (marked [personal]). Assume more meetings will land, so keep at least 40 percent of each day unplanned. Respect due dates; overdue tasks go early in the week. Otherwise follow the order of his task list, which is his own ranking: higher tasks go earlier. Put things needed for Sunday on Thursday or Friday. Lighter days get more. Anything that doesn’t fit goes in later.',
+        'Rules: give each day 2 to 4 focus tasks that fit around its meetings and personal commitments (marked [personal]). Assume more meetings will land, so keep at least 40 percent of each day unplanned. Respect due dates; overdue tasks go early in the week. Otherwise follow his sections and order: Today tasks go on the first day, This week tasks spread across the week in his order, and Not urgent tasks go in later unless a day is light. Put things needed for Sunday on Thursday or Friday. Lighter days get more. Anything that doesn’t fit goes in later.',
         'Reply with only JSON: {"summary": string, "days": [{"date": "YYYY-MM-DD", "theme": string, "focus": [{"taskId": string | null, "title": string, "why": string}]}], "later": [{"taskId": string | null, "title": string}]}. taskIds are ids from the task list. Keep theme under 8 words and why under 12 words.'
       ].join('\n\n');
       return sampleFn.json(prompt, { cache: false });
@@ -2423,7 +2449,16 @@ li > .empty-state { grid-column: 1 / -1; }
       repWrap.hidden = !rep.checked;
       save.textContent = rep.checked ? 'Move to recurring' : 'Save';
     });
-    f.append(field('Task', txt), field('Status', seg), whoField, dueField, repField, field('Note', nt), actions);
+    var section = bucketOf(id), startSection = section;
+    var secSeg = el('div', 'seg'); secSeg.setAttribute('role', 'radiogroup'); secSeg.setAttribute('aria-label', 'Section');
+    BUCKETS.forEach(function (bk) {
+      var b = el('button', 'seg-btn', bk[1]); b.type = 'button';
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(bk[0] === section));
+      b.addEventListener('click', function () { section = bk[0]; Array.prototype.forEach.call(secSeg.children, function (c) { c.setAttribute('aria-checked', String(c === b)); }); });
+      secSeg.append(b);
+    });
+    var secField = field('Section', secSeg);
+    f.append(field('Task', txt), field('Status', seg), whoField, secField, dueField, repField, field('Note', nt), actions);
     function close() { editingId = null; if (deferred) { deferred = false; } refresh(); }
     f.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -2431,12 +2466,13 @@ li > .empty-state { grid-column: 1 / -1; }
       editingId = null;
       if (rep.checked) {
         var v = repFp.value();
-        var order = recurring.reduce(function (mx, r) { return Math.max(mx, r.order || 0); }, 0) + 1;
-        saveRecurring(slug(text).slice(0, 40) + '-' + Date.now().toString(36), { text: text, every: v.every, due: v.due, order: order });
+        var nextOrder = recurring.reduce(function (mx, r) { return Math.max(mx, r.order || 0); }, 0) + 1;
+        saveRecurring(slug(text).slice(0, 40) + '-' + Date.now().toString(36), { text: text, every: v.every, due: v.due, order: nextOrder });
         writeTask(id, null);
         return;
       }
       patchTask(id, { text: text, due: due.value || '', status: status, waitingOn: status === 'waiting' ? who.value.trim() : (t.waitingOn || ''), note: nt.value.trim() });
+      if (section !== startSection) setBucket(id, section);
     });
     cancel.addEventListener('click', close);
     del.addEventListener('click', function () { del.hidden = true; confirmBox.hidden = false; yes.focus(); });
@@ -2525,20 +2561,43 @@ li > .empty-state { grid-column: 1 / -1; }
     if (taskView === 'mine') {
       // One list in your own order (new items first until you place them), then waiting.
       var anyPlaced = order.tasks.length > 0;
-      [['mine', 'Your list', openIds.slice().sort(byOrder('tasks', byDue))], ['waiting', names.waiting, groups.waiting.slice().sort(byOrder('tasks', byDue))]].forEach(function (g) {
-        if (!g[2].length) return;
-        var box = el('div', 'group g-' + g[0]);
-        box.append(el('div', 'sub-head', g[1] + ' (' + g[2].length + ')'));
-        if (g[0] === 'mine') { var hint = el('p', 'sort-hint'); hint.innerHTML = GRIP_SVG; hint.append(g[2].length > 1 ? 'Drag to put what matters most at the top.' : 'Your most important task goes at the top.'); box.append(hint); }
-        var ul = el('ul', 'todo-list one');
-        g[2].forEach(function (id) {
+      var mine = el('div', 'group g-mine');
+      if (openIds.length) {
+        var hint = el('p', 'sort-hint'); hint.innerHTML = GRIP_SVG;
+        hint.append('Drag tasks between Today, This week and Not urgent, and put what matters most at the top.');
+        mine.append(hint);
+      }
+      var bl = el('ul', 'todo-list one bucket-list');
+      BUCKETS.forEach(function (bk, bi) {
+        var ids = openIds.filter(function (id) { return bucketOf(id) === bk[0]; }).sort(byOrder('tasks', byDue));
+        var h = el('li', 'bucket-head b-' + bk[0]); h.dataset.bucket = bk[0];
+        if (bi > 0) h.dataset.sortHead = 'task-open';
+        h.append(el('span', 'bucket-name', bk[1]), el('span', 'count', ids.length ? String(ids.length) : 'Drag a task here'));
+        bl.append(h);
+        ids.forEach(function (id) {
           var li = taskRow(id, tasks[id]);
           if (anyPlaced && !isPlaced('tasks', id)) { var side = li.querySelector('.task-side'); if (side) side.prepend(el('span', 'chip new', 'New')); }
-          grip(li, id, tasks[id].text, 'task-' + g[0], function (ids) { saveOrder('tasks', ids); refresh(); });
-          ul.append(li);
+          grip(li, id, tasks[id].text, 'task-open', function (all) {
+            var map = {}, cur = 'today';
+            Array.prototype.forEach.call(bl.children, function (n) { if (n.dataset.bucket) cur = n.dataset.bucket; else if (n.dataset.sortId) map[n.dataset.sortId] = cur; });
+            saveOrder('tasks', all, map); refresh();
+          });
+          bl.append(li);
         });
-        box.append(ul); wrap.append(box);
       });
+      if (openIds.length) { mine.append(bl); wrap.append(mine); }
+      var wIds = groups.waiting.slice().sort(byOrder('tasks', byDue));
+      if (wIds.length) {
+        var wbox = el('div', 'group g-waiting');
+        wbox.append(el('div', 'sub-head', names.waiting + ' (' + wIds.length + ')'));
+        var wul = el('ul', 'todo-list one');
+        wIds.forEach(function (id) {
+          var li = taskRow(id, tasks[id]);
+          grip(li, id, tasks[id].text, 'task-waiting', function (all) { saveOrder('tasks', all); refresh(); });
+          wul.append(li);
+        });
+        wbox.append(wul); wrap.append(wbox);
+      }
     } else {
       ['overdue', 'today', 'week', 'later', 'none', 'waiting'].forEach(function (g) {
         if (!groups[g].length) return;
