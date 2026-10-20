@@ -468,123 +468,116 @@ li > .empty-state { grid-column: 1 / -1; }
 @media (prefers-reduced-motion: reduce) { .lifting { box-shadow: none; } }
 </style>
 
+<!-- Who this dashboard belongs to. Set once at setup; the morning routine never changes it. -->
+<script type="application/json" id="profile">
+{
+  "name": "Hobie McMahan",
+  "firstName": "Hobie",
+  "role": "Campus Pastor",
+  "campus": "Gloucester",
+  "campusCode": "GTR",
+  "church": "Liberty Live Church",
+  "region": "Virginia",
+  "email": "hmcmahan@libertylive.church",
+  "dayEnd": "16:30",
+  "weekNote": "Sundays are service days; he isn’t preaching soon.",
+  "calendars": [["Liberty Calendar", ""], ["Personal ", "personal"]],
+  "routineId": "trig_01RZJcCGr8qkMJkJU7PVppN8"
+}
+</script>
+
 <!-- The morning routine rewrites only this data block each day. Tasks live in the page's store, not here. -->
 <script type="application/json" id="brief-data">
 {
-  "date": "2026-10-19",
-  "dateLabel": "Monday, October 19",
-  "preparedAt": "Prepared Monday 7:40 AM ET",
-  "headline": "Liberty Kids at 11:00, then Elementary and Sunday Follow Up this afternoon; today's Student Meeting is cancelled, so the morning and the noon hour are open for Paycom, Brant's notes and the Group Inquiry follow-up. Last 7 days: 21 tasks finished, 2 slipping (the iPad issue in kids and the MORE supplies email).",
+  "date": "2026-10-20",
+  "dateLabel": "Tuesday, October 20",
+  "preparedAt": "Prepared Tuesday 7:30 AM ET",
+  "headline": "The All-Staff Breakfast (8:30 to 10:30) overlaps the 9:00 Campus Pastor Meeting, and the 12:00 meeting follows, so the real open time is 10:30 to 12:00 and after 1:30. Use it for Jewel's Hope for the Holidays wording, the Ramp receipt and the block party trailer.",
   "priorities": [
     {
-      "title": "Decide Kaylin Gentry's PTO requests and approve timecards in Paycom",
-      "why": "Four Paycom emails this morning ask for a decision on Kaylin's PTO (6 hours Feb 7 and 8 hours Feb 8, 2027, each sent twice) and the approve/deny links expire in 6 days. Paycom's timecard approval reminder from Friday is still unread, and today is payroll time card verification day.",
-      "source": "Paycom emails, Oct 16 and Oct 19",
+      "title": "Send Jewel the final Hope for the Holidays wording",
+      "why": "Jewel's Oct 8 request was due Oct 13, and on Monday she said Comms needs one last thing: the exact description of your Christmas Gift Angel event. Your Oct 11 reply has the Angel Tree text (choose Angels Nov 21 to Dec 6, return gifts Dec 6 and 13, Dec 16 shopping).",
+      "source": "Email from Jewel Siler, Oct 19",
+      "tag": "Overdue",
+      "urgent": true
+    },
+    {
+      "title": "Grab the block party trailer today",
+      "why": "Your Oct 19 notes say Tuesday. The breakfast, the 9:00 meeting and the 12:00 meeting fill the morning and noon, so go before 8:30 or after 1:30. Scott Hurley also plans to find a time today to collect your signature for the December first-gift letter.",
+      "source": "Updated To Do, Oct 19 + Scott Hurley email",
       "tag": "Today",
       "urgent": true
     },
     {
-      "title": "Liberty Kids at 11:00: settle the iPad issue and Oct 22 cider and cocoa",
-      "why": "The iPad issue has waited on Kaylin and Amanda since Oct 10 (9 days) and I found no email about it since. Amanda is back from the mission trip, and her Oct 7 forward set 50 cider and 100 cocoa for Trunk or Treat Oct 22. Ask her about \"Where do kids gifts go?\" too.",
-      "source": "Your task list + Liberty Kids Meeting, 11:00 AM",
-      "tag": "Follow up",
-      "urgent": false
-    },
-    {
-      "title": "Grab the block party trailer on Tuesday",
-      "why": "Your Oct 18 notes say to grab it Tuesday. Tuesday has the All-Staff Breakfast (8:30 to 10:30) and Campus Pastor Meetings at 9:00 and 12:00, so go before 8:30 or after 1:30.",
-      "source": "Updated To Do, Oct 18",
-      "tag": "Tomorrow",
-      "urgent": false
-    },
-    {
-      "title": "Follow up on the Group Inquiry from Deb Farrow in Ministry Platform",
-      "why": "Deb Farrow asked about Faith and Fellowship at Fiddlers - Lunsford on Saturday. The follow-up task is due Thursday Oct 22.",
-      "source": "Ministry Platform outstanding-tasks email, Oct 19",
+      "title": "Submit the missing receipt in Ramp",
+      "why": "Ramp says 1 transaction is missing items and your card locks if it isn't submitted by Thu Oct 22.",
+      "source": "Ramp email, Oct 20",
       "tag": "Thu Oct 22",
       "urgent": false
     },
     {
-      "title": "Student ministry: read Brant's Oct 14 meeting notes and settle who leads LSM students",
-      "why": "Brant's \"Meeting Progress 10/14\" email (4 days old, Word attachment) is still unread. Chad and Laurie Scott won't lead LSM students next series and no replacement is named. Today's Student Meeting was cancelled.",
-      "source": "Brant Ryan email + your task list",
+      "title": "Reply to Procore with a time for the pricing call",
+      "why": "Jesse Moss left you a voicemail Monday about the Pricing request you submitted. It ties to your task on a timeline and project system (Procore recommended), which you can raise at the 12:00 Campus Pastor Meeting.",
+      "source": "Email from Jesse Moss, Oct 19 + your task list",
       "tag": "This week",
+      "urgent": false
+    },
+    {
+      "title": "Wednesday 1:1 with Scott Payne: Amanda and Kaylin's hours, Hannah's insurance",
+      "why": "Both Scott items sit in your This week list, and the insurance finances wait on Pastor. The 1:1 is Wed at 11:00 on Teams.",
+      "source": "Your task list + One on One, Wed 11:00 AM",
+      "tag": "Tomorrow",
+      "urgent": false
+    },
+    {
+      "title": "Follow up with Page Middle School on the TV brackets",
+      "why": "You asked Michelle Brown on Sep 30 where the mount brackets are and I found no reply in 3 weeks. Your notes show TV mount help checked off, so confirm it's up before you take food to Page Middle School and Abingdon.",
+      "source": "Sent mail Sep 30 + your task list",
+      "tag": "Follow up",
       "urgent": false
     }
   ],
   "schedule": [
     {
       "start": "8:00 AM",
-      "end": "11:00 AM",
-      "title": "Open morning",
-      "where": "Fits the Paycom decisions, Brant's meeting notes and the Group Inquiry follow-up",
-      "gap": true
+      "end": "9:00 AM",
+      "title": "Take out trash (personal)",
+      "where": ""
     },
     {
-      "start": "11:00 AM",
+      "start": "8:30 AM",
+      "end": "10:30 AM",
+      "title": "All-Staff Breakfast",
+      "where": "HPT Campus Dining Hall. Overlaps the 9:00 Campus Pastor Meeting"
+    },
+    {
+      "start": "9:00 AM",
+      "end": "10:00 AM",
+      "title": "Campus Pastor Meeting",
+      "where": "W131. Bring Scott Hurley's signature request and the Life Team roster review"
+    },
+    {
+      "start": "10:30 AM",
       "end": "12:00 PM",
-      "title": "Liberty Kids Meeting",
-      "where": "Amanda McWhirter. Bring the iPad issue and the Oct 22 cider and cocoa"
+      "title": "Open window",
+      "where": "Fits Jewel's Hope for the Holidays wording, the Ramp receipt and the Procore reply",
+      "gap": true
     },
     {
       "start": "12:00 PM",
-      "end": "2:00 PM",
-      "title": "Open window",
-      "where": "Fits lunch, a plan for Tuesday's trailer pickup and the small-group alternative you promised the Horaceks",
-      "gap": true
+      "end": "1:30 PM",
+      "title": "Campus Pastor Meeting, 3rd Tuesday",
+      "where": "W131. Raise the timeline and project system (Procore)"
     },
     {
-      "start": "2:00 PM",
-      "end": "3:00 PM",
-      "title": "Elementary Meeting",
-      "where": "Kaylin Morgan. iPad issue and her pending PTO requests"
-    },
-    {
-      "start": "2:00 PM",
-      "end": "3:00 PM",
-      "title": "Campus Email Missions (personal)",
-      "where": "Overlaps the Elementary Meeting"
-    },
-    {
-      "start": "3:00 PM",
-      "end": "4:00 PM",
-      "title": "Sunday Follow Up",
-      "where": "JP Ward. MORE launch recap and Oct 25 serving gaps"
-    },
-    {
-      "start": "4:00 PM",
+      "start": "1:30 PM",
       "end": "4:30 PM",
-      "title": "Open until end of day",
-      "where": "Fits a last pass on the inbox",
+      "title": "Open afternoon",
+      "where": "Fits the block party trailer pickup, Scott Hurley's signature and the Page Middle School follow-up",
       "gap": true
     }
   ],
   "week": [
-    {
-      "day": "Mon Oct 19",
-      "items": [
-        {
-          "time": "11:00 AM",
-          "title": "Liberty Kids Meeting with Amanda McWhirter (to 12:00)"
-        },
-        {
-          "time": "2:00 PM",
-          "title": "Elementary Meeting with Kaylin Morgan (to 3:00)"
-        },
-        {
-          "time": "2:00 PM",
-          "title": "Campus Email Missions (personal) (to 3:00)"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Sunday Follow Up with JP Ward (to 4:00)"
-        },
-        {
-          "time": "All day",
-          "title": "Payroll time card verification reminder"
-        }
-      ]
-    },
     {
       "day": "Tue Oct 20",
       "items": [
@@ -631,12 +624,16 @@ li > .empty-state { grid-column: 1 / -1; }
       "day": "Thu Oct 22",
       "items": [
         {
+          "time": "1:30 PM",
+          "title": "Trunk or Treat Set Up (to 3:30)"
+        },
+        {
           "time": "Evening",
           "title": "Trunk or Treat at Lighthouse"
         },
         {
           "time": "All day",
-          "title": "Ministry Platform: Group Inquiry follow-up due"
+          "title": "Ramp: submit the missing receipt or the card locks"
         }
       ]
     },
@@ -707,59 +704,79 @@ li > .empty-state { grid-column: 1 / -1; }
   ],
   "emails": [
     {
-      "from": "Paycom",
-      "subject": "[PaycomOnline] Time-Off Request(s) Pending Future Automatic Decision",
-      "ask": "Four notices (two requests, each sent twice) for Kaylin Gentry: PTO 6 hours Feb 7, 2027 and 8 hours Feb 8, 2027. Approve or deny in the email or in Paycom; the links expire in 6 days.",
-      "when": "Mon 7:17 AM",
+      "from": "Jewel Siler",
+      "subject": "Re: Action needed by 10/13: Confirm Gloucester Hope for the Holidays",
+      "ask": "Comms needs the exact description of your Christmas Gift Angel event. Send the Angel Tree wording from your Oct 11 reply as the final text.",
+      "when": "Mon 2:44 PM",
       "flag": "Unread",
       "group": "action",
       "unread": true,
-      "received": "2026-10-19T11:17:28Z"
+      "received": "2026-10-19T18:44:30Z"
     },
     {
-      "from": "Paycom",
-      "subject": "[PaycomOnline] Approve Employee Timecard(s) Reminder",
-      "ask": "Approve employee timecards in Paycom under Time and Attendance. Today is also payroll time card verification day.",
-      "when": "Fri",
+      "from": "Ramp",
+      "subject": "Liberty Live Church — Action needed by Oct 22 to avoid your card being locked",
+      "ask": "Submit your 1 transaction with missing items by Thu Oct 22 or the card locks.",
+      "when": "Tue 4:19 AM",
       "flag": "Unread",
       "group": "action",
       "unread": true,
-      "received": "2026-10-16T13:43:28Z"
+      "received": "2026-10-20T08:19:16Z"
     },
     {
-      "from": "Church Administrator",
-      "subject": "1 Task(s) Outstanding for McMahan, Hobie",
-      "ask": "Ministry Platform: follow up on the Group Inquiry from Deb Farrow (Faith and Fellowship at Fiddlers - Lunsford), due Thu Oct 22.",
-      "when": "Mon 5:31 AM",
+      "from": "Scott Hurley",
+      "subject": "Signatures",
+      "ask": "Stewardship wants your signature on file for the December first-gift letter and will find a time today. Watch for it.",
+      "when": "Mon 3:01 PM",
       "flag": "Unread",
       "group": "action",
       "unread": true,
-      "received": "2026-10-19T09:31:23Z"
+      "received": "2026-10-19T19:01:26Z"
+    },
+    {
+      "from": "Austin Page",
+      "subject": "Life Team Roster Review: Gloucester",
+      "ask": "In the Life Team GTR roster, mark in red anyone no longer serving and add missing volunteers in the yellow rows. Share it with your ministry leads and reply when done, by Tue Nov 3.",
+      "when": "Mon 3:32 PM",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-19T19:32:16Z"
+    },
+    {
+      "from": "Jesse Moss",
+      "subject": "Hobie, Procore Request",
+      "ask": "Procore saw your Pricing request and left a voicemail. Reply with a good time for a call in the next few days.",
+      "when": "Mon 11:07 AM",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-19T15:07:33Z"
+    },
+    {
+      "from": "Jeff Askew",
+      "subject": "Re: Prison Ministry Question",
+      "ask": "He says the church has never supported someone going to prison, and he knows no one to watch the dog but will ask around. Tell your member.",
+      "when": "Mon 3:13 PM",
+      "flag": "Unread",
+      "group": "action",
+      "unread": true,
+      "received": "2026-10-19T19:13:02Z"
     },
     {
       "from": "Brant Ryan",
       "subject": "Meeting Progress 10/14",
       "ask": "His notes from the Oct 14 meeting are attached (Meeting 10:14.docx). Read them and reply.",
-      "when": "Thu · 4 days",
+      "when": "Thu · 5 days",
       "flag": "Unread",
       "group": "action",
       "unread": true,
       "received": "2026-10-15T16:01:21Z"
     },
     {
-      "from": "Gabriel Goar",
-      "subject": "Re: leadership Course week 40",
-      "ask": "He wants to dissect the course and talk about how it helps the whole team. Set a time. You checked off the leadership videos in your notes; mark handled if done.",
-      "when": "Sep 15 · 5 wks",
-      "flag": "Unread",
-      "group": "action",
-      "unread": true,
-      "received": "2026-09-15T13:19:48Z"
-    },
-    {
       "from": "Steve Dykema",
       "subject": "RE: SOM Courses",
-      "ask": "Hampton probably has no in-person SOM course on Wednesdays this winter. You checked off the Hampton SOM item in your notes; mark handled if you passed it on.",
+      "ask": "Hampton probably has no in-person SOM course this winter. You checked off the Hampton SOM item in your notes; mark handled if you passed it on.",
       "when": "Sep 27 · 3 wks",
       "flag": "Unread",
       "group": "action",
@@ -767,44 +784,34 @@ li > .empty-state { grid-column: 1 / -1; }
       "received": "2026-09-27T16:09:46Z"
     },
     {
+      "from": "Paycom",
+      "subject": "Punch Changes Need Approval",
+      "ask": "Kaylin Gentry requested punch changes; five notices came Monday. Approve them on the Punch Change Request dashboard in Paycom.",
+      "when": "Mon 1:31 PM",
+      "flag": "Action",
+      "group": "action",
+      "unread": false,
+      "received": "2026-10-19T17:31:53Z"
+    },
+    {
       "from": "Michelle Brown, Page Middle School",
       "subject": "RE: Page Middle School",
-      "ask": "Page IT approved the TV install, any time after 2:40 dismissal. You checked off TV mount help; mark handled if installed. Your list still has food to take to Page Middle School.",
+      "ask": "Page IT approved the TV install. You asked Sep 30 where the mount brackets are and no answer has come. Mark handled if the TV is up.",
       "when": "Sep 29 · 3 wks",
-      "flag": "Unread",
-      "group": "action",
+      "flag": "Waiting",
+      "group": "waiting",
       "unread": true,
       "received": "2026-09-29T14:58:45Z"
     },
     {
       "from": "Gabriel Goar",
-      "subject": "Declined: Gloucester Staff Meeting",
-      "ask": "He declined the Mon Oct 26 staff meeting. Decide whether to keep it as planned.",
-      "when": "Mon 6:57 AM",
-      "flag": "FYI",
-      "group": "action",
-      "unread": false,
-      "received": "2026-10-19T10:57:16Z"
-    },
-    {
-      "from": "Lifeway",
-      "subject": "Your monthly subscription renews in 7 days",
-      "ask": "Renews Oct 24. You told Laura on Oct 15 that the invoice layout is correct.",
-      "when": "Sat",
-      "flag": "FYI",
-      "group": "action",
-      "unread": true,
-      "received": "2026-10-17T22:00:15Z"
-    },
-    {
-      "from": "Jennifer Ward",
-      "subject": "MORE Supplies UPDATE for OCT 18",
-      "ask": "You replied Oct 8. The Oct 18 launch has passed; nothing is pending from her unless lanyards need to go back to the hub.",
-      "when": "Oct 7 · 12 days",
+      "subject": "Re: leadership Course week 40",
+      "ask": "You said \"sounds good\" on Sep 15 to his idea of dissecting the course with the whole team. Waiting on him to set a time.",
+      "when": "Sep 15 · 5 wks",
       "flag": "Waiting",
       "group": "waiting",
       "unread": true,
-      "received": "2026-10-07T20:01:30Z"
+      "received": "2026-09-15T13:19:48Z"
     },
     {
       "from": "Andrew and Kimberly Horacek",
@@ -818,14 +825,14 @@ li > .empty-state { grid-column: 1 / -1; }
     }
   ],
   "followups": [
-    "Ministry Platform: one outstanding task, a follow-up on a Group Inquiry (Deb Farrow, Faith and Fellowship at Fiddlers - Lunsford), due Thu Oct 22.",
-    "Planning Center: Sonia Maynard blocked Oct 24 to 31, Sharon Fulford blocked Oct 17, Greg Earwood blocked Nov 15, Judy Covington blocked Jan 8 to 18, 2027. Rhonda Smith declined the Oct 18 Cafe Cart.",
-    "Phil Humphreys is out Fri Oct 23 to Sun Oct 25, so the Oct 25 Sunday has no regional production manager.",
-    "Gabriel Goar declined the Oct 26 Gloucester Staff Meeting.",
-    "Kaylin Gentry's PTO requests for Feb 7 and 8, 2027 are waiting on you in Paycom.",
-    "Tablecloths Factory order 5654831TCF and the Amazon MaxGear brochure holder were both delivered Oct 17.",
-    "You forwarded the Lumos candlelight concert inquiry to Joy Dickerson on Oct 17.",
-    "iPad issue in kids: waiting on Kaylin and Amanda since Oct 10 (9 days). Ask at the 11:00 and 2:00 meetings."
+    "Scott Hurley (stewardship): campus pastor signatures are needed for the December first-gift letter; he plans to find a time today.",
+    "Planning Center: Sonia Maynard blocked Oct 24 to 31 (she was on Oct 18 indoor signage set up), Greg Earwood blocked Nov 15 and Nov 29, Judy Covington blocked Jan 8 to 18, 2027.",
+    "Phil Humphreys is out Fri Oct 23 to Sun Oct 25, so Oct 25 has no regional production manager.",
+    "Jeff Askew has no prison-support ministry and knows no one for the dog; he will ask around.",
+    "Brant Ryan's Oct 14 meeting notes (Meeting 10:14.docx) are still unread.",
+    "Gabriel Goar declined the Oct 26 Gloucester Staff Meeting. You accepted the Ordination Council invite for him on Oct 19.",
+    "Austin Page's Life Team roster review is due Tue Nov 3.",
+    "Cindy (Riverbend): you asked Oct 19 what the website should say for the Christmas toy donation. No reply yet."
   ],
   "todos": [],
   "ideas": [
@@ -834,82 +841,15 @@ li > .empty-state { grid-column: 1 / -1; }
     "Leadership video notes: multiply through being an example, creating a big picture, aligning individual objectives with business goals"
   ],
   "sources": [
-    "Outlook calendars (work, Liberty, Personal), Oct 19 to 26",
-    "All unread email plus read email and sent mail since Oct 16 (newsletters, promotions and text notifications skipped unless they ask something)",
-    "Self-sent note: \"Updated To Do\" (Oct 18, 8:51 PM)",
-    "Ministry Platform outstanding-tasks email, Oct 19",
+    "Outlook calendars (work, Liberty, Personal), Oct 20 to 27",
+    "All unread email plus read email and sent mail since Oct 17 (newsletters, promotions and text notifications skipped unless they ask something)",
+    "Self-sent note: \"Updated To Do\" (Oct 19, 9:03 PM)",
+    "Ministry Platform outstanding-tasks email, Oct 19 (already handled)",
     "Planning Center emails",
-    "Teams chats since Oct 16 (none found)"
+    "Teams chats since Oct 17 (none found)"
   ],
-  "generatedAt": "2026-10-19T11:40:00Z",
+  "generatedAt": "2026-10-20T11:30:00Z",
   "meetings": [
-    {
-      "key": "liberty-kids-meeting",
-      "title": "Liberty Kids Meeting",
-      "date": "2026-10-19",
-      "day": "Mon Oct 19",
-      "time": "11:00–12:00",
-      "where": "",
-      "attendees": [
-        "Amanda McWhirter"
-      ],
-      "context": [
-        "Waiting on Kaylin and Amanda: iPad issue in kids (since Oct 10; Amanda is back from the mission trip)",
-        "Her Oct 7 forward set 50 cider and 100 cocoa for Trunk or Treat on Oct 22",
-        "Your tasks: Where do kids gifts go?; Talk to Scott about Amanda and Kaylin's hours"
-      ],
-      "suggestions": [
-        "iPad issue in kids: where it stands",
-        "Trunk or Treat cider and cocoa for Oct 22",
-        "Where do kids gifts go?",
-        "Amanda's hours (before you talk to Scott Wednesday)"
-      ]
-    },
-    {
-      "key": "elementary-meeting",
-      "title": "Elementary Meeting",
-      "date": "2026-10-19",
-      "day": "Mon Oct 19",
-      "time": "2:00–3:00",
-      "where": "",
-      "attendees": [
-        "Kaylin Morgan"
-      ],
-      "context": [
-        "Waiting on Kaylin and Amanda: iPad issue in kids (Kaylin to disconnect from HPT)",
-        "Paycom: Kaylin has PTO requests for Feb 7 and 8, 2027 waiting on you",
-        "Your task: Talk to Scott about Amanda and Kaylin's hours",
-        "Your personal calendar has Campus Email Missions in this same hour"
-      ],
-      "suggestions": [
-        "iPad issue in kids: Kaylin disconnecting from HPT",
-        "Trunk or Treat plans for kids",
-        "Where do kids gifts go?",
-        "Her Feb PTO requests"
-      ]
-    },
-    {
-      "key": "sunday-follow-up",
-      "title": "Sunday Follow Up",
-      "date": "2026-10-19",
-      "day": "Mon Oct 19",
-      "time": "3:00–4:00",
-      "where": "",
-      "attendees": [
-        "JP Ward"
-      ],
-      "context": [
-        "Your tasks: Daniel Hogge for hospitality; Bonars serving; Signage stake; Send message to stroller people",
-        "Planning Center: Sonia Maynard blocked Oct 24 to 31; Rhonda Smith declined the Oct 18 Cafe Cart",
-        "Phil Humphreys is out Oct 23 to 25"
-      ],
-      "suggestions": [
-        "MORE launch Sunday: what worked and what to fix",
-        "Oct 25 hospitality gaps with Sonia out",
-        "Signage stake and the stroller message",
-        "Cafe Cart coverage"
-      ]
-    },
     {
       "key": "campus-pastor-meeting",
       "title": "Campus Pastor Meeting",
@@ -918,16 +858,17 @@ li > .empty-state { grid-column: 1 / -1; }
       "time": "9:00–10:00",
       "where": "W131",
       "attendees": [
-        "Campus pastors (11)"
+        "Campus pastors (10)"
       ],
       "context": [
-        "MORE launched Oct 18 at every campus",
-        "You forwarded the Lumos candlelight concert inquiry to Joy Dickerson Oct 17",
-        "Trunk or Treat at Lighthouse is Thursday Oct 22"
+        "Scott Hurley (stewardship) wants campus pastor signatures on file for the December first-gift letter",
+        "Austin Page's Life Team roster review is due Tue Nov 3",
+        "Jeff Askew replied to your Oct 14 prison-ministry question: no existing support"
       ],
       "suggestions": [
-        "MORE launch recap from Gloucester",
-        "Lumos candlelight concert inquiry",
+        "When to sign for the first-gift letter",
+        "Life Team roster review due Nov 3",
+        "Support for members headed to prison",
         "Trunk or Treat Thursday"
       ],
       "note": "This slot overlaps the All-Staff Breakfast (8:30 to 10:30)."
@@ -940,17 +881,17 @@ li > .empty-state { grid-column: 1 / -1; }
       "time": "12:00–1:30",
       "where": "W131",
       "attendees": [
-        "Campus pastors (12)"
+        "Campus pastors (11)"
       ],
       "context": [
-        "Same group as the 9:00 meeting, plus a few staff",
         "Your task: System behind timelines and projects (Autodesk, Procore recommended, Planning Center, Atlas)",
-        "Your task: Life.church operations: see if"
+        "Procore's Jesse Moss is waiting on a call time for your pricing request",
+        "Same group as the 9:00 meeting, plus a few staff"
       ],
       "suggestions": [
-        "MORE launch recap from Gloucester",
         "Timeline and project system options",
-        "Life.church operations"
+        "Procore pricing call",
+        "Life Team roster review"
       ]
     },
     {
@@ -974,7 +915,7 @@ li > .empty-state { grid-column: 1 / -1; }
       "suggestions": [
         "Projector pack-up order and case weight",
         "Oct 25 coverage with Phil out",
-        "MORE launch: what worked in the worship center"
+        "Anything for the Oct 25 plan"
       ],
       "note": "You and the team walk through the Planning Center plan together on the Teams call, so have this Sunday's plan (Oct 25) open."
     },
@@ -990,14 +931,37 @@ li > .empty-state { grid-column: 1 / -1; }
       ],
       "context": [
         "Your task: Talk to Scott about Amanda and Kaylin's hours",
-        "Your tasks: Health insurance for Hannah; Finances behind health insurance and Hannah's hours (wait on Pastor)",
-        "Paycom: Kaylin's PTO requests for Feb 7 and 8, 2027"
+        "Your tasks: Health insurance for Hannah (waiting); Finances behind health insurance and Hannah's hours (wait on Pastor)",
+        "Your task: Call Trevor"
       ],
       "suggestions": [
         "Amanda and Kaylin's hours",
         "Hannah's hours and health insurance",
-        "Kaylin's Feb PTO requests",
         "MORE launch recap"
+      ]
+    },
+    {
+      "key": "trunk-or-treat-set-up",
+      "title": "Trunk or Treat Set Up",
+      "date": "2026-10-22",
+      "day": "Thu Oct 22",
+      "time": "1:30–3:30",
+      "where": "",
+      "attendees": [
+        "Kaylin Morgan",
+        "JP Ward",
+        "Brant Ryan",
+        "Amanda McWhirter",
+        "Hannah McMahan"
+      ],
+      "context": [
+        "Your tasks: Block party trailer (grab it Tuesday); Get firepit; Where do kids gifts go?",
+        "Cider and cocoa for Oct 22: 50 cider and 100 cocoa (Amanda's Oct 7 forward)"
+      ],
+      "suggestions": [
+        "Who brings the trailer and firepit",
+        "Cider and cocoa count",
+        "Where kids gifts go"
       ]
     },
     {
@@ -1008,6 +972,7 @@ li > .empty-state { grid-column: 1 / -1; }
       "time": "8:30–10:30",
       "where": "GTR Office",
       "attendees": [
+        "Hannah McMahan",
         "Kaylin Morgan",
         "JP Ward",
         "Brant Ryan",
@@ -1016,14 +981,36 @@ li > .empty-state { grid-column: 1 / -1; }
         "Gabriel Goar (declined)"
       ],
       "context": [
-        "Gabriel Goar declined this meeting Monday morning",
+        "Gabriel Goar declined this meeting",
+        "Brant's Oct 14 meeting notes are unread; Chad and Laurie Scott are stepping away from LSM students",
         "Your tasks: Daniel Hogge for hospitality; Bonars serving; Take food to Page Middle School and Abingdon",
         "Phil is back from being out Oct 23 to 25"
       ],
       "suggestions": [
-        "MORE launch recap",
         "Trunk or Treat recap",
+        "Who leads LSM students next series",
         "Coverage without Gabriel"
+      ]
+    },
+    {
+      "key": "sunday-follow-up",
+      "title": "Sunday Follow Up",
+      "date": "2026-10-26",
+      "day": "Mon Oct 26",
+      "time": "3:00–4:00",
+      "where": "",
+      "attendees": [
+        "JP Ward"
+      ],
+      "context": [
+        "Your tasks: Daniel Hogge for hospitality; Bonars serving",
+        "Planning Center: Sonia Maynard blocked Oct 24 to 31",
+        "Phil Humphreys is out Oct 23 to 25"
+      ],
+      "suggestions": [
+        "Oct 25 hospitality gaps with Sonia out",
+        "Daniel Hogge for hospitality",
+        "Trunk or Treat recap"
       ]
     }
   ],
@@ -1034,7 +1021,7 @@ li > .empty-state { grid-column: 1 / -1; }
 <div class="shell" id="shell">
   <aside class="side" id="side" aria-label="Dashboard menu">
     <div class="side-top">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">GTR</span><span class="brand-text"><strong>Morning Brief</strong><small>Gloucester campus</small></span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-text"><strong>Morning Brief</strong><small></small></span></div>
       <button class="icon-btn" type="button" id="side-close" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <nav aria-label="Sections">
@@ -1207,6 +1194,14 @@ li > .empty-state { grid-column: 1 / -1; }
 <script>
 (function () {
   var d = JSON.parse(document.getElementById('brief-data').textContent);
+  // P: the owner's profile. WHO introduces them to Claude in every prompt.
+  var P = JSON.parse(document.getElementById('profile').textContent);
+  var FIRST = P.firstName || String(P.name || '').split(' ')[0] || 'you';
+  var WHO = P.name + ', ' + P.role + ' at the ' + P.campus + (P.campusCode ? ' (' + P.campusCode + ')' : '') + ' campus of ' + P.church + (P.region ? ' in ' + P.region : '');
+  var END_MIN = (function () { var m = /^(\d{1,2}):(\d{2})/.exec(P.dayEnd || '17:00'); return m ? +m[1] * 60 + +m[2] : 17 * 60; })();
+  var END_LABEL = new Date(2000, 0, 1, Math.floor(END_MIN / 60), END_MIN % 60).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  document.querySelector('.brand-mark').textContent = P.campusCode || String(P.campus || '').slice(0, 3).toUpperCase();
+  document.querySelector('.brand-text small').textContent = P.campus + ' campus';
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   document.getElementById('prepared').textContent = d.preparedAt;
@@ -1214,7 +1209,7 @@ li > .empty-state { grid-column: 1 / -1; }
   document.getElementById('headline').textContent = d.headline;
   document.getElementById('sources').textContent = d.sources.join(' · ');
 
-  // Saved state lives in the page's shared store so it follows Hobie across devices
+  // Saved state lives in the page's shared store so it follows the owner across devices
   // and the morning routine can read it:
   //   tasks/<id>      {text, status: open|waiting|done, due: YYYY-MM-DD|"", waitingOn, note,
   //                    source, createdAt, updatedAt, doneAt, since}
@@ -1503,11 +1498,11 @@ li > .empty-state { grid-column: 1 / -1; }
       st.q = question; st.busy = true; st.ctl = new AbortController();
       setOut('Thinking…'); setNote(''); sync();
       var prompt = [
-        'You are helping Hobie McMahan, Campus Pastor at the Gloucester (GTR) campus of Liberty Live Church in Virginia. Today is ' + d.dateLabel + '.',
-        'He is asking about this item from his daily dashboard:',
+        'You are helping ' + WHO + '. Today is ' + d.dateLabel + '.',
+        FIRST + ' is asking about this item from the daily dashboard:',
         describe(),
         'His request: ' + question,
-        'Answer plainly and briefly, in short paragraphs or a short list, with no headings. If he asks for a message, write it ready to send in his voice: warm, direct, and signed "Hobie". If you would need facts you don’t have, say what to check instead of guessing.'
+        'Answer plainly and briefly, in short paragraphs or a short list, with no headings. If ' + FIRST + ' asks for a message, write it ready to send in ' + FIRST + '’s voice: warm, direct, and signed "' + FIRST + '". If you would need facts you don’t have, say what to check instead of guessing.'
       ].join('\n\n');
       sampleFn(prompt, { signal: st.ctl.signal, cache: false, onText: function (u) { setOut(u.text); } })
         .then(function (r) { setOut(r.text); if (r.truncated) setNote('The answer was cut short. Ask for less at a time.'); }, function (e) {
@@ -2055,7 +2050,7 @@ li > .empty-state { grid-column: 1 / -1; }
     paintChart('inbox', 'Inbox open loops', 'Unread emails by how long they’ve waited', inboxAgeData(),
       { title: 'No open emails', body: 'Unread emails show up here by age until you read them in Outlook or tap Handled.', action: null }, animate);
     paintChart('week', 'This week on your calendar', 'Items per day, from the morning brief', weekData(),
-      { title: 'Nothing on the calendar this week', body: 'Work, Liberty and Personal calendar items appear here after the next morning brief.', action: null }, animate);
+      { title: 'Nothing on the calendar this week', body: 'Your calendar items appear here after the next morning brief.', action: null }, animate);
     document.getElementById('prog-note').textContent = 'Updated ' + hm(new Date());
   }
   function focusAddTask() { showTab('tasks'); var i = document.getElementById('add-text'); i.focus(); }
@@ -2085,7 +2080,7 @@ li > .empty-state { grid-column: 1 / -1; }
   }
   // Calendars read for planning: the default one, plus Liberty Calendar and the subscribed Apple
   // calendar ("Personal ", trailing space and all, as Outlook names it). A missing one is skipped.
-  var EXTRA_CALENDARS = [['Liberty Calendar', ''], ['Personal ', 'personal']];
+  var EXTRA_CALENDARS = P.calendars || [];
   function fetchOneCalendar(from, to, calendarName) {
     var all = [];
     function step(offset, n) {
@@ -2149,11 +2144,11 @@ li > .empty-state { grid-column: 1 / -1; }
     return (d.schedule || []).filter(function (s) { return !s.gap; }).map(function (s) { return '- ' + (s.end ? s.start + '–' + s.end : s.start) + ' ' + s.title; });
   }
 
-  // Day plan: from now until 4:30 PM (end of his workday), or the next workday once it is 4:00 PM.
+  // Day plan: from now until the end of the workday (P.dayEnd), or the next workday from half an hour before it.
   function planDay() {
     var btn = document.getElementById('plan-day-btn'), status = document.getElementById('plan-day-status');
     if (!sampleFn) return;
-    var now = new Date(), late = now.getHours() * 60 + now.getMinutes() >= 16 * 60;
+    var now = new Date(), late = now.getHours() * 60 + now.getMinutes() >= END_MIN - 30;
     var target = new Date(today);
     if (late) { do { target.setDate(target.getDate() + 1); } while (target.getDay() === 0 || target.getDay() === 6); }
     var startAt = late ? '8:30 AM' : hm(new Date(Math.ceil(now.getTime() / 9e5) * 9e5));
@@ -2174,14 +2169,14 @@ li > .empty-state { grid-column: 1 / -1; }
         var openPri = (late ? [] : d.priorities.filter(function (p) { return !marks['p-' + slug(p.title)]; })).map(function (p) { return '- ' + p.title + ' (' + p.tag + ')'; });
         var asks = d.emails.filter(function (m) { return m.group !== 'waiting' && !marks['e-' + slug(m.from + ' ' + m.subject)]; }).slice(0, 6).map(function (m) { return '- ' + m.from + ': ' + m.ask; });
         var prompt = [
-          'You plan the workday for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church.',
-          'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at 4:30 PM, when his workday ends.',
+          'You plan the workday for ' + WHO + '.',
+          'Day to plan: ' + target.toDateString() + '. Start at ' + startAt + ' and end at ' + END_LABEL + ', when the workday ends.',
           'Calendar (fixed, do not move):\n' + (cal.length ? cal.join('\n') : '- Nothing scheduled'),
           openPri.length ? 'This morning’s priorities:\n' + openPri.join('\n') : '',
-          'Open tasks, in Hobie’s own priority order with the most important first ([id] task {the section he put it in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
+          'Open tasks, in ' + FIRST + '’s own priority order with the most important first ([id] task {the section it was put in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(40).join('\n') || '- none'),
           recur.length ? 'Recurring items due now:\n' + recur.join('\n') : '',
-          asks.length ? 'Messages waiting on him (' + asks.length + '):\n' + asks.join('\n') : '',
-          'Rules: keep calendar events where they are and include them as "meeting" blocks. Events marked [personal] come from his personal calendar: keep that time free and label the block plainly. Put overdue and due-today tasks first, then the priorities, then the tasks in his Today section in his order. This week tasks fill the remaining time; Not urgent tasks only if the day is otherwise clear. Group small related tasks into one block. Include one 20 to 30 minute block for messages. Leave about a quarter of the open time unplanned, as "buffer", for interruptions. Never overlap blocks. Don’t plan more than fits; list the rest under notToday.',
+          asks.length ? 'Messages waiting on ' + FIRST + ' (' + asks.length + '):\n' + asks.join('\n') : '',
+          'Rules: keep calendar events where they are and include them as "meeting" blocks. Events marked [personal] come from a personal calendar: keep that time free and label the block plainly. Put overdue and due-today tasks first, then the priorities, then the tasks in the Today section in their listed order. This week tasks fill the remaining time; Not urgent tasks only if the day is otherwise clear. Group small related tasks into one block. Include one 20 to 30 minute block for messages. Leave about a quarter of the open time unplanned, as "buffer", for interruptions. Never overlap blocks. Don’t plan more than fits; list the rest under notToday.',
           'Reply with only JSON: {"summary": string, "blocks": [{"start": "HH:MM", "end": "HH:MM", "title": string, "kind": "meeting" | "task" | "email" | "buffer" | "break", "taskIds": [string], "why": string}], "notToday": [{"taskId": string | null, "title": string, "why": string}]}. Use 24-hour times. taskIds are ids from the task list (empty for anything else). Keep "why" under 15 words and the summary to one sentence.'
         ].filter(Boolean).join('\n\n');
         return sampleFn.json(prompt, { cache: false });
@@ -2218,12 +2213,12 @@ li > .empty-state { grid-column: 1 / -1; }
     }).then(function (cal) {
       status.textContent = 'Planning with Claude…';
       var prompt = [
-        'You plan the work week for Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church. His workday ends at 4:30 PM. Sundays are service days; he isn’t preaching soon.',
+        'You plan the work week for ' + WHO + '. The workday ends at ' + END_LABEL + '. ' + (P.weekNote || 'Sundays are service days.'),
         'Days to plan: ' + days.map(function (dd) { return ymd(dd) + ' (' + dd.toDateString().slice(0, 3) + ')'; }).join(', ') + '. Today is ' + today.toDateString() + '.',
         'Calendar so far:\n' + cal.join('\n\n'),
-        'Open tasks, in Hobie’s own priority order with the most important first ([id] task {the section he put it in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
+        'Open tasks, in ' + FIRST + '’s own priority order with the most important first ([id] task {the section it was put in: Today, This week or Not urgent}, due date, note):\n' + (taskLines(60).join('\n') || '- none'),
         'Recurring items: ' + (recurring.map(function (r) { return r.text + ' (' + r.every + (r.due ? ', by ' + r.due : '') + ')'; }).join('; ') || 'none'),
-        'Rules: give each day 2 to 4 focus tasks that fit around its meetings and personal commitments (marked [personal]). Assume more meetings will land, so keep at least 40 percent of each day unplanned. Respect due dates; overdue tasks go early in the week. Otherwise follow his sections and order: Today tasks go on the first day, This week tasks spread across the week in his order, and Not urgent tasks go in later unless a day is light. Put things needed for Sunday on Thursday or Friday. Lighter days get more. Anything that doesn’t fit goes in later.',
+        'Rules: give each day 2 to 4 focus tasks that fit around its meetings and personal commitments (marked [personal]). Assume more meetings will land, so keep at least 40 percent of each day unplanned. Respect due dates; overdue tasks go early in the week. Otherwise follow the sections and order of the task list: Today tasks go on the first day, This week tasks spread across the week in listed order, and Not urgent tasks go in later unless a day is light. Put things needed for Sunday on Thursday or Friday. Lighter days get more. Anything that doesn’t fit goes in later.',
         'Reply with only JSON: {"summary": string, "days": [{"date": "YYYY-MM-DD", "theme": string, "focus": [{"taskId": string | null, "title": string, "why": string}]}], "later": [{"taskId": string | null, "title": string}]}. taskIds are ids from the task list. Keep theme under 8 words and why under 12 words.'
       ].join('\n\n');
       return sampleFn.json(prompt, { cache: false });
@@ -2368,7 +2363,7 @@ li > .empty-state { grid-column: 1 / -1; }
 
   if (!d.priorities.length) {
     document.getElementById('first-box').hidden = true;
-    document.getElementById('first-empty').append(emptyState({ icon: 'flag', boxed: true, title: 'Nothing flagged as first today', body: 'The morning brief found nothing urgent. Start with what’s due, or let Claude lay out the day.', actions: [{ label: 'Plan my day', primary: true, onClick: function () { if (sampleFn) planDay(); else showError('Planning works when this page is open on claude.ai.'); } }, { label: 'See all tasks', onClick: function () { showTab('tasks'); } }] }));
+    document.getElementById('first-empty').append(emptyState({ icon: 'flag', boxed: true, title: d.date ? 'Nothing flagged as first today' : 'Your first brief fills this in', body: d.date ? 'The morning brief found nothing urgent. Start with what’s due, or let Claude lay out the day.' : 'Each morning, the brief puts the 3 to 6 things to do first here. Until then, start with your tasks or let Claude lay out the day.', actions: [{ label: 'Plan my day', primary: true, onClick: function () { if (sampleFn) planDay(); else showError('Planning works when this page is open on claude.ai.'); } }, { label: 'See all tasks', onClick: function () { showTab('tasks'); } }] }));
   }
 
   // Add a task
@@ -2938,16 +2933,16 @@ li > .empty-state { grid-column: 1 / -1; }
       go.disabled = true; stop.hidden = false;
       out.textContent = 'Thinking…';
       var parts = [
-        'You are helping Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church, prepare for a meeting.',
+        'You are helping ' + WHO + ', prepare for a meeting.',
         'Meeting: ' + m.title + ' — ' + [m.day, m.time, m.where].filter(Boolean).join(', '),
         m.attendees && m.attendees.length ? 'Attendees: ' + m.attendees.join(', ') : '',
         m.note ? 'About this meeting: ' + m.note : '',
-        m.context && m.context.length ? 'Open items from his dashboard involving these people:\n- ' + m.context.join('\n- ') : '',
+        m.context && m.context.length ? 'Open items from the dashboard involving these people:\n- ' + m.context.join('\n- ') : '',
         m.suggestions && m.suggestions.length ? 'Agenda ideas already suggested:\n- ' + m.suggestions.join('\n- ') : '',
-        'His running agenda:\n"""\n' + (ta.value.trim() || '(empty)').slice(0, 20000) + '\n"""',
-        doc.text ? 'Document he attached (' + doc.name + '):\n"""\n' + doc.text.slice(0, 40000) + '\n"""' : '',
-        'His request: ' + (q.value.trim() || 'Review my agenda and notes. Suggest what to add, what to prepare, and questions worth asking.'),
-        'Reply with only JSON: {"tips": [string], "additions": [{"item": string, "why": string}], "questions": [string]}. At most 4 tips, 6 additions and 4 questions; keep each string under 25 words. Only suggest additions that are not already on his agenda. Write plainly.'
+        'The running agenda:\n"""\n' + (ta.value.trim() || '(empty)').slice(0, 20000) + '\n"""',
+        doc.text ? 'Attached document (' + doc.name + '):\n"""\n' + doc.text.slice(0, 40000) + '\n"""' : '',
+        'Request: ' + (q.value.trim() || 'Review my agenda and notes. Suggest what to add, what to prepare, and questions worth asking.'),
+        'Reply with only JSON: {"tips": [string], "additions": [{"item": string, "why": string}], "questions": [string]}. At most 4 tips, 6 additions and 4 questions; keep each string under 25 words. Only suggest additions that are not already on the agenda. Write plainly.'
       ].filter(Boolean).join('\n\n');
       sampleFn.json(parts, { signal: ctl.signal, cache: false }).then(function (r) {
         out.textContent = '';
@@ -3053,7 +3048,7 @@ li > .empty-state { grid-column: 1 / -1; }
   function refreshFromStore() { if (editingId || recEditId || dragging) { deferred = true; return; } refresh(); }
 
   var sch = document.getElementById('schedule');
-  if (!d.schedule.length) sch.append(emptyState({ icon: 'calendar', title: 'No meetings on your calendar today', body: 'Your work, Liberty and Personal calendars are clear. Plan my day can fill the time with your open tasks.', actions: [{ label: 'Plan my day', primary: true, onClick: function () { if (sampleFn) planDay(); else showError('Planning works when this page is open on claude.ai.'); } }] }));
+  if (!d.schedule.length) sch.append(emptyState({ icon: 'calendar', title: 'No meetings on your calendar today', body: 'Your calendars are clear. Plan my day can fill the time with your open tasks.', actions: [{ label: 'Plan my day', primary: true, onClick: function () { if (sampleFn) planDay(); else showError('Planning works when this page is open on claude.ai.'); } }] }));
   d.schedule.forEach(function (s) {
     var r = el('div', 'row' + (s.gap ? ' gap' : ''));
     r.append(el('div', 'time', s.end ? s.start + '–' + s.end : s.start));
@@ -3215,7 +3210,7 @@ li > .empty-state { grid-column: 1 / -1; }
     return step(0, 0);
   }
   var NOISE = /(newsletter|offers|deals|promo|marketing|e-offers|em\.walmart|nba\.com|imdb|hubspot|mailchimp)/i;
-  var ME = 'hmcmahan@libertylive.church';
+  var ME = String(P.email || '').toLowerCase();
   function refreshMail() {
     if (!mcp) return;
     refreshBtn.disabled = true; refreshBtn.textContent = 'Checking…';
@@ -3270,12 +3265,12 @@ li > .empty-state { grid-column: 1 / -1; }
       renderEmails();
     }).then(function () { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh'; });
   }
-  // Ask Claude to drop noise among the new emails and say what each one asks of Hobie.
+  // Ask Claude to drop noise among the new emails and say what each one asks of the owner.
   function triageFresh() {
     var list = live.fresh.map(function (m, i) { return { i: i, from: m.from, subject: m.subject, preview: m.ask }; });
-    var prompt = 'You help Hobie McMahan, Campus Pastor at the Gloucester campus of Liberty Live Church, sort new email.\n'
-      + 'For each email below, decide whether it needs his attention (an ask, a decision, a deadline, a reply, or news that changes his plans) or is noise (ads, newsletters, automated notices that need nothing).\n'
-      + 'Reply with only a JSON array, one object per email: {"i": number, "keep": boolean, "ask": string, "flag": "Action" | "Reply" | "FYI"}. "ask" is one plain sentence under 20 words saying what he needs to do.\n\n'
+    var prompt = 'You sort new email for ' + WHO + '.\n'
+      + 'For each email below, decide whether it needs ' + FIRST + '’s attention (an ask, a decision, a deadline, a reply, or news that changes plans) or is noise (ads, newsletters, automated notices that need nothing).\n'
+      + 'Reply with only a JSON array, one object per email: {"i": number, "keep": boolean, "ask": string, "flag": "Action" | "Reply" | "FYI"}. "ask" is one plain sentence under 20 words saying what ' + FIRST + ' needs to do.\n\n'
       + JSON.stringify(list);
     mailStatus.textContent += ' · sorting with Claude…';
     sampleFn.json(prompt, { modelTier: 'quick' }).then(function (rows) {
@@ -3349,7 +3344,7 @@ li > .empty-state { grid-column: 1 / -1; }
       if (!ns) return;
       mcp = ns;
       refreshBtn.hidden = false;
-      document.getElementById('rebuild').hidden = false;
+      document.getElementById('rebuild').hidden = !ROUTINE;
       rebuildStatus();
     }, function () {});
     window.claude.use('sample').then(function (fn) {
@@ -3364,7 +3359,7 @@ li > .empty-state { grid-column: 1 / -1; }
   // Rebuild everything: start the same routine that builds the morning brief. It re-reads
   // email, Teams, calendar and notes, republishes this page, and every open view updates itself.
   // The request time is kept in meta/rebuild so other devices show it too.
-  var ROUTINE = 'trig_01RZJcCGr8qkMJkJU7PVppN8', CCR = 'Claude Code Remote';
+  var ROUTINE = P.routineId || '', CCR = 'Claude Code Remote';
   var rebuildAt = null;
   function rebuildStatus() {
     var st = document.getElementById('rebuild-status'), btn = document.getElementById('rebuild-btn');
