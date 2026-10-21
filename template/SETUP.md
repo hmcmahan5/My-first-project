@@ -1,6 +1,6 @@
-# Morning Brief: setup for Liberty Live campus pastors
+# Productivity Dashboard: setup for Liberty Live campus pastors
 
-This is a copy of the Morning Brief dashboard Hobie McMahan uses at Gloucester. Each morning it reads your Outlook email, calendar and Teams, plus the notes you email yourself. From that it builds one page with what to do first, your schedule, your inbox, your tasks and prep for your meetings.
+This is a copy of the Productivity Dashboard Hobie McMahan uses at Gloucester. Each morning it reads your Outlook email, calendar and Teams, plus the notes you email yourself. From that it builds one page with what to do first, your schedule, your inbox, your tasks and prep for your meetings.
 
 Your copy is your own. It starts empty, it's private to your Claude account, and nobody else sees your data, Hobie included.
 
@@ -16,7 +16,7 @@ Your copy is your own. It starts empty, it's private to your Claude account, and
 2. Attach the three files, or put them in the session's project folder.
 3. Paste this message:
 
-   > Set up my Morning Brief dashboard from the attached files. Follow "Instructions for Claude" in SETUP.md, and ask me what you need before you start.
+   > Set up my Productivity Dashboard from the attached files. Follow "Instructions for Claude" in SETUP.md, and ask me what you need before you start.
 
 4. Answer Claude's questions: your name, email, campus, when your workday ends, and which calendars you use.
 5. When Claude gives you the dashboard link, open it. The first time you use each feature, the page asks permission to use Microsoft 365, your Claude routines and Ask Claude. Choose **Allow**.
@@ -70,7 +70,7 @@ You are setting up this dashboard for a Liberty Live Church campus pastor in the
    - Replace every `{{…}}` placeholder, with `{{DASHBOARD URL}}` being the artifact link from step 3.
    - Replace `{{PERSONAL CALENDAR LINE}}` with one bullet per extra calendar. Use the same form as the bullets above it, and mark personal ones like this: `- "Personal " (with the trailing space). This is their personal calendar.` Delete the line if there are none.
 
-5. **Create the routine**, named "<First name> Morning Brief", with these settings:
+5. **Create the routine**, named "<First name> Productivity Dashboard", with these settings:
    - cron `CRON_TZ=America/New_York 27 7 * * *`;
    - a fresh session on each run;
    - connectors `["Microsoft 365"]`;

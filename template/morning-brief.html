@@ -1,4 +1,4 @@
-<title>{{FIRST NAME}}'s Morning Brief</title>
+<title>{{FIRST NAME}}'s Productivity Dashboard</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -240,7 +240,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; padding-left: 4px; }
 .brand-mark { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font: 700 13px/1 var(--font-display); letter-spacing: .04em; }
 .brand-text { display: grid; line-height: 1.2; min-width: 0; white-space: nowrap; transition: opacity .2s; }
-.brand-text strong { font: 700 16px var(--font-display); }
+.brand-text strong { font: 700 15px/1.15 var(--font-display); white-space: normal; }
 .brand-text small { color: var(--muted); font-size: 12px; }
 .nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 .nav-item { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; padding: 9px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--muted);
@@ -495,7 +495,7 @@ li > .empty-state { grid-column: 1 / -1; }
 <script type="application/json" id="brief-data">
 {
   "date": "",
-  "dateLabel": "Welcome to your Morning Brief",
+  "dateLabel": "Welcome to your Productivity Dashboard",
   "preparedAt": "Your first brief arrives tomorrow morning",
   "headline": "This dashboard fills itself each weekday morning from your Outlook email, calendar, Teams and notes. Until then, add a few tasks and recurring items so the first brief has something to work with.",
   "generatedAt": "",
@@ -515,7 +515,7 @@ li > .empty-state { grid-column: 1 / -1; }
 <div class="shell" id="shell">
   <aside class="side" id="side" aria-label="Dashboard menu">
     <div class="side-top">
-      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-text"><strong>Morning Brief</strong><small></small></span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-text"><strong>Productivity Dashboard</strong><small></small></span></div>
       <button class="icon-btn" type="button" id="side-close" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <nav aria-label="Sections">
