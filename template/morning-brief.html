@@ -691,11 +691,13 @@ li > .empty-state { grid-column: 1 / -1; }
   // P: the owner's profile. WHO introduces them to Claude in every prompt.
   var P = JSON.parse(document.getElementById('profile').textContent);
   var FIRST = P.firstName || String(P.name || '').split(' ')[0] || 'you';
-  var WHO = P.name + ', ' + P.role + ' at the ' + P.campus + (P.campusCode ? ' (' + P.campusCode + ')' : '') + ' campus of ' + P.church + (P.region ? ' in ' + P.region : '');
+  // Campus is optional: a church-wide role (missions, operations) leaves it empty.
+  var WHO = P.name + ', ' + P.role + (P.campus ? ' at the ' + P.campus + (P.campusCode ? ' (' + P.campusCode + ')' : '') + ' campus of ' : ' at ') + P.church + (P.region ? ' in ' + P.region : '');
   var END_MIN = (function () { var m = /^(\d{1,2}):(\d{2})/.exec(P.dayEnd || '17:00'); return m ? +m[1] * 60 + +m[2] : 17 * 60; })();
   var END_LABEL = new Date(2000, 0, 1, Math.floor(END_MIN / 60), END_MIN % 60).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  document.querySelector('.brand-mark').textContent = P.campusCode || String(P.campus || '').slice(0, 3).toUpperCase();
-  document.querySelector('.brand-text small').textContent = P.campus + ' campus';
+  var initials = String(P.name || '').split(/\s+/).filter(Boolean).map(function (w) { return w[0]; }).join('').slice(0, 3).toUpperCase();
+  document.querySelector('.brand-mark').textContent = P.badge || P.campusCode || (P.campus ? String(P.campus).slice(0, 3).toUpperCase() : initials);
+  document.querySelector('.brand-text small').textContent = P.subtitle || (P.campus ? P.campus + ' campus' : P.role);
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   document.getElementById('prepared').textContent = d.preparedAt;
